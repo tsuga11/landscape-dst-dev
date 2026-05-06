@@ -24,11 +24,11 @@ const CONFIG = {
 
   // Initial map view
   center: [19.89, -155.25],
-  zoom:   9,
+  zoom:   10,
 
   // 3D Terrain (optional)
   terrain: true,    // enable terrian extrusions
-  terrainExaggeration: 1.5,  // vertical scale (1 = real, 2 = double height)
+  terrainExaggeration: 2,  // vertical scale (1 = real, 2 = double height)
 
   //Initial camera (optional)
   defaultPitch: 45, // tilt angle 0 - 85
