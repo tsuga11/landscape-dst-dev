@@ -1,411 +1,298 @@
 /**
  * config.js — Babeldaob Island, Palau
  * ============================================================
- * THIS IS THE ONLY FILE YOU EDIT when adapting to the Palau geography.
+ * THIS IS THE ONLY FILE YOU EDIT when adapting to a new geography.
  *
- * Data files go in the data/ subfolder:
- *   data/units.geojson     — catchment polygons with all attributes (see FIELDS below)
- *   data/roads.geojson     — road polylines with {id} property
- *   data/streams.geojson   — stream polylines with {id} property
- *   data/corals.geojson    — coral reef polygons with {id} property
+ * To create a new geography:
+ *   1. Copy the geographies/hamakua/ folder to geographies/palau/
+ *   2. Replace config.js with this file
+ *   3. Put your GeoJSON files in the data/ subfolder
+ *   4. Update the card in the root index.html
  *
- * REQUIRED fields on units.geojson features:
- *   id             — integer catchment ID
- *   hydroUnit      — display label (matches id in Shiny app)
- *   propForest     — proportion forest cover (0–1)
- *   propSavanna    — proportion savanna cover (0–1)
- *   sedCurrent     — current sediment load (tons)
- *   sedForest      — sediment under full-forest scenario (tons)
- *   sedSavanna     — sediment under full-savanna scenario (tons)
- *   rchCurrent     — current groundwater recharge (MG)
- *   rchForest      — recharge under full-forest scenario (MG)
- *   rchSavanna     — recharge under full-savanna scenario (MG)
- *   logicRest      — combined restoration logic score (−1 to 1)
- *   logicProt      — combined protection logic score (−1 to 1)
- *   sedLogicRest   — sediment branch restoration logic score (−1 to 1)
- *   sedLogicProt   — sediment branch protection logic score (−1 to 1)
- *   rchLogicRest   — recharge branch restoration logic score (−1 to 1)
- *   rchLogicProt   — recharge branch protection logic score (−1 to 1)
- *   vegLogicRest   — vegetation branch restoration logic score (−1 to 1)
- *   vegLogicProt   — vegetation branch protection logic score (−1 to 1)
- *   decLogic       — decision model: logic score (0–1)
- *   decEffort      — decision model: effort score (0–1)
- *   decDiversity   — decision model: diversity score (0–1)
- *   decBuffer      — decision model: buffer score (0–1)
- *   decProtLogic   — decision model (protection): logic score (0–1)
- *   decProtEffort  — decision model (protection): effort score (0–1)
- *   decProtDiversity — decision model (protection): diversity score (0–1)
- *   decProtBuffer  — decision model (protection): buffer score (0–1)
+ * Keys marked [REQUIRED] must be provided.
+ * Keys marked [OPTIONAL] have defaults if omitted.
  * ============================================================
  */
 
 const CONFIG = {
 
   // ══════════════════════════════════════════════════════════
-  // GENERAL
+  // GENERAL  [REQUIRED]
   // ══════════════════════════════════════════════════════════
   title:    'Palau DST',
   subtitle: 'Babeldaob Island, Palau',
 
-  // Initial map view
+  // Initial map view  [lat, lng]
   center: [7.52, 134.62],
   zoom:   12,
-  mobileZoom: 11,   // zoom used when screen width < 600px
 
-  // Default base layer on load
-  defaultBaseLayer: 'Forest',
+  // 3D Terrain [OPTIONAL]
+  terrain: false,
 
-  // Map tile options: 'light' | 'satellite' | 'topo'  (used by shared/app.js)
+  // Default base layer: 'light' | 'satellite' | 'topo'  [OPTIONAL]
   defaultBasemap: 'light',
 
   // ══════════════════════════════════════════════════════════
-  // DATA FILES
+  // HOVER INFO BOX  [OPTIONAL]
+  // Fields shown when hovering over a feature.
+  //   field:    GeoJSON property name
+  //   label:    Display label
+  //   format:   'pct' | 'int' | 'dec' | omit for raw
+  //   decimals: decimal places (used with format:'dec')
   // ══════════════════════════════════════════════════════════
-  dataFiles: {
-    units:   'data/units.geojson',
-    roads:   'data/roads.geojson',
-    streams: 'data/streams.geojson',
-    corals:  'data/corals.geojson',
-  },
-
-  // ══════════════════════════════════════════════════════════
-  // BASE LAYERS (radio buttons)
-  // Each entry defines how to color the units polygon layer.
-  // ══════════════════════════════════════════════════════════
-  baseLayers: [
-    {
-      id: 'None',
-      label: 'None',
-    },
-    {
-      id: 'Forest',
-      label: 'Forest',
-      field: 'propForest',
-      scale: 100,               // multiply field value by this for display
-      unit: '%',
-      palette: ['#ffffcc', '#c2e699', '#78c679', '#31a354', '#006837'],
-      bins: [0, 20, 40, 60, 80, 100],
-      legendTitle: 'Forest cover (%)',
-    },
-    {
-      id: 'Savanna',
-      label: 'Savanna',
-      field: 'propSavanna',
-      scale: 100,
-      unit: '%',
-      palette: ['#ffffd4', '#fed98e', '#fe9929', '#d95f0e', '#993404'],
-      bins: [0, 20, 40, 60, 80, 100],
-      legendTitle: 'Savanna cover (%)',
-    },
-    {
-      id: 'Sediment',
-      label: 'Sediment',
-      field: 'sedCurrent',
-      scale: 1,
-      unit: ' tons',
-      palette: ['#ffffcc','#ffeda0','#fed976','#feb24c','#fd8d3c','#fc4e2a','#e31a1c','#b10026'],
-      bins: null,               // null = compute from data quantiles (8 bins)
-      legendTitle: 'Sediment load (tons)',
-    },
-    {
-      id: 'Recharge',
-      label: 'Recharge',
-      field: 'rchCurrent',
-      scale: 1,
-      unit: ' MG',
-      palette: ['#ffffd9','#edf8b1','#c7e9b4','#7fcdbb','#41b6c4','#1d91c0','#225ea8','#0c2c84'],
-      bins: null,               // null = compute from data quantiles (8 bins)
-      legendTitle: 'Groundwater recharge (MG)',
-    },
-    {
-      id: 'Logic model',
-      label: 'Logic model',
-      // Uses both logicRest (red) and logicProt (blue) — handled specially in app
-      legendTitle: 'Logic model scores',
-    },
-    {
-      id: 'Decision model',
-      label: 'Decision model',
-      // Colors computed dynamically from AHP decision model — handled specially
-      legendTitle: 'Decision model scores',
-    },
+  hoverFields: [
+    { field: 'hydroUnit',   label: 'Catchment',           format: 'int'                },
+    { field: 'Acres',       label: 'Acres',                format: 'dec', decimals: 1  },
+    { field: 'propForest',  label: 'Forest cover',         format: 'pct'               },
+    { field: 'propSavanna', label: 'Savanna cover',        format: 'pct'               },
+    { field: 'sedCurrent',  label: 'Sediment (tons)',      format: 'dec', decimals: 2  },
+    { field: 'rchCurrent',  label: 'Recharge (MG)',        format: 'dec', decimals: 2  },
+    { field: 'logicRest',   label: 'EcoLogic (restore)',   format: 'dec', decimals: 3  },
+    { field: 'logicProt',   label: 'EcoLogic (protect)',   format: 'dec', decimals: 3  },
   ],
 
   // ══════════════════════════════════════════════════════════
-  // OVERLAY LAYERS (checkboxes)
+  // DATA LAYERS  [REQUIRED]
+  // All polygon features live in data/soe.geojson.
+  // Roads, streams, and corals are in their own files.
   // ══════════════════════════════════════════════════════════
-  overlayLayers: [
+  layers: [
+
+    // ── Forest cover ─────────────────────────────────────────
     {
-      id: 'roads',
-      label: 'Roads',
-      style: { color: '#8B4513', weight: 1.5, opacity: 0.8 },
+      id:           'forest',
+      label:        'Forest cover',
+      file:         'data/soe.geojson',
+      type:         'geojson',
+      colorField:   'propForest',
+      colorBreaks:  [0, 0.125, 0.250, 0.375, 0.500, 0.625, 0.750, 0.875],
+      colorPalette: ['#ffffcc','#c2e699','#78c679','#41ab5d','#238443','#006837','#004529','#002b18'],
+      legendTitle:  'Forest cover',
+      legendLabels: ['0–12.5%','12.5–25%','25–37.5%','37.5–50%','50–62.5%','62.5–75%','75–87.5%','>87.5%'],
+      strokeWeight: 0.5,
+      defaultOn:    true,
     },
+
+    // ── Savanna cover ─────────────────────────────────────────
     {
-      id: 'streams',
-      label: 'Streams',
-      style: { color: '#1f78b4', weight: 1.5, opacity: 0.8 },
+      id:           'savanna',
+      label:        'Savanna cover',
+      file:         'data/soe.geojson',
+      type:         'geojson',
+      colorField:   'propSavanna',
+      colorBreaks:  [0, 0.125, 0.250, 0.375, 0.500, 0.625, 0.750, 0.875],
+      colorPalette: ['#ffffd4','#fed98e','#fe9929','#d95f0e','#993404','#662100','#3d1200','#1a0700'],
+      legendTitle:  'Savanna cover',
+      legendLabels: ['0–12.5%','12.5–25%','25–37.5%','37.5–50%','50–62.5%','62.5–75%','75–87.5%','>87.5%'],
+      strokeWeight: 0.5,
+      defaultOn:    false,
     },
+
+    // ── Sediment load ─────────────────────────────────────────
+    // NOTE: update colorBreaks with your actual quantile values from the data.
     {
-      id: 'corals',
-      label: 'Corals',
-      style: { color: '#FF69B4', weight: 1, fillColor: '#FFB6C1', fillOpacity: 0.5, opacity: 0.8 },
+      id:           'sediment',
+      label:        'Sediment load',
+      file:         'data/soe.geojson',
+      type:         'geojson',
+      colorField:   'sedCurrent',
+      colorBreaks:  [0, 0.010, 0.025, 0.060, 0.120, 0.250, 0.500, 1.000],
+      colorPalette: ['#ffffcc','#ffeda0','#fed976','#feb24c','#fd8d3c','#fc4e2a','#e31a1c','#b10026'],
+      legendTitle:  'Sediment load (tons)',
+      legendLabels: ['0–0.01','0.01–0.025','0.025–0.06','0.06–0.12','0.12–0.25','0.25–0.5','0.5–1.0','>1.0'],
+      strokeWeight: 0.5,
+      defaultOn:    false,
     },
+
+    // ── Groundwater recharge ──────────────────────────────────
+    // NOTE: update colorBreaks with your actual quantile values from the data.
+    {
+      id:           'recharge',
+      label:        'Groundwater recharge',
+      file:         'data/soe.geojson',
+      type:         'geojson',
+      colorField:   'rchCurrent',
+      colorBreaks:  [0, 0.5, 1.0, 2.0, 4.0, 8.0, 15.0, 30.0],
+      colorPalette: ['#ffffd9','#edf8b1','#c7e9b4','#7fcdbb','#41b6c4','#1d91c0','#225ea8','#0c2c84'],
+      legendTitle:  'Groundwater recharge (MG)',
+      legendLabels: ['0–0.5','0.5–1','1–2','2–4','4–8','8–15','15–30','>30'],
+      strokeWeight: 0.5,
+      defaultOn:    false,
+    },
+
+    // ── EcoLogic score (dual restore / protect) ───────────────
+    {
+      id:           'ecologic',
+      label:        'EcoLogic score',
+      file:         'data/soe.geojson',
+      type:         'dual',
+      colorFieldA:  'logicRest',    // Restore direction
+      colorFieldB:  'logicProt',    // Protect direction
+      colorBreaks:  [-1.00,-0.75,-0.5,-0.25,0.00,0.25,0.5,0.75],
+      colorPaletteA: ['#fff7ec','#fee8c8','#fdd49e','#fdbb84','#fc8d59','#ef6548','#d7301f','#990000'],
+      colorPaletteB: ['#fff7fb','#ece7f2','#d0d1e6','#a6bddb','#74a9cf','#3690c0','#0570b0','#034e7b'],
+      legendTitle:  'EcoLogic score',
+      legendLabels: ['>0.75','0.5–0.75','0.25–0.5','0–0.25','-0.25–0','-0.5–-0.25','-0.75–-0.5','<-0.75'],
+      legendHeadA:  'Restore',
+      legendHeadB:  'Protect',
+      strokeWeight: 0.5,
+      defaultOn:    false,
+    },
+
+    // ── Decision score (computed by DST model at runtime) ─────
+    {
+      id:           'dst_decision',
+      label:        'Decision score',
+      file:         'data/soe.geojson',
+      type:         'dst',
+      legendTitle:  'Decision score',
+      legendLabels: ['>0.75','0.5–0.75','0.25–0.5','0–0.25','-0.25–0','-0.5–-0.25','-0.75–-0.5','<-0.75'],
+      legendHeadA:  'Restore',
+      legendHeadB:  'Protect',
+      strokeWeight: 0.5,
+      defaultOn:    false,
+    },
+
+    // ── Roads ─────────────────────────────────────────────────
+    {
+      id:           'roads',
+      label:        'Roads',
+      file:         'data/roads.geojson',
+      type:         'geojson',
+      colorField:   'road_type',
+      colorType:    'categorical',
+      colorBreaks:  [1],
+      colorPalette: ['#8B4513'],
+      legendTitle:  'Roads',
+      legendLabels: ['Road'],
+      strokeWeight: 1.5,
+      defaultOn:    false,
+    },
+
+    // ── Streams ───────────────────────────────────────────────
+    {
+      id:           'streams',
+      label:        'Streams',
+      file:         'data/streams.geojson',
+      type:         'geojson',
+      colorField:   'stream_order',
+      colorType:    'categorical',
+      colorBreaks:  [1],
+      colorPalette: ['#1f78b4'],
+      legendTitle:  'Streams',
+      legendLabels: ['Stream'],
+      strokeWeight: 1.0,
+      defaultOn:    false,
+    },
+
+    // ── Coral reefs ───────────────────────────────────────────
+    {
+      id:           'corals',
+      label:        'Coral reefs',
+      file:         'data/corals.geojson',
+      type:         'geojson',
+      colorField:   'reef_type',
+      colorType:    'categorical',
+      colorBreaks:  [1],
+      colorPalette: ['#FF69B4'],
+      legendTitle:  'Coral reefs',
+      legendLabels: ['Reef'],
+      strokeWeight: 1.0,
+      defaultOn:    false,
+    },
+
   ],
 
   // ══════════════════════════════════════════════════════════
-  // POPUP GAUGE CHARTS
-  // Defines which data field to read for each base layer's popup
+  // DECISION SUPPORT TOOL (AHP)
   // ══════════════════════════════════════════════════════════
-  popupConfig: {
-    Forest:        { field: 'propForest',  scale: 100, unit: '%',    palette: ['#ffffcc','#c2e699','#78c679','#31a354','#006837'], nBins: 5 },
-    Savanna:       { field: 'propSavanna', scale: 100, unit: '%',    palette: ['#ffffd4','#fed98e','#fe9929','#d95f0e','#993404'], nBins: 5 },
-    Sediment:      { field: 'sedCurrent',  scale: 1,   unit: ' tons',palette: ['#ffffcc','#ffeda0','#fed976','#feb24c','#fd8d3c','#fc4e2a','#e31a1c','#b10026'], nBins: 8 },
-    Recharge:      { field: 'rchCurrent',  scale: 1,   unit: ' MG',  palette: ['#ffffd9','#edf8b1','#c7e9b4','#7fcdbb','#41b6c4','#1d91c0','#225ea8','#0c2c84'], nBins: 8 },
-    'Logic model': { dual: true,  // shows two gauges side-by-side
-      restore: { field: 'logicRest', unit: '',     palette: ['#990000','#d7301f','#ef6548','#fc8d59','#fdbb84','#fdd49e','#fee8c8','#fff7ec'], nBins: 8, label: 'Restore' },
-      protect: { field: 'logicProt', unit: '',     palette: ['#034e7b','#0570b0','#3690c0','#74a9cf','#a6bddb','#d0d1e6','#ece7f2','#fff7fb'], nBins: 8, label: 'Protect' },
-    },
-  },
+  dst: {
+    enabled: true,
 
-  // ══════════════════════════════════════════════════════════
-  // LOGIC MODEL PLOTS
-  // Six scatter plots (3 restoration, 3 protection)
-  // ══════════════════════════════════════════════════════════
-  logicModelPlots: {
-    restoration: [
-      {
-        id: 'restSed',
-        title: 'Restoration: Sediment',
-        xField: 'sedRestDiff',          // computed: sedCurrent − sedForest
-        xCompute: (f) => f.sedCurrent - f.sedForest,
-        yField: 'sedLogicRest',
-        xLabel: 'Potential reduction in sediment',
-        yLabel: 'Logic Score',
-        palette: ['#990000','#d7301f','#ef6548','#fc8d59','#fdbb84','#fdd49e','#fee8c8','#fff7ec'],
-        trendLine: { type: 'threshold_monotone', p10Field: 'sedFullDiff', p90: true },
-      },
-      {
-        id: 'restRch',
-        title: 'Restoration: Groundwater',
-        xField: 'rchRestDiff',
-        xCompute: (f) => f.rchForest - f.rchCurrent,
-        yField: 'rchLogicRest',
-        xLabel: 'Potential increase in groundwater production',
-        yLabel: 'Logic Score',
-        palette: ['#990000','#d7301f','#ef6548','#fc8d59','#fdbb84','#fdd49e','#fee8c8','#fff7ec'],
-        trendLine: { type: 'inflection_at_0.33' },
-      },
-      {
-        id: 'restVeg',
-        title: 'Restoration: Vegetation',
-        xField: 'propSavanna',
-        xCompute: null,
-        yField: 'vegLogicRest',
-        xLabel: 'Current savanna cover',
-        yLabel: 'Logic Score',
-        xDomain: [0, 1],
-        palette: ['#990000','#d7301f','#ef6548','#fc8d59','#fdbb84','#fdd49e','#fee8c8','#fff7ec'],
-        trendLine: { type: 'trapezoid', x: [0, 0.2, 0.8, 1.0], y: [-1, 1, 1, -1] },
-      },
-    ],
-    protection: [
-      {
-        id: 'protSed',
-        title: 'Protection: Sediment',
-        xField: 'sedProtDiff',
-        xCompute: (f) => f.sedSavanna - f.sedCurrent,
-        yField: 'sedLogicProt',
-        xLabel: 'Potential increase in sediment',
-        yLabel: 'Logic Score',
-        palette: ['#034e7b','#0570b0','#3690c0','#74a9cf','#a6bddb','#d0d1e6','#ece7f2','#fff7fb'],
-        trendLine: { type: 'threshold_monotone', p10: true, p90: true },
-      },
-      {
-        id: 'protRch',
-        title: 'Protection: Groundwater',
-        xField: 'rchProtDiff',
-        xCompute: (f) => f.rchCurrent - f.rchSavanna,
-        yField: 'rchLogicProt',
-        xLabel: 'Potential reduction in groundwater',
-        yLabel: 'Logic Score',
-        palette: ['#034e7b','#0570b0','#3690c0','#74a9cf','#a6bddb','#d0d1e6','#ece7f2','#fff7fb'],
-        trendLine: { type: 'threshold_monotone', p10: true, p90: true, inverted: true },
-      },
-      {
-        id: 'protVeg',
-        title: 'Protection: Vegetation',
-        xField: 'propForest',
-        xCompute: null,
-        yField: 'vegLogicProt',
-        xLabel: 'Current forest cover',
-        yLabel: 'Logic Score',
-        xDomain: [0, 1],
-        palette: ['#034e7b','#0570b0','#3690c0','#74a9cf','#a6bddb','#d0d1e6','#ece7f2','#fff7fb'],
-        trendLine: { type: 'linear', x: [0, 1.0], y: [-1, 1] },
-      },
-    ],
-  },
+    // Field used to sort features before indexing (must be numeric, sequential)
+    sortField: 'hydroUnit',
 
-  // ══════════════════════════════════════════════════════════
-  // DECISION MODEL
-  // AHP (Saaty) with abbreviated pairwise comparisons
-  // Criteria order matters — sliders compare adjacent pairs
-  // ══════════════════════════════════════════════════════════
-  decisionModel: {
+    // Color breaks and palettes for the decision score output layer
+    decisionBreaks:   [0, 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875],
+    decisionPaletteA: ['#fff7ec','#fee8c8','#fdd49e','#fdbb84','#fc8d59','#ef6548','#d7301f','#990000'],
+    decisionPaletteB: ['#fff7fb','#ece7f2','#d0d1e6','#a6bddb','#74a9cf','#3690c0','#0570b0','#034e7b'],
+
+    // Pairwise comparison criteria.
+    // Sliders compare criteria[i] vs criteria[i+1] for i = 0..n-2.
     restoration: {
-      heading: 'Savanna restoration',
-      criteria: ['logic', 'effort', 'diversity', 'buffer'],
-      dataFields: ['decLogic', 'decEffort', 'decDiversity', 'decBuffer'],
-      sliders: [
-        {
-          id: 'rest_logicVsEffort',
-          leftLabel: 'Logic score',
-          rightLabel: 'Restoration effort',
-          tooltip: 'Logic score is the result of the Logic Model. Restoration effort combines proximity to the nearest road and steepness of the hydrounit.',
-          outputTemplate: 'Logic score is {dir} Restoration effort score.',
-        },
-        {
-          id: 'rest_effortVsDiversity',
-          leftLabel: 'Restoration effort',
-          rightLabel: 'Biodiversity',
-          tooltip: 'Restoration effort combines proximity to the nearest road and steepness. Biodiversity represents the number of species within the hydrounit.',
-          outputTemplate: 'Restoration effort score is {dir} Biodiversity score.',
-        },
-        {
-          id: 'rest_diversityVsBuffer',
-          leftLabel: 'Biodiversity',
-          rightLabel: 'Savanna encroachment',
-          tooltip: 'Biodiversity represents the number of species within the hydrounit. Savanna encroachment is the amount of edge within savanna vegetation patches.',
-          outputTemplate: 'Biodiversity score is {dir} Savanna encroachment score.',
-        },
-      ],
-      palette: {
-        bins: [0, 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1.0],
-        colors: ['#fff7ec','#fee8c8','#fdd49e','#fdbb84','#fc8d59','#ef6548','#d7301f','#990000'],
-        legendTitle: 'Restore score',
-      },
+      criteria: [
+        'EcoLogic score',
+        'Restoration effort',
+        'Biodiversity',
+        'Savanna encroachment',
+      ]
     },
     protection: {
-      heading: 'Forest protection',
-      criteria: ['logic', 'effort', 'diversity', 'buffer'],
-      dataFields: ['decProtLogic', 'decProtEffort', 'decProtDiversity', 'decProtBuffer'],
-      sliders: [
-        {
-          id: 'prot_logicVsEffort',
-          leftLabel: 'Logic score',
-          rightLabel: 'Protection effort',
-          tooltip: 'Logic score is the result of the Logic Model. Protection effort combines proximity to the nearest road and steepness of the hydrounit.',
-          outputTemplate: 'Logic score is {dir} Protection effort score.',
-        },
-        {
-          id: 'prot_effortVsDiversity',
-          leftLabel: 'Protection effort',
-          rightLabel: 'Biodiversity',
-          tooltip: 'Protection effort combines proximity to the nearest road and steepness. Biodiversity represents the number of species within the hydrounit.',
-          outputTemplate: 'Protection effort is {dir} Biodiversity score.',
-        },
-        {
-          id: 'prot_diversityVsBuffer',
-          leftLabel: 'Biodiversity',
-          rightLabel: 'Forest-savanna edge',
-          tooltip: 'Biodiversity represents the number of species within the hydrounit. Forest-savanna edge is the amount of edge within forest patches that border savanna.',
-          outputTemplate: 'Biodiversity score is {dir} Forest susceptibility score.',
-        },
-      ],
-      palette: {
-        bins: [0, 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1.0],
-        colors: ['#fff7fb','#ece7f2','#d0d1e6','#a6bddb','#74a9cf','#3690c0','#0570b0','#034e7b'],
-        legendTitle: 'Protect score',
-      },
+      criteria: [
+        'EcoLogic score',
+        'Protection effort',
+        'Biodiversity',
+        'Forest-savanna edge',
+      ]
     },
-  },
 
-  // ══════════════════════════════════════════════════════════
-  // DATA TABLE COLUMNS
-  // Each entry: { field, label, digits }
-  // ══════════════════════════════════════════════════════════
-  tableColumns: [
-    { field: 'hydroUnit',   label: 'Catchment ID', digits: 0 },
-    { field: 'propForest',  label: 'Forest (%)',   digits: 1, scale: 100 },
-    { field: 'propSavanna', label: 'Savanna (%)',  digits: 1, scale: 100 },
-    { field: 'sedCurrent',  label: 'Sediment (tons)', digits: 2 },
-    { field: 'rchCurrent',  label: 'Recharge (MG)',   digits: 2 },
-    { field: 'logicRest',   label: 'Logic: Restore',  digits: 2 },
-    { field: 'logicProt',   label: 'Logic: Protect',  digits: 2 },
-  ],
+    // ──────────────────────────────────────────────────────────
+    // computeCriteriaArrays(features)
+    //
+    // Called once after GeoJSON loads. Returns utility scores in
+    // [0,1] for each criterion × feature combination.
+    //
+    // Expected fields on data/soe.geojson features:
+    //   logicRest    — EcoLogic restoration score (−1 to 1)
+    //   logicProt    — EcoLogic protection score (−1 to 1)
+    //   effortRest   — restoration effort index (raw; higher = harder)
+    //   effortProt   — protection effort index (raw; higher = harder)
+    //   diversity    — biodiversity score (species count or composite index)
+    //   savEdge      — savanna encroachment / edge density
+    //   forEdge      — forest-savanna edge density
+    //
+    // The utility() helper (from shared/app.js):
+    //   utility(array, inMin, inMax, outMin, outMax)
+    //   → rescales values from [inMin,inMax] to [outMin,outMax]
+    //   → set outMin=1, outMax=0 to INVERT (lower raw = higher utility)
+    // ──────────────────────────────────────────────────────────
+    computeCriteriaArrays(features) {
 
-  // ══════════════════════════════════════════════════════════
-  // PAGE TEXT CONTENT
-  // ══════════════════════════════════════════════════════════
-  text: {
-    background: [
-      `Coral reef ecosystems represent some of the most diverse and ecologically
-       important places on Earth, yet are also some of the most threatened by both
-       climate change and human activities. Of the many human impacts on coastal
-       environments, the removal of tropical forestland ranks among the most
-       detrimental to coral reef communities.`,
-      `Forest removal increases the amount of soil erosion into inland stream
-       networks, and ultimately onto coral reefs up to 100 km from shore. Over
-       time, this sediment contributes to declining coral populations, lower
-       productivity, and overall diversity of plant and animal assemblages.
-       Land management that promotes ridge-to-reef conservation by preserving
-       and restoring tropical forestland is essential to the long-term viability
-       of offshore environments.`,
-      `Here we showcase a state-of-the-science modeling approach to assist
-       forest restoration planning in The Republic of Palau, a Pacific Island
-       nation 500 miles east of the Philippines. In Palau, extensive human-ignited
-       fires, harvesting, agriculture, urban expansion, and road building have
-       contributed to high sedimentation loads.`,
-    ],
-    modelInfo: [
-      `The Environmental Management Decision Support (EMDS) model is a tool to
-       aid in ecological analysis and strategic management planning. The model is
-       composed of (1) a <em>logic model</em>, which assesses the ecological state
-       of the system, and (2) a <em>decision model</em>, which states "given the
-       state of the system, what can we do about it?".`,
-      `For the Palau Decision Support Tool, we are concerned with managing the
-       island's terrestrial resources to prevent increases in sediment deposition
-       to nearshore environments. Such sediment is the result of human-ignited
-       fires in tropical forest that cause their conversion to and maintenance
-       of savanna vegetation types.`,
-      `Individual catchments are evaluated for their opportunity for:
-       (1) <strong>Restoring savanna</strong> by fostering tropical forest development
-       to reduce sediment loads and increase groundwater recharge, and
-       (2) <strong>Protecting forest</strong> to maintain currently low levels of
-       sediment and high recharge. Each catchment receives a score for each
-       objective, ranging from −1 (low potential) to +1 (high potential).`,
-    ],
-    howToUse: [
-      `The three-bar icon in the upper right provides a selection of map layers
-       depicting vegetation, groundwater recharge, sediment production, and logic
-       and decision model scores. Note: the Decision model map will appear grey at
-       first — scores are calculated from the <strong>Decision model</strong> tab.`,
-      `Click on a catchment to see the value and percentile for the respective
-       data layer. The <strong>Data</strong> tab provides a selection of model data
-       for each catchment; clicking on one or more rows will highlight them on
-       the map and on the Logic model plots.`,
-      `The <strong>Logic model</strong> tab shows graphically how the scores are
-       calculated and the distribution of individual catchments across each branch
-       of the model. The <strong>Decision model</strong> tab lets managers weight
-       individual criteria using sliders, then recalculate scores on the map.`,
-    ],
-  },
+      // ── Raw property arrays ───────────────────────────────
+      const logicRest  = features.map(f => f.properties.logicRest);
+      const logicProt  = features.map(f => f.properties.logicProt);
+      const effortRest = features.map(f => f.properties.effortRest);
+      const effortProt = features.map(f => f.properties.effortProt);
+      const diversity  = features.map(f => f.properties.diversity);
+      const savEdge    = features.map(f => f.properties.savEdge);
+      const forEdge    = features.map(f => f.properties.forEdge);
 
-  // ══════════════════════════════════════════════════════════
-  // CONTACTS
-  // ══════════════════════════════════════════════════════════
-  contacts: [
-    { name: 'Nicholas Povak',    role: 'Post-doc Fellow',              email: 'napovak@gmail.com', affil: 1 },
-    { name: 'Christian Giardina', role: 'Research Ecologist',          affil: 2 },
-    { name: 'Paul Hessburg',      role: 'Research Landscape Ecologist', affil: 3 },
-    { name: 'Keith Reynolds',     role: 'Research Forester',           affil: 4 },
-    { name: 'Richard MacKenzie',  role: 'Research Ecologist',          affil: 2 },
-  ],
-  affiliations: [
-    '',  // 0-indexed placeholder
-    'Oak Ridge Institute for Science and Education',
-    'USDA Forest Service, PSW Research, Institute of Pacific Islands Forestry',
-    'USDA Forest Service, PNW Research, Wenatchee Forest Sciences Lab',
-    'USDA Forest Service, PNW Research, Corvallis Forest Sciences Lab',
-  ],
-};
+      const minER = Math.min(...effortRest), maxER = Math.max(...effortRest);
+      const minEP = Math.min(...effortProt), maxEP = Math.max(...effortProt);
+      const minDv = Math.min(...diversity),  maxDv = Math.max(...diversity);
+      const minSE = Math.min(...savEdge),    maxSE = Math.max(...savEdge);
+      const minFE = Math.min(...forEdge),    maxFE = Math.max(...forEdge);
+
+      // ── Restoration utility arrays ────────────────────────
+      // Order must match restoration.criteria above!
+      const restoreArrays = [
+        utility(logicRest,  -1, 1,    0, 1),  // EcoLogic score
+        utility(effortRest, minER, maxER, 1, 0),  // Restoration effort (inverted)
+        utility(diversity,  1, 5, 0, 1),               // Biodiversity (raw 1–5 species score)
+        utility(savEdge,    minSE, maxSE, 0, 1),  // Savanna encroachment
+      ];
+
+      // ── Protection utility arrays ─────────────────────────
+      // Order must match protection.criteria above!
+      const protectArrays = [
+        utility(logicProt,  -1, 1,    0, 1),  // EcoLogic score
+        utility(effortProt, minEP, maxEP, 1, 0),  // Protection effort (inverted)
+        utility(diversity,  1, 5, 0, 1),               // Biodiversity (raw 1–5 species score)
+        utility(forEdge,    minFE, maxFE, 0, 1),  // Forest-savanna edge
+      ];
+
+      return { restoreArrays, protectArrays };
+    }
+  }
+
+};  // end CONFIG
