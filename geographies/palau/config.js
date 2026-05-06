@@ -27,7 +27,7 @@ const CONFIG = {
   zoom:   12,
 
   // 3D Terrain [OPTIONAL]
-  terrain: false,
+  terrain: true,
 
   // Default base layer: 'light' | 'satellite' | 'topo'  [OPTIONAL]
   defaultBasemap: 'light',
@@ -278,7 +278,7 @@ const CONFIG = {
       const restoreArrays = [
         utility(logicRest,  -1, 1,    0, 1),  // EcoLogic score
         utility(effortRest, minER, maxER, 1, 0),  // Restoration effort (inverted)
-        utility(diversity,  1, 5, 0, 1),               // Biodiversity (raw 1–5 species score)
+        utility(diversity,  minDv, maxDv, 0, 1),  // Biodiversity
         utility(savEdge,    minSE, maxSE, 0, 1),  // Savanna encroachment
       ];
 
@@ -287,7 +287,7 @@ const CONFIG = {
       const protectArrays = [
         utility(logicProt,  -1, 1,    0, 1),  // EcoLogic score
         utility(effortProt, minEP, maxEP, 1, 0),  // Protection effort (inverted)
-        utility(diversity,  1, 5, 0, 1),               // Biodiversity (raw 1–5 species score)
+        utility(diversity,  minDv, maxDv, 0, 1),  // Biodiversity
         utility(forEdge,    minFE, maxFE, 0, 1),  // Forest-savanna edge
       ];
 
