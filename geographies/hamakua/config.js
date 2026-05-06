@@ -216,6 +216,14 @@ const CONFIG = {
       defaultOn: false,
     },
 
+    // --- Hillshade
+    {
+      id:       'hillshade',
+      label:    'Hillshade',
+      type:     'hillshade',   // special type
+      defaultOn: false,
+    },
+
     // ── EXAMPLE: How to add a COG raster layer ────────────────
     // Uncomment and edit when you have a GeoTIFF/COG file ready.
     // Requires the georaster CDN scripts to be added to index.html.
