@@ -55,6 +55,7 @@ function sliderPctToDisplayStr(pct) {
 function getColor(value, layerDef) {
   const { colorBreaks: breaks, colorPalette: palette, colorType } = layerDef;
   if (colorType === 'categorical') {
+    if (value == null || isNaN(Number(value))) return palette[0]; // ← ADD THIS LINE
     const idx = Math.round(value) - 1;
     return palette[Math.min(Math.max(idx, 0), palette.length - 1)];
   }
