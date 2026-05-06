@@ -24,7 +24,7 @@ const CONFIG = {
 
   // Initial map view
   center: [19.89, -155.25],
-  zoom:   11,
+  zoom:   9,
 
   // 3D Terrain (optional)
   terrain: true,    // enable terrian extrusions
