@@ -481,7 +481,7 @@ function recolorLayer(lyrDef) {
 // LAYER PANEL  (custom — replaces Leaflet layer control)
 // =============================================================================
 function buildLayerPanel() {
-  const panel = document.getElementById('layer-panel');
+  const panel = document.getElementById('layer-panel-inner');  // ← changed
   if (!panel) return;
 
   // Basemap switcher
@@ -554,7 +554,7 @@ function updateAllLayerVisibility() {
 // OPACITY CONTROL
 // =============================================================================
 function buildOpacityControl() {
-  const panel = document.getElementById('layer-panel');
+  const panel = document.getElementById('layer-panel-inner');  // ← changed
   if (!panel) return;
 
   const wrap = document.createElement('div');
