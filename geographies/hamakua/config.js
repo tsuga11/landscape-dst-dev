@@ -28,7 +28,7 @@ const CONFIG = {
 
   // 3D Terrain (optional)
   terrain: true,    // enable terrian extrusions
-  terrainExaggeration: 1.5,  / vertical scale (1 = real, 2 = double height)
+  terrainExaggeration: 1.5,  // vertical scale (1 = real, 2 = double height)
 
   //Initial camera (optional)
   defaultPitch: 30, // tilt angle 0 - 85
