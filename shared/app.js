@@ -182,8 +182,8 @@ function getBaseStyle(name) {
   const styles = {
     light:     'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
     dark:      'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json',
-    satellite: 'https://api.maptiler.com/maps/satellite/style.json?key=get_your_own_OpIi9ZULNHzrESv6T2vL',
-    topo:      'https://api.maptiler.com/maps/topo-v2/style.json?key=get_your_own_OpIi9ZULNHzrESv6T2vL',
+    satellite: 'https://api.maptiler.com/maps/satellite/style.json?key=L9m2QvkG3KvfZEuyAa2n',
+    topo:      'https://api.maptiler.com/maps/topo-v2/style.json?key=L9m2QvkG3KvfZEuyAa2n',
     // Free alternative that needs no API key:
     osm:       'https://tiles.openfreemap.org/styles/liberty'
   };
@@ -199,11 +199,14 @@ function addTerrain() {
   if (!_map.getSource('terrain-dem')) {
     _map.addSource('terrain-dem', {
       type: 'raster-dem',
-      url:  'https://api.maptiler.com/tiles/terrain-rgb-v2/tiles.json?key=cv4A9SfoJm6F3eii0Yjy',
+      url:  'https://api.maptiler.com/tiles/terrain-rgb-v2/tiles.json?key=L9m2QvkG3KvfZEuyAa2n',
       tileSize: 256
     });
   }
-  _map.setTerrain({ source: 'terrain-dem', exaggeration: CONFIG.terrainExaggeration || 1.5 });
+  _map.setTerrain({ 
+      source: 'terrain-dem', 
+      exaggeration: CONFIG.terrainExaggeration || 1.5 
+  });
 }
 
 // =============================================================================
