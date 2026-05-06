@@ -3,68 +3,130 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-  <title>Loading…</title><!-- overwritten by app.js from CONFIG.title -->
+  <title>Loading…</title>
 
-  <!-- ── Leaflet ──────────────────────────────────────────── -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <!-- ── MapLibre GL JS ───────────────────────────────────── -->
+  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css">
 
   <!-- ── App styles ───────────────────────────────────────── -->
-  <link rel="stylesheet" href="../../shared/style.css">
+  <link rel="stylesheet" href="/shared/style.css">
+
+  <style>
+    /* ── Layer panel (replaces Leaflet control) ─────────────── */
+    #layer-panel {
+      position: fixed;
+      top: calc(var(--navbar-h) + 0.75rem);
+      right: 0.75rem;
+      z-index: 600;
+      background: rgba(255,255,255,0.97);
+      border-radius: var(--panel-radius);
+      box-shadow: var(--shadow-sm);
+      padding: 0.6rem 0;
+      min-width: 180px;
+      max-width: 220px;
+      font-size: 0.8rem;
+    }
+
+    .lp-section { padding: 0.4rem 0.8rem 0.5rem; }
+    .lp-section + .lp-section { border-top: 1px solid #eee; }
+    .lp-title { font-size: 0.65rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: #888; margin-bottom: 0.4rem; }
+    .lp-row { display: flex; align-items: center; gap: 0.5rem; padding: 0.2rem 0; cursor: pointer; color: #333; }
+    .lp-row:hover { color: #000; }
+    .lp-check { cursor: pointer; accent-color: var(--green-mid); }
+    .lp-select { width: 100%; font-size: 0.78rem; padding: 0.2rem 0.3rem; border: 1px solid #ddd; border-radius: 3px; background: #fff; }
+
+    /* ── Legend container ──────────────────────────────────── */
+    #legend-container {
+      position: fixed;
+      bottom: 2.5rem;
+      left: 0.75rem;
+      z-index: 600;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    /* ── Pitch hint ────────────────────────────────────────── */
+    #pitch-hint {
+      position: fixed;
+      bottom: 2.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.55);
+      color: rgba(255,255,255,0.8);
+      font-size: 0.7rem;
+      padding: 0.3rem 0.8rem;
+      border-radius: 20px;
+      pointer-events: none;
+      letter-spacing: 0.06em;
+      z-index: 500;
+      opacity: 1;
+      transition: opacity 1s ease;
+    }
+
+    #pitch-hint.hidden { opacity: 0; }
+  </style>
 </head>
 <body>
 
-  <!-- ╔══════════════════════════════════════════════════════╗ -->
-  <!-- ║  TOP NAVBAR                                          ║ -->
-  <!-- ╚══════════════════════════════════════════════════════╝ -->
+  <!-- ── NAVBAR ───────────────────────────────────────────── -->
   <nav id="navbar">
     <a id="app-title" href="#">Loading…</a>
     <div class="navbar-right">
       <button id="dst-toggle" class="navbar-btn btn-gold">Decision Tool</button>
-      <a href="../../index.html" class="navbar-btn btn-outline">← Geographies</a>
+      <a id="back-link" href="/" class="navbar-btn btn-outline">← Geographies</a>
     </div>
   </nav>
 
-  <!-- ╔══════════════════════════════════════════════════════╗ -->
-  <!-- ║  MAP                                                 ║ -->
-  <!-- ╚══════════════════════════════════════════════════════╝ -->
+  <!-- ── MAP ──────────────────────────────────────────────── -->
   <div id="map"></div>
 
-  <!-- ╔══════════════════════════════════════════════════════╗ -->
-  <!-- ║  DECISION SUPPORT TOOL PANEL (populated by app.js)  ║ -->
-  <!-- ╚══════════════════════════════════════════════════════╝ -->
-  <div id="dst-panel">
-    <!-- content injected by app.js buildDSTPanel() -->
+  <!-- ── LAYER PANEL ──────────────────────────────────────── -->
+  <div id="layer-panel">
+    <!-- populated by app.js buildLayerPanel() -->
   </div>
 
-  <!-- ╔══════════════════════════════════════════════════════╗ -->
-  <!-- ║  FLOATING CONTROLS (populated by app.js)            ║ -->
-  <!-- ╚══════════════════════════════════════════════════════╝ -->
+  <!-- ── LEGEND ───────────────────────────────────────────── -->
+  <div id="legend-container">
+    <!-- populated by app.js showLegend() -->
+  </div>
+
+  <!-- ── PITCH HINT ───────────────────────────────────────── -->
+  <div id="pitch-hint">Right-click drag to tilt · Two-finger rotate</div>
+
+  <!-- ── DST PANEL ────────────────────────────────────────── -->
+  <div id="dst-panel">
+    <!-- populated by app.js buildDSTPanel() -->
+  </div>
+
+  <!-- ── HOVER INFO ───────────────────────────────────────── -->
   <div id="info-box"></div>
-  <!--<div id="opacity-control"></div> -->
-  <!--<div id="search-box"></div>-->
 
   <!-- ═══════════════════════════════════════════════════════ -->
-  <!-- SCRIPTS — order matters                                 -->
+  <!-- SCRIPTS                                                 -->
   <!-- ═══════════════════════════════════════════════════════ -->
 
-  <!-- Leaflet -->
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <!-- MapLibre GL JS -->
+  <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
 
-  <!-- numeric.js — required for AHP eigenvalue calculation -->
+  <!-- numeric.js — AHP eigenvalue -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/numeric/1.2.6/numeric.min.js"></script>
 
-  <!-- D3 v7 — for the weight visualization chart -->
+  <!-- D3 v7 — weight chart -->
   <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
 
-  <!-- georaster — uncomment BOTH lines below when adding COG raster layers -->
-  <!-- <script src="https://unpkg.com/georaster"></script> -->
-  <!-- <script src="https://unpkg.com/georaster-layer-for-leaflet/dist/georaster-layer-for-leaflet.min.js"></script> -->
-
-  <!-- Geography config  ← THIS is what you swap per geography -->
+  <!-- Geography config — swap this per geography -->
   <script src="config.js"></script>
 
-  <!-- Generic app logic  ← never edit this -->
-  <script src="../../shared/app.js"></script>
+  <!-- Generic app logic — never edit -->
+  <script src="/shared/app.js"></script>
+
+  <!-- Hide pitch hint after 5 seconds -->
+  <script>
+    setTimeout(() => {
+      document.getElementById('pitch-hint')?.classList.add('hidden');
+    }, 5000);
+  </script>
 
 </body>
 </html>
