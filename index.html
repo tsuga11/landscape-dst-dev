@@ -188,26 +188,69 @@
     /* ══════════════════════════════════════════════════════════
        FLOATING SECTION WRAPPER
     ══════════════════════════════════════════════════════════ */
-    .page-section {
-      position: relative;
-      z-index: 1;
-      margin: var(--section-margin) calc(var(--section-margin) * 1.5);
-      border-radius: var(--section-radius);
-      border: 1px solid var(--border);
-      background: var(--section-bg);
-      backdrop-filter: blur(6px);
-      -webkit-backdrop-filter: blur(6px);
-    }
+.page-section {
+  position: relative;
+  margin: var(--section-margin) calc(var(--section-margin) * 1.5);
+  border-radius: var(--section-radius);
+  isolation: isolate;
 
-    /* Gap between sections */
-    .page-section + .page-section { margin-top: 1rem; }
+  /* Dark glass — fire/smoke shows through */
+  background: rgba(15, 12, 10, 0.38);
+  backdrop-filter: blur(28px) saturate(180%) brightness(1.15) contrast(1.05);
+  -webkit-backdrop-filter: blur(28px) saturate(180%) brightness(1.15) contrast(1.05);
 
-    /* Footer section gets darker */
-    .page-section.dark {
-      background: rgba(20, 18, 15, 0.88);
-      border-color: rgba(100, 90, 70, 0.3);
-      color: rgba(255,255,255,0.75);
-    }
+  /* Layered borders */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+
+  /* Outer shadow + inner highlight streak */
+  box-shadow:
+    0 12px 48px rgba(0, 0, 0, 0.45),
+    0 2px 8px rgba(0, 0, 0, 0.25),
+    inset 0 1.5px 0 rgba(255, 255, 255, 0.22),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.18),
+    inset 1px 0 0 rgba(255, 255, 255, 0.06),
+    inset -1px 0 0 rgba(255, 255, 255, 0.06);
+}
+
+.page-section.dark {
+  background: rgba(5, 4, 3, 0.72);
+  border-color: rgba(100, 80, 50, 0.2);
+}
+
+/* Top highlight streak — the "liquid" shine */
+.page-section::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 8%; right: 8%;
+  height: 1px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.45) 25%,
+    rgba(255, 255, 255, 0.65) 50%,
+    rgba(255, 255, 255, 0.45) 75%,
+    transparent 100%
+  );
+  border-radius: 100%;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Refraction shimmer — catches the warm fire tones */
+.page-section::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 240, 200, 0.05) 0%,
+    rgba(255, 255, 255, 0.02) 40%,
+    rgba(180, 140, 90, 0.04) 70%,
+    rgba(255, 220, 150, 0.05) 100%
+  );
+  pointer-events: none;
+  z-index: 1;
+}
 
     /* ══════════════════════════════════════════════════════════
        SPLIT LAYOUT (sticky left title + scrolling right cards)
@@ -219,6 +262,13 @@
       gap: 3rem;
       min-height: 400px;
     }
+
+.split-layout,
+.simple-section,
+.footer-inner {
+  position: relative;
+  z-index: 2;
+}
 
     /* Left — sticky title column */
     .split-left {
@@ -236,7 +286,7 @@
       font-weight: 500;
       letter-spacing: 0.2em;
       text-transform: uppercase;
-      color: var(--green-light);
+      color: var(--gold);
       margin-bottom: 0.65rem;
     }
 
@@ -246,7 +296,7 @@
       font-family: 'Cormorant Garamond', serif;
       font-size: clamp(1.8rem, 3vw, 2.6rem);
       font-weight: 700;
-      color: var(--green-deep);
+      color: rgba(255, 255, 255, 0.92);
       line-height: 1.15;
       margin-bottom: 1rem;
     }
@@ -256,7 +306,7 @@
     .section-sub {
       font-size: 0.88rem;
       font-weight: 300;
-      color: var(--text-mid);
+      color: rgba(255, 255, 255, 0.5);
       line-height: 1.65;
     }
 
@@ -274,18 +324,39 @@
       gap: 1.25rem;
     }
 
-    .project-card {
-      background: rgba(255,255,255,0.82);
-      border-radius: 6px;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.06);
-      position: relative;
-      opacity: 0;
-      transform: translateY(20px);
-      transition: opacity 0.6s ease, transform 0.6s ease, box-shadow 0.25s ease;
-    }
+.project-card {
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(12px) saturate(160%) brightness(1.06);
+  -webkit-backdrop-filter: blur(12px) saturate(160%) brightness(1.06);
+  border-radius: 6px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+
+  /* Bright top edge + depth shadow */
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-top: 1px solid rgba(255, 255, 255, 0.72);
+  box-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.18),
+    0 1px 4px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.04);
+
+  /* Reveal animation */
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease, transform 0.6s ease,
+              box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.project-card:not(.wip):hover {
+  transform: translateY(-3px);
+  border-top-color: rgba(255, 255, 255, 0.9);
+  box-shadow:
+    0 12px 40px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+}
 
     .project-card.visible              { opacity: 1; transform: translateY(0); }
     .project-card.wip.visible          { opacity: 0.65; }
@@ -397,9 +468,11 @@
       font-size: 0.95rem;
       font-weight: 300;
       line-height: 1.8;
-      color: var(--text-mid);
+      color: rgba(255, 255, 255, 0.65);
       max-width: 680px;
     }
+
+    .about-text p    { color: rgba(255, 255, 255, 0.65); }
 
     .about-text p + p { margin-top: 1rem; }
 
@@ -583,7 +656,7 @@
   ══════════════════════════════════════════════════════════ -->
   <section class="hero">
     <div class="hero-bg-img">
-      <img src="assets/wildfire-on-mountain_1600.jpg" alt="Burning forest landscape">
+      <img src="assets/washington.jpeg" alt="Burning forest landscape">
     </div>
     <nav class="hero-nav">
       <span class="site-name">Nicholas Povak</span>
