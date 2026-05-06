@@ -273,7 +273,7 @@ async function addLayer(lyrDef) {
         source: 'terrain-dem',
         layout: { visibility: lyrDef.defaultOn ? 'visible' : 'none' },
         paint: {
-          'hillshade-intensity':        0.6,
+          'hillshade-exaggeration':        0.6,
           'hillshade-shadow-color':     '#3a2a1a',
           'hillshade-highlight-color':  '#ffffff',
           'hillshade-accent-color':     '#5a4a3a',
