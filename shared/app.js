@@ -638,6 +638,7 @@ function showPopup(lngLat, props) {
 // LEGEND SYSTEM  (unchanged logic, rendered as custom HTML controls)
 // =============================================================================
 function showLegend(lyrDef) {
+  if (lyrDef.type === 'hillshade') return;  // ← add this line
   if (_legendControls[lyrDef.id]) return;
 
   const container = document.getElementById('legend-container');
