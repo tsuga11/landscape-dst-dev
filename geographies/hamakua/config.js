@@ -26,14 +26,22 @@ const CONFIG = {
   center: [19.89, -155.25],
   zoom:   11,
 
+  // 3D Terrain (optional)
+  terrain: true,    // enable terrian extrusions
+  terrainExaggeration: 1.5,  / vertical scale (1 = real, 2 = double height)
+
+  //Initial camera (optional)
+  defaultPitch: 30, // tilt angle 0 - 85
+  defaultBearing: 0, // rotation 0-360
+
   // Default base layer: 'light' | 'satellite' | 'topo'  [OPTIONAL]
   defaultBasemap: 'light',
 
   // ══════════════════════════════════════════════════════════
   // SEARCH BAR  [OPTIONAL — remove block to disable]
   // ══════════════════════════════════════════════════════════
-  searchField: 'hydroUnit',    // GeoJSON property to search by
-  searchLabel: 'Catchment ID', // Label shown in the search box
+  // searchField: 'hydroUnit',    // GeoJSON property to search by
+  // searchLabel: 'Catchment ID', // Label shown in the search box
 
   // ══════════════════════════════════════════════════════════
   // HOVER INFO BOX  [OPTIONAL — remove to disable hover]
