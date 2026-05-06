@@ -258,7 +258,31 @@ async function addLayer(lyrDef) {
       addWMSLayer(lyrDef);
     } else if (lyrDef.type === 'cog') {
       addCOGLayer(lyrDef);
+    } else if (lyrDef.type === 'hillshade') {
+      // Reuse the terrain-dem source if already loaded, otherwise add it
+      if (!_map.getSource('terrain-dem')) {
+        _map.addSource('terrain-dem', {
+          type: 'raster-dem',
+          url:  'https://api.maptiler.com/tiles/terrain-rgb-v2/tiles.json?key=YOUR_NEW_KEY',
+          tileSize: 256
+        });
+      }
+      _map.addLayer({
+        id:     'layer-hillshade',
+        type:   'hillshade',
+        source: 'terrain-dem',
+        layout: { visibility: lyrDef.defaultOn ? 'visible' : 'none' },
+        paint: {
+          'hillshade-intensity':        0.6,
+          'hillshade-shadow-color':     '#3a2a1a',
+          'hillshade-highlight-color':  '#ffffff',
+          'hillshade-accent-color':     '#5a4a3a',
+          'hillshade-illumination-direction': 315  // NW light source
+        }
+      }, 'layer-sg') // ← inserts BELOW your data layers so they show on top
     }
+
+
   } catch (err) {
     console.error(`Error adding layer "${lyrDef.id}":`, err);
   }
@@ -468,6 +492,8 @@ function buildLayerPanel() {
         <option value="light">Light</option>
         <option value="dark">Dark</option>
         <option value="osm">OpenStreetMap</option>
+        <option value="satellite">Satellite</option>
+        <option value="topo">Topo</option>
       </select>
     </div>
     <div class="lp-section">
