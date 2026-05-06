@@ -204,11 +204,6 @@ function addTerrain() {
     });
   }
   _map.setTerrain({ source: 'terrain-dem', exaggeration: CONFIG.terrainExaggeration || 1.5 });
-  _map.setFog({
-    range:            [0.5, 10],
-    color:            'rgba(220,210,195,0.8)',
-    'horizon-blend':  0.1
-  });
 }
 
 // =============================================================================
