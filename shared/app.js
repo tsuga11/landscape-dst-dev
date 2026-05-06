@@ -171,14 +171,7 @@ function initMap() {
     document.getElementById('dst-panel')?.classList.toggle('open');
   });
 
-  // Basemap switcher
-  document.getElementById('basemap-select')?.addEventListener('change', e => {
-    _map.setStyle(getBaseStyle(e.target.value));
-    _map.once('styledata', () => {
-      if (CONFIG.terrain) addTerrain();
-      reloadLayers();
-    });
-  });
+
 
   // Back link
   const backLink = document.getElementById('back-link');
@@ -206,7 +199,7 @@ function addTerrain() {
   if (!_map.getSource('terrain-dem')) {
     _map.addSource('terrain-dem', {
       type: 'raster-dem',
-      url:  'https://demotiles.maplibre.org/terrain-tiles/tiles.json',
+      url:  'https://api.maptiler.com/tiles/terrain-rgb-v2/tiles.json?key=cv4A9SfoJm6F3eii0Yjy',
       tileSize: 256
     });
   }
@@ -508,6 +501,14 @@ function buildLayerPanel() {
 
   // Show initial legends
   CONFIG.layers.filter(l => l.defaultOn).forEach(showLegend);
+
+  document.getElementById('basemap-select').addEventListener('change', e => {
+    _map.setStyle(getBaseStyle(e.target.value));
+    _map.once('styledata', () => {
+      if (CONFIG.terrain) addTerrain();
+      reloadLayers();
+    });
+  });
 }
 
 function setLayerVisibility(id, visibility) {
@@ -720,10 +721,11 @@ function buildDSTPanel() {
     </div>
   `;
 
-  panel.querySelectorAll('.ahp-slider').forEach(s => {
-    s.addEventListener('input', onSliderMove);
-    onSliderMove({ target: s });
-  });
+   panel.querySelectorAll('.ahp-slider').forEach(s => {
+     s.addEventListener('input', onSliderMove);
+     // Defer initial call until DOM is fully ready
+     setTimeout(() => onSliderMove({ target: s }), 0);
+   });
 
   document.getElementById('btn-reset').addEventListener('click', resetDST);
   document.getElementById('btn-calculate').addEventListener('click', runDSTCalculation);
