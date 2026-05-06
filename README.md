@@ -1,195 +1,61 @@
-# Landscape Decision Support Tools
+# MapLibre GL JS Port — DST Map Application
 
-A clean, config-driven web platform for spatial multi-criteria decision support.
-Built on Leaflet 1.9, D3 v7, and vanilla JavaScript — no build step required.
+Drop-in replacement for the Leaflet version of app.js.
+Config.js is unchanged — no data or criteria need updating.
 
----
+## What's new
 
-## File structure
+- **Tilt/pitch** — right-click drag (desktop) or two-finger drag (touch)
+- **Rotate** — two-finger rotate gesture, or Ctrl+drag
+- **3D terrain** — enable in config.js with `terrain: true`
+- **Hardware-accelerated** WebGL rendering — much faster on large datasets
+- **Compass** in the navigation control — click to reset north/bearing
 
-```
-/
-  index.html                ← Splash page (geography selector)
-  shared/
-    app.js                  ← Generic map + DST logic — NEVER EDIT THIS
-    style.css               ← Shared styles — NEVER EDIT THIS
-  geographies/
-    hamakua/
-      index.html            ← Boilerplate loader (same for every geography)
-      config.js             ← ← ← THE ONLY FILE YOU EDIT PER GEOGRAPHY
-      data/
-        soe.geojson         ← Your GeoJSON data files go here
-        tmk.geojson
-        ...
-    your-new-geography/     ← Copy hamakua/ folder to add a new geography
-      index.html
-      config.js
-      data/
-```
+## Files changed vs. Leaflet version
 
----
+| File | Change |
+|------|--------|
+| `shared/app.js` | Full rewrite — MapLibre API |
+| `geographies/hamakua/index.html` | CDN swap (Leaflet → MapLibre), new layer panel |
+| `shared/style.css` | Unchanged |
+| `geographies/hamakua/config.js` | Unchanged |
 
-## Adapting to a new geography
+## New config.js options
 
-### Step 1 — Copy the template folder
-```bash
-cp -r geographies/hamakua geographies/my-new-place
-```
-
-### Step 2 — Edit `config.js`
-Open `geographies/my-new-place/config.js` and change:
-- `title`, `subtitle`, `center`, `zoom`
-- The `layers` array (see the comments in config.js for all options)
-- The `dst.restoration.criteria` and `dst.protection.criteria` arrays
-- The `dst.computeCriteriaArrays()` function body to extract your data properties
-
-Everything else in the file can stay the same until you need it.
-
-### Step 3 — Prepare your GeoJSON files
-Your GeoJSON files must be valid JSON (not JavaScript).
-
-If your existing files look like this at the top:
 ```javascript
-var soe = {"type":"FeatureCollection", ...
-```
-…you need to strip the `var soe =` prefix. Use this Python one-liner:
-```bash
-python3 -c "
-import sys
-text = open(sys.argv[1]).read().strip()
-# Remove JS variable wrapper
-for prefix in ['var soe =', 'var trails =', 'var tmk =', 'var roads =']:
-    if text.startswith(prefix):
-        text = text[len(prefix):].lstrip()
-        break
-if text.endswith(';'):
-    text = text[:-1]
-open(sys.argv[2], 'w').write(text)
-" input.geojson output.geojson
-```
-Then place the output file in the `data/` subfolder.
+const CONFIG = {
+  // ... existing options unchanged ...
 
-### Step 4 — Add the card to the splash page
-Open the root `index.html` and add a new `<article class="project-card">` block
-inside the `<div class="card-grid">`. Copy one of the existing cards as a template
-and update the link to `geographies/my-new-place/index.html`.
+  // 3D terrain (optional)
+  terrain: true,                  // enable terrain extrusion
+  terrainExaggeration: 1.5,       // vertical scale (1 = real, 2 = double height)
 
----
+  // Initial camera (optional)
+  defaultPitch:   30,             // tilt angle 0-85
+  defaultBearing: 0,              // rotation 0-360
 
-## Adding raster layers (COG / GeoTIFF)
-
-1. Uncomment the two `<script>` lines for `georaster` in your geography's `index.html`
-2. Add a layer entry in `config.js` with `type: 'cog'` (see the commented example)
-3. Put your `.tif` file in the `data/` folder
-
-Cloud-Optimized GeoTIFFs work best — they load progressively and are faster over
-the web. You can create one from any GeoTIFF with GDAL:
-```bash
-gdal_translate input.tif output_cog.tif -of COG -co COMPRESS=DEFLATE
+  // Default basemap (light | dark | osm)
+  defaultBasemap: 'light',
+};
 ```
 
----
+## Basemap options
 
-## Deploying to GitHub Pages (free hosting)
+| Key | Style | API key needed? |
+|-----|-------|----------------|
+| `light` | CartoDB Positron | No |
+| `dark` | CartoDB Dark Matter | No |
+| `osm` | OpenFreeMap Liberty | No |
+| `satellite` | MapTiler Satellite | Yes (free tier) |
+| `topo` | MapTiler Topo | Yes (free tier) |
 
-### First time setup
+For satellite/topo, get a free API key at maptiler.com and replace
+`get_your_own_OpIi9ZULNHzrESv6T2vL` in app.js with your key.
 
-1. **Create a GitHub account** at github.com if you don't have one.
+## Deployment
 
-2. **Create a new repository**
-   - Go to github.com → click the `+` button → New repository
-   - Name it something like `landscape-dst`
-   - Set it to **Public** (required for free GitHub Pages)
-   - Click "Create repository"
+Same as the Leaflet version — drop into your GitHub repo.
+The only file that changes at the repo level is `shared/app.js`
+and `geographies/hamakua/index.html`.
 
-3. **Upload your files**
-   Option A — Via the GitHub website (easiest):
-   - Drag and drop your entire project folder onto the repository page
-   - GitHub will ask you to commit — click "Commit changes"
-
-   Option B — Via Git (if you have Git installed):
-   ```bash
-   cd /path/to/your/project
-   git init
-   git add .
-   git commit -m "Initial commit"
-   git remote add origin https://github.com/YOUR_USERNAME/landscape-dst.git
-   git push -u origin main
-   ```
-
-4. **Enable GitHub Pages**
-   - Go to your repository on GitHub
-   - Click **Settings** → **Pages** (in the left sidebar)
-   - Under "Source", select **Deploy from a branch**
-   - Choose branch: `main`, folder: `/ (root)`
-   - Click **Save**
-
-5. **Your site is live!**
-   After ~1 minute, your site will be at:
-   `https://YOUR_USERNAME.github.io/landscape-dst/`
-
-### Updating the site
-
-After your first deployment, any time you push new files to GitHub, the site
-updates automatically within about 30 seconds.
-
-Via the GitHub website:
-- Navigate to the file you want to update, click the pencil icon to edit,
-  commit when done.
-
-Via Git:
-```bash
-git add .
-git commit -m "Update Hamakua config"
-git push
-```
-
----
-
-## Dependencies (all loaded from CDN — no install needed)
-
-| Library | Version | Purpose |
-|---------|---------|---------|
-| Leaflet | 1.9.4 | Interactive map |
-| numeric.js | 1.2.6 | Eigenvalue computation for AHP |
-| D3 | 7.x | Weight visualization chart |
-| georaster | latest | COG raster parsing (optional) |
-| georaster-layer-for-leaflet | latest | COG layer display (optional) |
-
----
-
-## Common issues
-
-**Map doesn't load / shows blank**
-- Open browser developer tools (F12) → Console tab
-- Look for red error messages — usually a file path is wrong
-- Make sure your GeoJSON files are in the `data/` folder and the paths in
-  `config.js` match exactly (case-sensitive on GitHub)
-
-**GeoJSON not loading**
-- The file must be valid JSON (not JavaScript). Run it through
-  jsonlint.com to check.
-- If loading locally (file:// URL), use a local server instead:
-  ```bash
-  python3 -m http.server 8000
-  # then open http://localhost:8000
-  ```
-
-**DST sliders don't affect the map**
-- Click "Calculate" after adjusting sliders — the map updates on demand
-- Make sure the Decision Score layer is turned on in the layer control
-
-**COG raster not showing**
-- Uncomment the georaster `<script>` tags in index.html
-- Check the file path and make sure the COG is accessible from your server
-- For local testing, CORS restrictions may block local file access; use
-  a hosted URL or a local server
-
----
-
-## Credits
-
-Built by Nicholas Povak — [northcoastxy.com](http://northcoastxy.com)
-
-Analytical Hierarchy Process: Saaty (1980)
-EcoLogic methodology: Raphael & Marcot (1994); Raphael et al. (2001)
+Config.js and all data files are untouched.
