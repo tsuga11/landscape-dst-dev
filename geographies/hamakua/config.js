@@ -31,8 +31,8 @@ const CONFIG = {
   terrainExaggeration: 1.5,  // vertical scale (1 = real, 2 = double height)
 
   //Initial camera (optional)
-  defaultPitch: 30, // tilt angle 0 - 85
-  defaultBearing: 0, // rotation 0-360
+  defaultPitch: 45, // tilt angle 0 - 85
+  defaultBearing: -20, // rotation 0-360
 
   // Default base layer: 'light' | 'satellite' | 'topo'  [OPTIONAL]
   defaultBasemap: 'light',
