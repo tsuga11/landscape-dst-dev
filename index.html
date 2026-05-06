@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nicholas Povak — Landscape Ecology Research</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green-deep:   #1b3a2f;
+      --green-light:  #3d7a5e;
+      --gold:         #c4963a;
+      --gold-light:   #e8c46a;
+      --cream:        #f5f0e8;
+      --smoke:        rgba(60, 55, 50, 0.82);
+      --border:       rgba(160, 140, 110, 0.25);
+      --text-dark:    #1a1a1a;
+      --text-mid:     #4a4a4a;
+      --section-bg:   rgba(245, 238, 225, 0.72);
+      --section-margin: 1.5rem;
+      --section-radius: 10px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: #111;
+      color: var(--text-dark);
+      overflow-x: hidden;
+    }
+
+    /* ══════════════════════════════════════════════════════════
+       HERO
+    ══════════════════════════════════════════════════════════ */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      position: sticky;
+      top: 0;
+      z-index: 0;
+      will-change: transform;
+    }
+
+    .hero-bg-img {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+    }
+
+    .hero-bg-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      filter: brightness(0.6) blur(2px);
+      opacity: 0.6;
+    }
+
+    .hero-bg-img::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        135deg,
+        rgba(80, 85, 95, 0.96) 0%,
+        rgba(90, 90, 100, 0.85) 40%,
+        rgba(110, 105, 100, 0.45) 70%,
+        rgba(120, 110, 95, 0.10) 100%
+      );
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      background-image:
+        repeating-linear-gradient(0deg,   transparent, transparent 59px, rgba(255,255,255,0.03) 60px),
+        repeating-linear-gradient(90deg,  transparent, transparent 59px, rgba(255,255,255,0.03) 60px);
+      pointer-events: none;
+    }
+
+    .hero::after {
+      content: '';
+      position: absolute;
+      z-index: 1;
+      top: -20%; right: -10%;
+      width: 55%; height: 160%;
+      background: linear-gradient(135deg, transparent 40%, rgba(196,150,58,0.05) 40%);
+      pointer-events: none;
+    }
+
+    .hero-nav {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 2rem 4rem;
+    }
+
+    .hero-nav .site-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.1rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.6);
+    }
+
+    .hero-nav a {
+      color: rgba(255,255,255,0.5);
+      text-decoration: none;
+      font-size: 0.85rem;
+      letter-spacing: 0.05em;
+      transition: color 0.2s;
+    }
+
+    .hero-nav a:hover { color: var(--gold-light); }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 4rem 4rem 6rem;
+      max-width: 800px;
+      transition: opacity 0.1s ease, transform 0.1s ease;
+    }
+
+    .hero-eyebrow {
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1.5rem;
+    }
+
+    .hero-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(3rem, 6vw, 5.5rem);
+      font-weight: 700;
+      line-height: 1.05;
+      color: #fff;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero-title em { font-style: italic; color: var(--gold-light); }
+
+    .hero-desc {
+      font-size: 1.05rem;
+      font-weight: 300;
+      line-height: 1.7;
+      color: rgba(255,255,255,0.65);
+      max-width: 520px;
+      margin-bottom: 2.5rem;
+    }
+
+    .hero-scroll {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      color: rgba(255,255,255,0.45);
+      font-size: 0.8rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .hero-scroll:hover { color: var(--gold-light); }
+    .hero-scroll svg { animation: bounce 2s infinite; }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(5px); }
+    }
+
+    /* ══════════════════════════════════════════════════════════
+       FLOATING SECTION WRAPPER
+    ══════════════════════════════════════════════════════════ */
+    .page-section {
+      position: relative;
+      z-index: 1;
+      margin: var(--section-margin) calc(var(--section-margin) * 1.5);
+      border-radius: var(--section-radius);
+      border: 1px solid var(--border);
+      background: var(--section-bg);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+    }
+
+    /* Gap between sections */
+    .page-section + .page-section { margin-top: 1rem; }
+
+    /* Footer section gets darker */
+    .page-section.dark {
+      background: rgba(20, 18, 15, 0.88);
+      border-color: rgba(100, 90, 70, 0.3);
+      color: rgba(255,255,255,0.75);
+    }
+
+    /* ══════════════════════════════════════════════════════════
+       SPLIT LAYOUT (sticky left title + scrolling right cards)
+    ══════════════════════════════════════════════════════════ */
+    .split-layout {
+      display: flex;
+      align-items: flex-start;
+      padding: 3.5rem;
+      gap: 3rem;
+      min-height: 400px;
+    }
+
+    /* Left — sticky title column */
+    .split-left {
+      width: 33%;
+      flex-shrink: 0;
+    }
+
+    .split-sticky {
+      position: sticky;
+      top: 3rem;
+    }
+
+    .section-eyebrow {
+      font-size: 0.68rem;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--green-light);
+      margin-bottom: 0.65rem;
+    }
+
+    .dark .section-eyebrow { color: var(--gold); }
+
+    .section-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1.8rem, 3vw, 2.6rem);
+      font-weight: 700;
+      color: var(--green-deep);
+      line-height: 1.15;
+      margin-bottom: 1rem;
+    }
+
+    .dark .section-title { color: #fff; }
+
+    .section-sub {
+      font-size: 0.88rem;
+      font-weight: 300;
+      color: var(--text-mid);
+      line-height: 1.65;
+    }
+
+    .dark .section-sub { color: rgba(255,255,255,0.5); }
+
+    /* Right — cards */
+    .split-right { flex: 1; }
+
+    /* ══════════════════════════════════════════════════════════
+       CARD GRID
+    ══════════════════════════════════════════════════════════ */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .project-card {
+      background: rgba(255,255,255,0.82);
+      border-radius: 6px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.06);
+      position: relative;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.6s ease, transform 0.6s ease, box-shadow 0.25s ease;
+    }
+
+    .project-card.visible              { opacity: 1; transform: translateY(0); }
+    .project-card.wip.visible          { opacity: 0.65; }
+    .project-card:not(.wip):hover      { transform: translateY(-3px); box-shadow: 0 8px 32px rgba(27,58,47,0.14); }
+    .project-card.wip                  { cursor: default; }
+    .project-card.wip:hover            { transform: none; }
+
+    .card-img-wrap {
+      height: 160px;
+      overflow: hidden;
+      background: #2a3a2f;
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .card-img-wrap img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s ease;
+      filter: brightness(0.85);
+    }
+
+    .project-card:not(.wip):hover .card-img-wrap img { transform: scale(1.04); }
+
+    .card-badge {
+      position: absolute;
+      top: 10px; right: 10px;
+      padding: 0.2rem 0.55rem;
+      border-radius: 2px;
+      font-size: 0.62rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .badge-ready   { background: var(--gold);       color: #fff; }
+    .badge-wip     { background: rgba(0,0,0,0.45);  color: rgba(255,255,255,0.8); }
+
+    .card-body {
+      padding: 1.2rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card-region {
+      font-size: 0.65rem;
+      font-weight: 500;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--green-light);
+      margin-bottom: 0.4rem;
+    }
+
+    .card-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--green-deep);
+      line-height: 1.25;
+      margin-bottom: 0.5rem;
+    }
+
+    .card-desc {
+      font-size: 0.82rem;
+      font-weight: 300;
+      line-height: 1.6;
+      color: var(--text-mid);
+      flex: 1;
+      margin-bottom: 1rem;
+    }
+
+    .card-meta {
+      font-size: 0.7rem;
+      color: #999;
+      margin-bottom: 0.75rem;
+    }
+
+    .card-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.5rem 1rem;
+      background: var(--green-deep);
+      color: #fff;
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      text-decoration: none;
+      border-radius: 3px;
+      align-self: flex-start;
+      transition: background 0.2s;
+    }
+
+    .card-link:hover   { background: var(--green-light); }
+    .card-link.disabled { background: #bbb; cursor: default; pointer-events: none; }
+
+    /* ══════════════════════════════════════════════════════════
+       SIMPLE SECTIONS (publications, cv, about — no card grid)
+    ══════════════════════════════════════════════════════════ */
+    .simple-section {
+      padding: 3.5rem;
+    }
+
+    .simple-section .section-eyebrow { margin-bottom: 0.65rem; }
+    .simple-section .section-title   { margin-bottom: 1rem; }
+
+    .about-text {
+      font-size: 0.95rem;
+      font-weight: 300;
+      line-height: 1.8;
+      color: var(--text-mid);
+      max-width: 680px;
+    }
+
+    .about-text p + p { margin-top: 1rem; }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 1.5rem;
+      padding: 0.7rem 1.4rem;
+      background: var(--green-deep);
+      color: #fff;
+      font-size: 0.82rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-decoration: none;
+      border-radius: 3px;
+      transition: background 0.2s;
+    }
+
+    .btn-primary:hover { background: var(--green-light); }
+
+    .scholar-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin-top: 1rem;
+      padding: 0.7rem 1.4rem;
+      background: #4285f4;
+      color: #fff;
+      font-size: 0.82rem;
+      font-weight: 500;
+      text-decoration: none;
+      border-radius: 3px;
+      transition: background 0.2s;
+    }
+
+    .scholar-btn:hover { background: #2b6fd4; }
+
+    /* ══════════════════════════════════════════════════════════
+       FOOTER SECTION
+    ══════════════════════════════════════════════════════════ */
+    .footer-inner {
+      padding: 2rem 3.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .footer-inner p {
+      font-size: 0.8rem;
+      color: rgba(255,255,255,0.35);
+      letter-spacing: 0.04em;
+    }
+
+    .footer-inner a { color: rgba(255,255,255,0.45); text-decoration: none; }
+    .footer-inner a:hover { color: var(--gold-light); }
+
+    /* ══════════════════════════════════════════════════════════
+       FLOATING SECTION NAV (right side)
+    ══════════════════════════════════════════════════════════ */
+    #section-nav {
+      position: fixed;
+      right: 1.75rem;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 2000;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 0;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+      text-decoration: none;
+      padding: 0.55rem 0;
+      position: relative;
+    }
+
+    .nav-label {
+      font-size: 0.68rem;
+      font-weight: 400;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.35);
+      transition: color 0.25s, font-weight 0.25s;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+    }
+
+    .nav-dot-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+    }
+
+    .nav-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.3);
+      transition: background 0.25s, transform 0.25s;
+      flex-shrink: 0;
+    }
+
+    /* Vertical line between dots */
+    .nav-item:not(:last-child) .nav-dot-wrap::after {
+      content: '';
+      display: block;
+      width: 1px;
+      height: 1.8rem;
+      background: rgba(255,255,255,0.15);
+      margin-top: 2px;
+    }
+
+    /* Active state */
+    .nav-item.active .nav-label {
+      color: rgba(255,255,255,0.9);
+      font-weight: 500;
+    }
+
+    .nav-item.active .nav-dot {
+      background: var(--gold);
+      transform: scale(1.35);
+    }
+
+    .nav-item:hover .nav-label { color: rgba(255,255,255,0.7); }
+    .nav-item:hover .nav-dot   { background: rgba(255,255,255,0.6); }
+
+    /* ══════════════════════════════════════════════════════════
+       RESPONSIVE
+    ══════════════════════════════════════════════════════════ */
+    @media (max-width: 900px) {
+      .split-layout      { flex-direction: column; padding: 2rem; }
+      .split-left        { width: 100%; }
+      .split-sticky      { position: static; }
+      #section-nav       { display: none; }
+      .hero-nav,
+      .hero-content      { padding-left: 1.5rem; padding-right: 1.5rem; }
+      .hero-title        { font-size: 2.5rem; }
+      .card-grid         { grid-template-columns: 1fr; }
+      .page-section      { margin: 0.75rem; }
+      .simple-section    { padding: 2rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ══════════════════════════════════════════════════════════
+       FLOATING SECTION NAV
+  ══════════════════════════════════════════════════════════ -->
+  <nav id="section-nav" aria-label="Page sections">
+    <a class="nav-item active" href="#tools"        data-section="tools">
+      <span class="nav-label">Tools</span>
+      <div class="nav-dot-wrap"><div class="nav-dot"></div></div>
+    </a>
+    <a class="nav-item" href="#blog"         data-section="blog">
+      <span class="nav-label">Blog</span>
+      <div class="nav-dot-wrap"><div class="nav-dot"></div></div>
+    </a>
+    <a class="nav-item" href="#publications" data-section="publications">
+      <span class="nav-label">Publications</span>
+      <div class="nav-dot-wrap"><div class="nav-dot"></div></div>
+    </a>
+    <a class="nav-item" href="#cv"           data-section="cv">
+      <span class="nav-label">CV</span>
+      <div class="nav-dot-wrap"><div class="nav-dot"></div></div>
+    </a>
+    <a class="nav-item" href="#about"        data-section="about">
+      <span class="nav-label">About</span>
+      <div class="nav-dot-wrap"><div class="nav-dot"></div></div>
+    </a>
+  </nav>
+
+  <!-- ══════════════════════════════════════════════════════════
+       HERO
+  ══════════════════════════════════════════════════════════ -->
+  <section class="hero">
+    <div class="hero-bg-img">
+      <img src="assets/washington.jpeg" alt="Burning forest landscape">
+    </div>
+    <nav class="hero-nav">
+      <span class="site-name">Nicholas Povak</span>
+      <a href="mailto:napovak@gmail.com">napovak@gmail.com</a>
+    </nav>
+    <div class="hero-content">
+      <p class="hero-eyebrow">Landscape ecology · Decision support · Wildfire</p>
+      <h1 class="hero-title">
+        Forest &amp; watershed<br>
+        management <em>tools</em>
+      </h1>
+      <p class="hero-desc">
+        Spatial decision support tools for prioritizing ecological restoration
+        and protection across western US forests and watersheds.
+      </p>
+      <a class="hero-scroll" href="#tools">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
+          <path d="M7 10.5L1.5 5h11L7 10.5z"/>
+        </svg>
+        Explore
+      </a>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════
+       TOOLS
+  ══════════════════════════════════════════════════════════ -->
+  <section class="page-section" id="tools">
+    <div class="split-layout">
+      <div class="split-left">
+        <div class="split-sticky">
+          <p class="section-eyebrow">Decision support tools</p>
+          <h2 class="section-title">Select a geography</h2>
+          <p class="section-sub">Interactive maps with multi-criteria decision models. Adjust criteria weights to generate customized management priorities for restoration and protection.</p>
+        </div>
+      </div>
+      <div class="split-right">
+        <div class="card-grid">
+
+          <article class="project-card">
+            <div class="card-img-wrap">
+              <img src="assets/hamakua.jpg" alt="Hamakua coast">
+              <span class="card-badge badge-ready">Live</span>
+            </div>
+            <div class="card-body">
+              <p class="card-region">Hawai'i, USA</p>
+              <h3 class="card-title">Hamakua Coast</h3>
+              <p class="card-desc">Prioritizing strawberry guava removal to restore freshwater yield across watershed catchments.</p>
+              <a class="card-link" href="geographies/hamakua/index.html">Open tool →</a>
+            </div>
+          </article>
+
+          <article class="project-card wip">
+            <div class="card-img-wrap">
+              <img src="assets/Babeldaob-mosaic.jpg" alt="Babeldaob">
+              <span class="card-badge badge-wip">Coming soon</span>
+            </div>
+            <div class="card-body">
+              <p class="card-region">Palau, Micronesia</p>
+              <h3 class="card-title">Babeldaob Island</h3>
+              <p class="card-desc">Managing tropical forest to protect near-shore environments from upland sediment.</p>
+              <a class="card-link disabled" href="#">Coming soon</a>
+            </div>
+          </article>
+
+          <article class="project-card wip">
+            <div class="card-img-wrap">
+              <img src="assets/tahoe.jpg" alt="Tahoe Sierra">
+              <span class="card-badge badge-wip">In progress</span>
+            </div>
+            <div class="card-body">
+              <p class="card-region">California / Nevada, USA</p>
+              <h3 class="card-title">Tahoe–Central Sierra</h3>
+              <p class="card-desc">Managing 2.4 million hectares for multiple co-benefits across the TCSI footprint.</p>
+              <a class="card-link disabled" href="#">In progress</a>
+            </div>
+          </article>
+
+          <article class="project-card wip">
+            <div class="card-img-wrap">
+              <img src="assets/washington.jpeg" alt="North Central Washington">
+              <span class="card-badge badge-wip">In progress</span>
+            </div>
+            <div class="card-body">
+              <p class="card-region">Washington, USA</p>
+              <h3 class="card-title">North-Central Washington</h3>
+              <p class="card-desc">Managing subbasins for hydrologic function, biomass production, and fire hazard reduction.</p>
+              <a class="card-link disabled" href="#">In progress</a>
+            </div>
+          </article>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════
+       BLOG
+  ══════════════════════════════════════════════════════════ -->
+  <section class="page-section" id="blog">
+    <div class="split-layout">
+      <div class="split-left">
+        <div class="split-sticky">
+          <p class="section-eyebrow">Field notes &amp; research updates</p>
+          <h2 class="section-title">From the lab</h2>
+          <p class="section-sub">Notes on ongoing research, methods, and observations from the field and the data.</p>
+        </div>
+      </div>
+      <div class="split-right">
+        <div class="card-grid">
+
+          <article class="project-card">
+            <div class="card-img-wrap">
+              <img src="assets/washington.jpeg" alt="Wildfire">
+              <span class="card-badge badge-ready">New</span>
+            </div>
+            <div class="card-body">
+              <p class="card-region">Research update</p>
+              <h3 class="card-title">Climate analogs and the future of western conifers</h3>
+              <p class="card-meta">May 2025</p>
+              <p class="card-desc">How Mahalanobis distance modeling reveals where today's forests may be headed — and what that means for management.</p>
+              <a class="card-link" href="blog/post-1.html">Read →</a>
+            </div>
+          </article>
+
+          <article class="project-card wip">
+            <div class="card-img-wrap">
+              <img src="assets/tahoe.jpg" alt="Sierra Nevada">
+              <span class="card-badge badge-wip">Coming soon</span>
+            </div>
+            <div class="card-body">
+              <p class="card-region">Methods</p>
+              <h3 class="card-title">Phylogenetic distance as an ecological vulnerability metric</h3>
+              <p class="card-meta">Coming soon</p>
+              <p class="card-desc">Exploring Aitchison distance and UniFrac as measures of compositional shift in analog vegetation communities.</p>
+              <a class="card-link disabled" href="#">Coming soon</a>
+            </div>
+          </article>
+
+          <article class="project-card wip">
+            <div class="card-img-wrap">
+              <img src="assets/hamakua.jpg" alt="Hamakua">
+              <span class="card-badge badge-wip">Coming soon</span>
+            </div>
+            <div class="card-body">
+              <p class="card-region">Field notes</p>
+              <h3 class="card-title">Bottom-up refugia: where topography buffers climate</h3>
+              <p class="card-meta">Coming soon</p>
+              <p class="card-desc">Evidence from soil and terrain variables that local factors can partially offset regional climate pressure on conifer communities.</p>
+              <a class="card-link disabled" href="#">Coming soon</a>
+            </div>
+          </article>
+
+          <article class="project-card wip">
+            <div class="card-img-wrap">
+              <img src="assets/Babeldaob-mosaic.jpg" alt="Tropical forest">
+              <span class="card-badge badge-wip">Coming soon</span>
+            </div>
+            <div class="card-body">
+              <p class="card-region">Tools &amp; code</p>
+              <h3 class="card-title">Building the PROMOTE framework: from concept to pipeline</h3>
+              <p class="card-meta">Coming soon</p>
+              <p class="card-desc">A walkthrough of the Resist-Accept-Direct framework operationalized at landscape scale using R and ClimateNA.</p>
+              <a class="card-link disabled" href="#">Coming soon</a>
+            </div>
+          </article>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════
+       PUBLICATIONS
+  ══════════════════════════════════════════════════════════ -->
+  <section class="page-section" id="publications">
+    <div class="simple-section">
+      <p class="section-eyebrow">Research output</p>
+      <h2 class="section-title">Publications</h2>
+      <p class="about-text">
+        Peer-reviewed research spanning wildfire ecology, spatial decision support,
+        climate change adaptation, and landscape simulation modeling across western
+        US forests and beyond.
+      </p>
+      <a class="scholar-btn" href="https://scholar.google.com/citations?user=YOUR_ID" target="_blank" rel="noopener">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 24a7 7 0 1 1 0-14 7 7 0 0 1 0 14zm0-24L0 9.5l4.838 3.94A8 8 0 0 1 12 9a8 8 0 0 1 7.162 4.44L24 9.5z"/>
+        </svg>
+        View on Google Scholar
+      </a>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════
+       CV
+  ══════════════════════════════════════════════════════════ -->
+  <section class="page-section" id="cv">
+    <div class="simple-section">
+      <p class="section-eyebrow">Background</p>
+      <h2 class="section-title">Curriculum vitae</h2>
+      <p class="about-text">
+        Research ecologist at Spatial Informatics Group. PhD in Landscape Ecology,
+        University of Washington. Prior work at the US Forest Service Pacific Southwest
+        Research Station and The Nature Conservancy.
+      </p>
+      <!-- Replace # with the actual path to your CV PDF, e.g. assets/povak-cv.pdf -->
+      <a class="btn-primary" href="assets/povak-cv.pdf" target="_blank" rel="noopener">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+        </svg>
+        Download CV (PDF)
+      </a>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════
+       ABOUT
+  ══════════════════════════════════════════════════════════ -->
+  <section class="page-section" id="about">
+    <div class="simple-section">
+      <p class="section-eyebrow">Background</p>
+      <h2 class="section-title">About</h2>
+      <div class="about-text">
+        <p>
+          I am a research ecologist at Spatial Informatics Group (SIG), working at the
+          intersection of climate change adaptation, wildfire ecology, and forest
+          management decision support. My current work centers on the PROMOTE framework —
+          a landscape-scale approach for operationalizing Resist-Accept-Direct management
+          strategies using climate analog modeling and ecological vulnerability assessment
+          across western US forests.
+        </p>
+        <p>
+          My research interests focus on understanding where and when topographic and
+          soil factors can buffer climate change impacts on conifer vegetation, providing
+          refugia for biodiversity and ecosystem services. I use a combination of spatial
+          statistics, machine learning, and simulation modeling to translate ecological
+          understanding into actionable management guidance.
+        </p>
+        <p>
+          Previously I was at the US Forest Service Pacific Southwest Research Station,
+          where I co-developed the REBURN landscape simulation model, and worked with
+          The Nature Conservancy on prescribed burning in California.
+        </p>
+      </div>
+      <a class="btn-primary" href="mailto:napovak@gmail.com" style="margin-top:1.5rem;">
+        Get in touch →
+      </a>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════
+       FOOTER
+  ══════════════════════════════════════════════════════════ -->
+  <section class="page-section dark" style="margin-bottom: var(--section-margin);">
+    <div class="footer-inner">
+      <p>© 2025 Nicholas Povak &nbsp;·&nbsp; <a href="http://northcoastxy.com">northcoastxy.com</a></p>
+      <p><a href="mailto:napovak@gmail.com">napovak@gmail.com</a></p>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════
+       SCRIPTS
+  ══════════════════════════════════════════════════════════ -->
+  <script>
+    // ── Parallax hero ──────────────────────────────────────────
+    const hero        = document.querySelector('.hero');
+    const heroContent = document.querySelector('.hero-content');
+
+    window.addEventListener('scroll', () => {
+      const scrollY  = window.scrollY;
+      const heroH    = hero.offsetHeight;
+      const progress = Math.min(scrollY / heroH, 1);
+      heroContent.style.opacity   = Math.max(1 - progress * 2, 0);
+      heroContent.style.transform = `translateY(${scrollY * 0.2}px)`;
+    }, { passive: true });
+
+    // ── Card reveal ────────────────────────────────────────────
+    const cards = document.querySelectorAll('.project-card');
+    cards.forEach((card, i) => {
+      setTimeout(() => card.classList.add('visible'), 200 + i * 100);
+    });
+
+    // ── Section nav highlighting ───────────────────────────────
+    const sections = document.querySelectorAll('.page-section[id]');
+    const navItems = document.querySelectorAll('.nav-item[data-section]');
+
+    const sectionObserver = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          navItems.forEach(n => n.classList.remove('active'));
+          const match = document.querySelector(
+            `.nav-item[data-section="${entry.target.id}"]`
+          );
+          if (match) match.classList.add('active');
+        }
+      });
+    }, { threshold: 0.25 });
+
+    sections.forEach(s => sectionObserver.observe(s));
+  </script>
+
+</body>
+</html>
