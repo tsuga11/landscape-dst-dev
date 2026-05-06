@@ -22,10 +22,14 @@
       --text-mid:     #4a4a4a;
       --section-bg:   rgba(245, 238, 225, 0.72);
       --section-margin: 1.5rem;
+      --section-right-margin: 3.5rem; /* ← new — clears the nav dots */
       --section-radius: 10px;
     }
 
-    html { scroll-behavior: smooth; }
+    html { 
+      scroll-behavior: smooth; 
+      overflow-x: hidden;
+    }
 
     body {
       font-family: 'DM Sans', sans-serif;
@@ -45,6 +49,8 @@
       top: 0;
       z-index: 0;
       will-change: transform;
+      max-width: 100vw; /* ← add */
+      overflow-x: hidden; /* ← add */
     }
 
     .hero-bg-img {
@@ -189,8 +195,9 @@
        FLOATING SECTION WRAPPER
     ══════════════════════════════════════════════════════════ */
 .page-section {
+  max-width: 100%;
   position: relative;
-  margin: var(--section-margin) calc(var(--section-margin) * 1.5);
+  margin: var(--section-margin) var(--section-right-margin) var(--section-margin) calc(var(--section-margin) * 1.5);
   border-radius: var(--section-radius);
   isolation: isolate;
 
@@ -620,6 +627,11 @@
       .card-grid         { grid-template-columns: 1fr; }
       .page-section      { margin: 0.75rem; }
       .simple-section    { padding: 2rem; }
+    }
+
+    @media (max-width: 1100px) {
+      #section-nav { right: 0.5rem; }
+      .nav-label   { display: none; } /* hide text, keep dots */
     }
   </style>
 </head>
