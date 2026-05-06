@@ -28,14 +28,16 @@
 
     html { 
       scroll-behavior: smooth; 
-      overflow-x: clip;
     }
 
     body {
       font-family: 'DM Sans', sans-serif;
       background: #111;
       color: var(--text-dark);
-      overflow-x: clip;
+    }
+
+    #tools {
+      margin-top: 100vh;   /* ← pushes first section below the fixed hero */
     }
 
     /* ══════════════════════════════════════════════════════════
@@ -45,7 +47,7 @@
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-      position: sticky;
+      position: fixed;
       top: 0;
       z-index: 0;
       will-change: transform;
@@ -329,6 +331,7 @@
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
       gap: 1.25rem;
+      overflow: hidden;
     }
 
 .project-card {
