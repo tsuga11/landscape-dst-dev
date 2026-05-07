@@ -37,43 +37,58 @@ function initPMTiles() {
   const protocol = new pmtiles.Protocol();
   maplibregl.addProtocol('pmtiles', protocol.tile.bind(protocol));
 
+  // Cache PMTiles instances to avoid re-opening
+  const pmtilesCache = {};
+
   maplibregl.addProtocol('pmtiles-color', async (params) => {
     const [rampName, pmtilesUrl] = params.url
       .replace('pmtiles-color://', '')
       .split('|');
     const ramp = CONFIG.colorRamps[rampName];
 
-    // Fetch tile using pmtiles protocol
-    const result = await protocol.tile({ ...params, url: pmtilesUrl });
-    if (!result || !result.data) return { data: null };
-
-    // Convert to image
-    const blob = new Blob([result.data], { type: 'image/png' });
-    const imageBitmap = await createImageBitmap(blob);
-
-    // Draw to canvas and colorize
-    const canvas = new OffscreenCanvas(imageBitmap.width, imageBitmap.height);
-    const ctx = canvas.getContext('2d');
-    ctx.drawImage(imageBitmap, 0, 0);
-
-    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    const pixels = imageData.data;
-
-    for (let i = 0; i < pixels.length; i += 4) {
-      if (pixels[i + 3] === 0) continue; // skip transparent/NoData
-      const val = pixels[i]; // grayscale 0-100
-      const color = interpolateColor(ramp, val);
-      pixels[i]     = color[0];
-      pixels[i + 1] = color[1];
-      pixels[i + 2] = color[2];
-      pixels[i + 3] = 255;
+    // Get or create PMTiles instance
+    const cleanUrl = pmtilesUrl.replace('pmtiles://', '');
+    if (!pmtilesCache[cleanUrl]) {
+      pmtilesCache[cleanUrl] = new pmtiles.PMTiles(cleanUrl);
     }
+    const pt = pmtilesCache[cleanUrl];
 
-    ctx.putImageData(imageData, 0, 0);
-    const outBlob = await canvas.convertToBlob({ type: 'image/png' });
-    const arrayBuffer = await outBlob.arrayBuffer();
+    // Parse tile coordinates from params
+    const { x, y, z } = params;
 
-    return { data: arrayBuffer };
+    try {
+      const tile = await pt.getZxy(z, x, y);
+      if (!tile || !tile.data) return { data: new ArrayBuffer(0) };
+
+      const blob = new Blob([tile.data], { type: 'image/png' });
+      const imageBitmap = await createImageBitmap(blob);
+
+      const canvas = new OffscreenCanvas(imageBitmap.width, imageBitmap.height);
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(imageBitmap, 0, 0);
+
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const pixels = imageData.data;
+
+      for (let i = 0; i < pixels.length; i += 4) {
+        if (pixels[i + 3] === 0) continue;
+        const val = pixels[i];
+        const color = interpolateColor(ramp, val);
+        pixels[i]     = color[0];
+        pixels[i + 1] = color[1];
+        pixels[i + 2] = color[2];
+        pixels[i + 3] = 255;
+      }
+
+      ctx.putImageData(imageData, 0, 0);
+      const outBlob = await canvas.convertToBlob({ type: 'image/png' });
+      const arrayBuffer = await outBlob.arrayBuffer();
+      return { data: arrayBuffer };
+
+    } catch (e) {
+      console.warn('Tile error:', e);
+      return { data: new ArrayBuffer(0) };
+    }
   });
 }
 
