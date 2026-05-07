@@ -11,6 +11,10 @@
  *   COG/GeoTIFF → normalize to uint8 → gdal2tiles → PMTiles
  */
 
+const RELEASE_URL = 'pmtiles://https://pub-79bd7cf474e04912a703cf917dd8855e.r2.dev';
+
+
+
 // ─────────────────────────────────────────────────────────────
 // CAMERA / BOUNDS
 // ─────────────────────────────────────────────────────────────
@@ -494,86 +498,14 @@ const CONFIG = {
       labelColor: '#6e6112',
       download: './rasters/PROMOTE_v3/ecosystem.zip',
       layers: [
-        {
-          id: 'currentEcosystem',
-          label: 'Current',
-          type: 'raster-pmtiles',
-          url: 'pmtiles://./pmtiles/promote/ecosystem/current.pmtiles',
-          colorRamp: 'departure',
-          rasterColorRange: [-1, 1],
-          defaultOpacity: 0.85,
-          tooltip: 'Final current condition score averaged across all pillars. Values range from -1 (fully departed) to +1 (within target).'
-        },
-        {
-          id: 'futureEcosystem',
-          label: 'Future',
-          type: 'raster-pmtiles',
-          url: 'pmtiles://./pmtiles/promote/ecosystem/future.pmtiles',
-          colorRamp: 'departure',
-          rasterColorRange: [-1, 1],
-          defaultOpacity: 0.85,
-          tooltip: 'Future condition score (2020–2060) averaged across all pillars using LANDIS-II projections.'
-        },
-        {
-          id: 'apEcosystem',
-          label: 'Impact score',
-          type: 'raster-pmtiles',
-          url: 'pmtiles://./pmtiles/promote/ecosystem/ap_score.pmtiles',
-          colorRamp: 'apScore',
-          rasterColorRange: [-1, 1],
-          defaultOpacity: 0.85,
-          tooltip: 'Impact scores represent the opportunity for management to protect existing resources or adapt them to maintain resources over time.'
-        },
-        {
-          id: 'strategyEcosystem',
-          label: 'Strategy score',
-          type: 'raster-pmtiles',
-          url: 'pmtiles://./pmtiles/promote/ecosystem/strategy.pmtiles',
-          colorRamp: 'strategy',
-          rasterColorRange: [1, 8],
-          defaultOpacity: 0.85,
-          tooltip: 'Dominant restoration strategy (Monitor / Protect / Adapt / Transform) with strong/weak classification.'
-        },
-        {
-          id: 'monitorEcosystem',
-          label: 'Monitor',
-          type: 'raster-pmtiles',
-          url: 'pmtiles://./pmtiles/promote/ecosystem/monitor.pmtiles',
-          colorRamp: 'monitor',
-          rasterColorRange: [0, 1],
-          defaultOpacity: 0.85,
-          tooltip: 'Monitor areas are in good condition now and into the future.'
-        },
-        {
-          id: 'protectEcosystem',
-          label: 'Protect',
-          type: 'raster-pmtiles',
-          url: 'pmtiles://./pmtiles/promote/ecosystem/protect.pmtiles',
-          colorRamp: 'protect',
-          rasterColorRange: [0, 1],
-          defaultOpacity: 0.85,
-          tooltip: 'Protect areas are in good condition now but fall out of desired conditions over time.'
-        },
-        {
-          id: 'adaptEcosystem',
-          label: 'Adapt',
-          type: 'raster-pmtiles',
-          url: 'pmtiles://./pmtiles/promote/ecosystem/adapt.pmtiles',
-          colorRamp: 'adapt',
-          rasterColorRange: [0, 1],
-          defaultOpacity: 0.85,
-          tooltip: 'Adapt areas are in poor condition now but achieve desired conditions in the future.'
-        },
-        {
-          id: 'transformEcosystem',
-          label: 'Transform',
-          type: 'raster-pmtiles',
-          url: 'pmtiles://./pmtiles/promote/ecosystem/transform.pmtiles',
-          colorRamp: 'transform',
-          rasterColorRange: [0, 1],
-          defaultOpacity: 0.85,
-          tooltip: 'Transform areas are in poor condition now and remain so over time.'
-        }
+        { id: 'currentEcosystem',  label: 'Current',      type:'raster-pmtiles', url:`pmtiles://${RELEASE_URL}/ecosystem_current.pmtiles`,   colorRamp:'departure', rasterColorRange:[0,100], defaultOpacity:0.85 },
+        { id: 'futureEcosystem',   label: 'Future',       type:'raster-pmtiles', url:`pmtiles://${RELEASE_URL}/ecosystem_future.pmtiles`,    colorRamp:'departure', rasterColorRange:[0,100], defaultOpacity:0.85 },
+        { id: 'apEcosystem',       label: 'Impact score', type:'raster-pmtiles', url:`pmtiles://${RELEASE_URL}/ecosystem_ap.pmtiles`,        colorRamp:'apScore',   rasterColorRange:[0,100], defaultOpacity:0.85 },
+        { id: 'strategyEcosystem', label: 'Strategy',     type:'raster-pmtiles', url:`pmtiles://${RELEASE_URL}/ecosystem_strategy.pmtiles`,  colorRamp:'strategy',  rasterColorRange:[1,8],   defaultOpacity:0.85 },
+        { id: 'monitorEcosystem',  label: 'Monitor',      type:'raster-pmtiles', url:`pmtiles://${RELEASE_URL}/ecosystem_monitor.pmtiles`,   colorRamp:'monitor',   rasterColorRange:[0,100], defaultOpacity:0.85 },
+        { id: 'protectEcosystem',  label: 'Protect',      type:'raster-pmtiles', url:`pmtiles://${RELEASE_URL}/ecosystem_protect.pmtiles`,   colorRamp:'protect',   rasterColorRange:[0,100], defaultOpacity:0.85 },
+        { id: 'adaptEcosystem',    label: 'Adapt',        type:'raster-pmtiles', url:`pmtiles://${RELEASE_URL}/ecosystem_adapt.pmtiles`,     colorRamp:'adapt',     rasterColorRange:[0,100], defaultOpacity:0.85 },
+        { id: 'transformEcosystem',label: 'Transform',    type:'raster-pmtiles', url:`pmtiles://${RELEASE_URL}/ecosystem_transform.pmtiles`, colorRamp:'transform', rasterColorRange:[0,100], defaultOpacity:0.85 }
       ]
     },
 
@@ -659,22 +591,15 @@ const CONFIG = {
 // ─── HELPER: build standard 7-layer pillar config ────────────
 function makePillarLayers(folder, idPrefix) {
   const fp = folder.toLowerCase();
-  const tooltips = {
-    current:   'Current condition score (-1 to +1).',
-    future:    'Future condition score using LANDIS-II projections (-1 to +1).',
-    ap:        'Impact score: opportunity for management to protect or adapt.',
-    monitor:   'Monitor: good condition now and into the future.',
-    protect:   'Protect: good condition now, deteriorates over time.',
-    adapt:     'Adapt: poor condition now, capacity to reach desired state.',
-    transform: 'Transform: poor condition now and remains so over time.'
-  };
+  const base = `pmtiles://${RELEASE_URL}`;
+  
   return [
-    { id: `current${idPrefix.charAt(0).toUpperCase()+idPrefix.slice(1)}`,  label: 'Current',      type:'raster-pmtiles', url:`pmtiles://./pmtiles/promote/${fp}/current.pmtiles`,   colorRamp:'departure', rasterColorRange:[-1,1], defaultOpacity:0.85, tooltip: tooltips.current  },
-    { id: `future${idPrefix.charAt(0).toUpperCase()+idPrefix.slice(1)}`,   label: 'Future',       type:'raster-pmtiles', url:`pmtiles://./pmtiles/promote/${fp}/future.pmtiles`,    colorRamp:'departure', rasterColorRange:[-1,1], defaultOpacity:0.85, tooltip: tooltips.future   },
-    { id: `ap${idPrefix.charAt(0).toUpperCase()+idPrefix.slice(1)}`,       label: 'Impact score', type:'raster-pmtiles', url:`pmtiles://./pmtiles/promote/${fp}/ap.pmtiles`,        colorRamp:'apScore',   rasterColorRange:[-1,1], defaultOpacity:0.85, tooltip: tooltips.ap      },
-    { id: `monitor${idPrefix.charAt(0).toUpperCase()+idPrefix.slice(1)}`,  label: 'Monitor',      type:'raster-pmtiles', url:`pmtiles://./pmtiles/promote/${fp}/monitor.pmtiles`,   colorRamp:'monitor',   rasterColorRange:[0,1],  defaultOpacity:0.85, tooltip: tooltips.monitor  },
-    { id: `protect${idPrefix.charAt(0).toUpperCase()+idPrefix.slice(1)}`,  label: 'Protect',      type:'raster-pmtiles', url:`pmtiles://./pmtiles/promote/${fp}/protect.pmtiles`,   colorRamp:'protect',   rasterColorRange:[0,1],  defaultOpacity:0.85, tooltip: tooltips.protect  },
-    { id: `adapt${idPrefix.charAt(0).toUpperCase()+idPrefix.slice(1)}`,    label: 'Adapt',        type:'raster-pmtiles', url:`pmtiles://./pmtiles/promote/${fp}/adapt.pmtiles`,     colorRamp:'adapt',     rasterColorRange:[0,1],  defaultOpacity:0.85, tooltip: tooltips.adapt    },
-    { id: `transform${idPrefix.charAt(0).toUpperCase()+idPrefix.slice(1)}`,label: 'Transform',    type:'raster-pmtiles', url:`pmtiles://./pmtiles/promote/${fp}/transform.pmtiles`, colorRamp:'transform', rasterColorRange:[0,1],  defaultOpacity:0.85, tooltip: tooltips.transform }
+    { id: `current${idPrefix}`,  label: 'Current',      type:'raster-pmtiles', url:`${base}/${fp}_current.pmtiles`,   colorRamp:'departure', rasterColorRange:[0,100], defaultOpacity:0.85, tooltip: tooltips.current  },
+    { id: `future${idPrefix}`,   label: 'Future',       type:'raster-pmtiles', url:`${base}/${fp}_future.pmtiles`,    colorRamp:'departure', rasterColorRange:[0,100], defaultOpacity:0.85, tooltip: tooltips.future   },
+    { id: `ap${idPrefix}`,       label: 'Impact score', type:'raster-pmtiles', url:`${base}/${fp}_ap.pmtiles`,        colorRamp:'apScore',   rasterColorRange:[0,100], defaultOpacity:0.85, tooltip: tooltips.ap      },
+    { id: `monitor${idPrefix}`,  label: 'Monitor',      type:'raster-pmtiles', url:`${base}/${fp}_monitor.pmtiles`,   colorRamp:'monitor',   rasterColorRange:[0,100], defaultOpacity:0.85, tooltip: tooltips.monitor  },
+    { id: `protect${idPrefix}`,  label: 'Protect',      type:'raster-pmtiles', url:`${base}/${fp}_protect.pmtiles`,   colorRamp:'protect',   rasterColorRange:[0,100], defaultOpacity:0.85, tooltip: tooltips.protect  },
+    { id: `adapt${idPrefix}`,    label: 'Adapt',        type:'raster-pmtiles', url:`${base}/${fp}_adapt.pmtiles`,     colorRamp:'adapt',     rasterColorRange:[0,100], defaultOpacity:0.85, tooltip: tooltips.adapt    },
+    { id: `transform${idPrefix}`,label: 'Transform',    type:'raster-pmtiles', url:`${base}/${fp}_transform.pmtiles`, colorRamp:'transform', rasterColorRange:[0,100], defaultOpacity:0.85, tooltip: tooltips.transform }
   ];
 }
