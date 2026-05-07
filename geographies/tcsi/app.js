@@ -105,20 +105,18 @@ function addLayer(layerCfg) {
 
   if (state.map.getLayer(lyrId)) return; // already added
 
-  if (layerCfg.type === 'raster-pmtiles') {
-    const ramp = CONFIG.colorRamps[layerCfg.colorRamp];
-    state.map.addLayer({
-      id: lyrId,
-      type: 'raster',
-      source: srcId,
-      paint: {
-        'raster-opacity': layerCfg.defaultOpacity ?? 0.85,
-        'raster-color-range': layerCfg.rasterColorRange,
-        //'raster-color': buildRasterColorExpr(ramp, layerCfg.rasterColorRange)
-      }
-    });
-
-  } else if (layerCfg.type === 'vector-pmtiles') {
+if (layerCfg.type === 'raster-pmtiles') {
+  const ramp = CONFIG.colorRamps[layerCfg.colorRamp];
+  state.map.addLayer({
+    id: lyrId,
+    type: 'raster',
+    source: srcId,
+    paint: {
+      'raster-opacity': layerCfg.defaultOpacity ?? 0.85,
+      'raster-color': buildRasterColorExpr(ramp, layerCfg.rasterColorRange)
+    }
+  });
+} else if (layerCfg.type === 'vector-pmtiles') {
     const p = layerCfg.paint;
     // Detect geometry type from paint keys
     if ('line-color' in p && !('fill-color' in p)) {
@@ -182,22 +180,26 @@ function setLineColor(layerCfg, color) {
 
 // ─── COLOR RAMP EXPRESSION BUILDER ─────────────────────────
 function buildRasterColorExpr(ramp, dataRange) {
+  const [dMin, dMax] = dataRange;
+  
   if (ramp.categorical) {
-    // Step expression for categorical rasters
     const expr = ['step', ['raster-value']];
-    expr.push(ramp.classes[0].color); // default
+    expr.push(ramp.classes[0].color);
     ramp.classes.forEach((cls, i) => {
       if (i > 0) {
-        expr.push(cls.value);
+        // normalize class value to 0-1
+        const norm = (cls.value - dMin) / (dMax - dMin);
+        expr.push(norm);
         expr.push(cls.color);
       }
     });
     return expr;
   } else {
-    // Continuous interpolation
     const expr = ['interpolate', ['linear'], ['raster-value']];
     for (let i = 0; i < ramp.stops.length; i += 2) {
-      expr.push(ramp.stops[i]);
+      // normalize stop value to 0-1
+      const norm = (ramp.stops[i] - dMin) / (dMax - dMin);
+      expr.push(norm);
       expr.push(ramp.stops[i + 1]);
     }
     return expr;
