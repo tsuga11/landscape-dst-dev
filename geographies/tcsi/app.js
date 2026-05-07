@@ -36,6 +36,89 @@ document.addEventListener('DOMContentLoaded', () => {
 function initPMTiles() {
   const protocol = new pmtiles.Protocol();
   maplibregl.addProtocol('pmtiles', protocol.tile.bind(protocol));
+
+  // Custom colorizing protocol
+  maplibregl.addProtocol('pmtiles-color', (params, callback) => {
+    // URL format: pmtiles-color://rampName|pmtiles://https://...
+    const [rampName, pmtilesUrl] = params.url.replace('pmtiles-color://', '').split('|');
+    const ramp = CONFIG.colorRamps[rampName];
+
+    protocol.tile({ ...params, url: pmtilesUrl }, (err, data) => {
+      if (err || !data) return callback(err);
+
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0);
+
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const pixels = imageData.data;
+
+        for (let i = 0; i < pixels.length; i += 4) {
+          const alpha = pixels[i + 3];
+          if (alpha === 0) continue; // skip transparent (NoData)
+
+          const val = pixels[i]; // grayscale value 0-100
+          const color = interpolateColor(ramp, val);
+          pixels[i]     = color[0];
+          pixels[i + 1] = color[1];
+          pixels[i + 2] = color[2];
+          pixels[i + 3] = 255;
+        }
+
+        ctx.putImageData(imageData, 0, 0);
+        canvas.toBlob(blob => callback(null, blob), 'image/png');
+      };
+
+      const blob = new Blob([data], { type: 'image/png' });
+      img.src = URL.createObjectURL(blob);
+    });
+
+    return { cancel: () => {} };
+  });
+}
+
+// ── COLOR INTERPOLATION ──────────────────────────────────
+function interpolateColor(ramp, value) {
+  if (ramp.categorical) {
+    const match = ramp.classes.find(c => c.value === Math.round(value));
+    const hex = match ? match.color : '#000000';
+    return hexToRgb(hex);
+  }
+
+  const stops = ramp.stops;
+  // Clamp to range
+  if (value <= stops[0]) return hexToRgb(stops[1]);
+  if (value >= stops[stops.length - 2]) return hexToRgb(stops[stops.length - 1]);
+
+  // Find surrounding stops
+  for (let i = 0; i < stops.length - 2; i += 2) {
+    const v0 = stops[i],     c0 = stops[i + 1];
+    const v1 = stops[i + 2], c1 = stops[i + 3];
+    if (value >= v0 && value <= v1) {
+      const t = (value - v0) / (v1 - v0);
+      return lerpColor(hexToRgb(c0), hexToRgb(c1), t);
+    }
+  }
+  return [0, 0, 0];
+}
+
+function hexToRgb(hex) {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return [r, g, b];
+}
+
+function lerpColor(c0, c1, t) {
+  return [
+    Math.round(c0[0] + (c1[0] - c0[0]) * t),
+    Math.round(c0[1] + (c1[1] - c0[1]) * t),
+    Math.round(c0[2] + (c1[2] - c0[2]) * t)
+  ];
 }
 
 // ─── MAP INIT ────────────────────────────────────────────────
@@ -78,13 +161,15 @@ function registerAllSources() {
     const srcId = `src-${layer.id}`;
     if (state.map.getSource(srcId)) return;
 
-    if (layer.type === 'raster-pmtiles') {
-      state.map.addSource(srcId, {
-        type: 'raster',
-        url: layer.url,
-        tileSize: 256
-      });
-    } else if (layer.type === 'vector-pmtiles') {
+if (layer.type === 'raster-pmtiles') {
+  // Use colorizing protocol: pmtiles-color://rampName|pmtiles://https://...
+  const colorUrl = `pmtiles-color://${layer.colorRamp}|${layer.url}`;
+  state.map.addSource(srcId, {
+    type: 'raster',
+    url: colorUrl,
+    tileSize: 256
+  });
+} else if (layer.type === 'vector-pmtiles') {
       state.map.addSource(srcId, {
         type: 'vector',
         url: layer.url
@@ -106,14 +191,12 @@ function addLayer(layerCfg) {
   if (state.map.getLayer(lyrId)) return; // already added
 
 if (layerCfg.type === 'raster-pmtiles') {
-  const ramp = CONFIG.colorRamps[layerCfg.colorRamp];
   state.map.addLayer({
     id: lyrId,
     type: 'raster',
     source: srcId,
     paint: {
-      'raster-opacity': layerCfg.defaultOpacity ?? 0.85,
-      'raster-color': buildRasterColorExpr(ramp, layerCfg.rasterColorRange)
+      'raster-opacity': layerCfg.defaultOpacity ?? 0.85
     }
   });
 } else if (layerCfg.type === 'vector-pmtiles') {
