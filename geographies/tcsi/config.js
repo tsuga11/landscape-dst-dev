@@ -592,6 +592,16 @@ const CONFIG = {
 function makePillarLayers(folder, idPrefix) {
   const fp = folder.toLowerCase();
   const base = `pmtiles://${RELEASE_URL}`;
+
+const tooltips = {
+    current:   'Current condition score (0-100).',
+    future:    'Future condition score using LANDIS-II projections (0-100).',
+    ap:        'Impact score: opportunity for management to protect or adapt.',
+    monitor:   'Monitor: good condition now and into the future.',
+    protect:   'Protect: good condition now, deteriorates over time.',
+    adapt:     'Adapt: poor condition now, capacity to reach desired state.',
+    transform: 'Transform: poor condition now and remains so over time.'
+  };
   
   return [
     { id: `current${idPrefix}`,  label: 'Current',      type:'raster-pmtiles', url:`${base}/${fp}_current.pmtiles`,   colorRamp:'departure', rasterColorRange:[0,100], defaultOpacity:0.85, tooltip: tooltips.current  },
