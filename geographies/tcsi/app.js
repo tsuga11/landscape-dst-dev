@@ -37,47 +37,43 @@ function initPMTiles() {
   const protocol = new pmtiles.Protocol();
   maplibregl.addProtocol('pmtiles', protocol.tile.bind(protocol));
 
-  // Custom colorizing protocol
-  maplibregl.addProtocol('pmtiles-color', (params, callback) => {
-    // URL format: pmtiles-color://rampName|pmtiles://https://...
-    const [rampName, pmtilesUrl] = params.url.replace('pmtiles-color://', '').split('|');
+  maplibregl.addProtocol('pmtiles-color', async (params) => {
+    const [rampName, pmtilesUrl] = params.url
+      .replace('pmtiles-color://', '')
+      .split('|');
     const ramp = CONFIG.colorRamps[rampName];
 
-    protocol.tile({ ...params, url: pmtilesUrl }, (err, data) => {
-      if (err || !data) return callback(err);
+    // Fetch tile using pmtiles protocol
+    const result = await protocol.tile({ ...params, url: pmtilesUrl });
+    if (!result || !result.data) return { data: null };
 
-      const img = new Image();
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        canvas.width = img.width;
-        canvas.height = img.height;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 0, 0);
+    // Convert to image
+    const blob = new Blob([result.data], { type: 'image/png' });
+    const imageBitmap = await createImageBitmap(blob);
 
-        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        const pixels = imageData.data;
+    // Draw to canvas and colorize
+    const canvas = new OffscreenCanvas(imageBitmap.width, imageBitmap.height);
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(imageBitmap, 0, 0);
 
-        for (let i = 0; i < pixels.length; i += 4) {
-          const alpha = pixels[i + 3];
-          if (alpha === 0) continue; // skip transparent (NoData)
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const pixels = imageData.data;
 
-          const val = pixels[i]; // grayscale value 0-100
-          const color = interpolateColor(ramp, val);
-          pixels[i]     = color[0];
-          pixels[i + 1] = color[1];
-          pixels[i + 2] = color[2];
-          pixels[i + 3] = 255;
-        }
+    for (let i = 0; i < pixels.length; i += 4) {
+      if (pixels[i + 3] === 0) continue; // skip transparent/NoData
+      const val = pixels[i]; // grayscale 0-100
+      const color = interpolateColor(ramp, val);
+      pixels[i]     = color[0];
+      pixels[i + 1] = color[1];
+      pixels[i + 2] = color[2];
+      pixels[i + 3] = 255;
+    }
 
-        ctx.putImageData(imageData, 0, 0);
-        canvas.toBlob(blob => callback(null, blob), 'image/png');
-      };
+    ctx.putImageData(imageData, 0, 0);
+    const outBlob = await canvas.convertToBlob({ type: 'image/png' });
+    const arrayBuffer = await outBlob.arrayBuffer();
 
-      const blob = new Blob([data], { type: 'image/png' });
-      img.src = URL.createObjectURL(blob);
-    });
-
-    return { cancel: () => {} };
+    return { data: arrayBuffer };
   });
 }
 
