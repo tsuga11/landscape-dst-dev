@@ -1,0 +1,530 @@
+/**
+ * tcsi_app.js
+ * TCSI PROMOTE DST — MapLibre GL JS 4.x application
+ *
+ * Requires:
+ *   - maplibre-gl@4.x
+ *   - @protomaps/maplibre-gl (PMTiles protocol)
+ *   - tcsi_config.js (CONFIG object)
+ *
+ * Architecture:
+ *   Raster layers: PMTiles (single-band uint8/uint16) + raster-color
+ *   Vector layers: PMTiles (pbf)
+ *   No jQuery, no Bootstrap, no Leaflet.
+ */
+
+'use strict';
+
+// ─── STATE ──────────────────────────────────────────────────
+const state = {
+  map: null,
+  activeLayers: new Set(),   // layer IDs currently visible
+  currentBasemap: 'dark',
+  activeLegend: null
+};
+
+// ─── INIT ────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  initPMTiles();
+  initMap();
+  buildSidebar();
+  initHamburger();
+  initInfoPanel();
+});
+
+// ─── PMTILES PROTOCOL ───────────────────────────────────────
+function initPMTiles() {
+  // Register the pmtiles:// protocol with MapLibre
+  // https://protomaps.com/docs/pmtiles/maplibre
+  const protocol = new pmtiles.Protocol();
+  maplibregl.addProtocol('pmtiles', protocol.tile);
+}
+
+// ─── MAP INIT ────────────────────────────────────────────────
+function initMap() {
+  state.map = new maplibregl.Map({
+    container: 'map',
+    style: CONFIG.basemaps[CONFIG.defaultBasemap || 'dark'].style,
+    center: CONFIG.center,
+    zoom: CONFIG.zoom,
+    minZoom: CONFIG.minZoom,
+    maxZoom: CONFIG.maxZoom,
+    pitchWithRotate: true,
+    attributionControl: false
+  });
+
+  state.map.fitBounds(CONFIG.bounds, { animate: false });
+
+  // Controls
+  state.map.addControl(new maplibregl.NavigationControl({ showCompass: true }), 'top-right');
+  state.map.addControl(new maplibregl.AttributionControl({ compact: true }), 'bottom-right');
+  state.map.addControl(new maplibregl.ScaleControl({ unit: 'imperial' }), 'bottom-left');
+
+  state.map.on('load', () => {
+    // Pre-register all sources (but don't add layers yet)
+    registerAllSources();
+
+    // Click/hover handlers for raster pixel inspection
+    initPixelInspect();
+
+    // Pitch hint
+    setTimeout(() => document.getElementById('pitch-hint')?.classList.add('hidden'), 5000);
+  });
+}
+
+// ─── SOURCE REGISTRATION ────────────────────────────────────
+// Register every PMTiles source upfront so layers can be added
+// on demand without async delays.
+function registerAllSources() {
+  getAllLayers().forEach(layer => {
+    const srcId = `src-${layer.id}`;
+    if (state.map.getSource(srcId)) return;
+
+    if (layer.type === 'raster-pmtiles') {
+      state.map.addSource(srcId, {
+        type: 'raster',
+        url: layer.url,
+        tileSize: 256
+      });
+    } else if (layer.type === 'vector-pmtiles') {
+      state.map.addSource(srcId, {
+        type: 'vector',
+        url: layer.url
+      });
+    } else if (layer.type === 'geojson') {
+      state.map.addSource(srcId, {
+        type: 'geojson',
+        data: layer.url
+      });
+    }
+  });
+}
+
+// ─── LAYER ADD / REMOVE ──────────────────────────────────────
+function addLayer(layerCfg) {
+  const srcId = `src-${layerCfg.id}`;
+  const lyrId = `lyr-${layerCfg.id}`;
+
+  if (state.map.getLayer(lyrId)) return; // already added
+
+  if (layerCfg.type === 'raster-pmtiles') {
+    const ramp = CONFIG.colorRamps[layerCfg.colorRamp];
+    state.map.addLayer({
+      id: lyrId,
+      type: 'raster',
+      source: srcId,
+      paint: {
+        'raster-opacity': layerCfg.defaultOpacity ?? 0.85,
+        'raster-color-range': layerCfg.rasterColorRange,
+        'raster-color': buildRasterColorExpr(ramp, layerCfg.rasterColorRange)
+      }
+    });
+
+  } else if (layerCfg.type === 'vector-pmtiles') {
+    const p = layerCfg.paint;
+    // Detect geometry type from paint keys
+    if ('line-color' in p && !('fill-color' in p)) {
+      state.map.addLayer({ id: lyrId, type: 'line', source: srcId, 'source-layer': layerCfg.sourceLayer, paint: p });
+    } else if ('fill-color' in p && 'line-color' in p) {
+      // Add fill + outline as two sub-layers
+      state.map.addLayer({ id: `${lyrId}-fill`, type: 'fill', source: srcId, 'source-layer': layerCfg.sourceLayer,
+        paint: { 'fill-color': p['fill-color'], 'fill-opacity': p['fill-opacity'] ?? 0.5 } });
+      state.map.addLayer({ id: `${lyrId}-line`, type: 'line', source: srcId, 'source-layer': layerCfg.sourceLayer,
+        paint: { 'line-color': p['line-color'], 'line-width': p['line-width'] ?? 1 } });
+    } else if ('fill-color' in p) {
+      state.map.addLayer({ id: `${lyrId}-fill`, type: 'fill', source: srcId, 'source-layer': layerCfg.sourceLayer,
+        paint: { 'fill-color': p['fill-color'], 'fill-opacity': p['fill-opacity'] ?? 0.5 } });
+    } else if ('circle-color' in p) {
+      state.map.addLayer({ id: lyrId, type: 'circle', source: srcId, 'source-layer': layerCfg.sourceLayer, paint: p });
+    } else {
+      state.map.addLayer({ id: lyrId, type: 'line', source: srcId, 'source-layer': layerCfg.sourceLayer, paint: p });
+    }
+  }
+
+  state.activeLayers.add(layerCfg.id);
+
+  // Boundary layers always on top
+  bringBoundariesToFront();
+
+  // Show legend
+  showLegend(layerCfg);
+}
+
+function removeLayer(layerCfg) {
+  const lyrId = `lyr-${layerCfg.id}`;
+  [`${lyrId}`, `${lyrId}-fill`, `${lyrId}-line`].forEach(id => {
+    if (state.map.getLayer(id)) state.map.removeLayer(id);
+  });
+  state.activeLayers.delete(layerCfg.id);
+  clearLegend();
+}
+
+function setLayerOpacity(layerCfg, opacity) {
+  const lyrId = `lyr-${layerCfg.id}`;
+  if (layerCfg.type === 'raster-pmtiles') {
+    if (state.map.getLayer(lyrId)) state.map.setPaintProperty(lyrId, 'raster-opacity', opacity);
+  } else {
+    const p = layerCfg.paint;
+    if ('fill-color' in p && state.map.getLayer(`${lyrId}-fill`))
+      state.map.setPaintProperty(`${lyrId}-fill`, 'fill-opacity', (p['fill-opacity'] ?? 0.5) * opacity);
+    if ('line-color' in p && state.map.getLayer(`${lyrId}-line`))
+      state.map.setPaintProperty(`${lyrId}-line`, 'line-opacity', opacity);
+    if (state.map.getLayer(lyrId)) {
+      if ('circle-color' in p) state.map.setPaintProperty(lyrId, 'circle-opacity', opacity);
+      else state.map.setPaintProperty(lyrId, 'line-opacity', opacity);
+    }
+  }
+}
+
+function setLineColor(layerCfg, color) {
+  const lyrId = `lyr-${layerCfg.id}`;
+  if (state.map.getLayer(lyrId)) state.map.setPaintProperty(lyrId, 'line-color', color);
+  if (state.map.getLayer(`${lyrId}-line`)) state.map.setPaintProperty(`${lyrId}-line`, 'line-color', color);
+}
+
+// ─── COLOR RAMP EXPRESSION BUILDER ─────────────────────────
+function buildRasterColorExpr(ramp, dataRange) {
+  if (ramp.categorical) {
+    // Step expression for categorical rasters
+    const expr = ['step', ['raster-value']];
+    expr.push(ramp.classes[0].color); // default
+    ramp.classes.forEach((cls, i) => {
+      if (i > 0) {
+        expr.push(cls.value);
+        expr.push(cls.color);
+      }
+    });
+    return expr;
+  } else {
+    // Continuous interpolation
+    const expr = ['interpolate', ['linear'], ['raster-value']];
+    for (let i = 0; i < ramp.stops.length; i += 2) {
+      expr.push(ramp.stops[i]);
+      expr.push(ramp.stops[i + 1]);
+    }
+    return expr;
+  }
+}
+
+// ─── BOUNDARY LAYER Z-ORDER ──────────────────────────────────
+function bringBoundariesToFront() {
+  const boundaryIds = ['tcsiBounds', 'tcsiHUC12', 'tcsiHUC10'];
+  boundaryIds.forEach(id => {
+    if (!state.activeLayers.has(id)) return;
+    const lyrId = `lyr-${id}`;
+    if (state.map.getLayer(lyrId)) state.map.moveLayer(lyrId);
+  });
+}
+
+// ─── LEGEND ──────────────────────────────────────────────────
+function showLegend(layerCfg) {
+  const ramp = CONFIG.colorRamps[layerCfg.colorRamp];
+  if (!ramp) { clearLegend(); return; }
+
+  const container = document.getElementById('legend-container');
+  state.activeLegend = layerCfg.id;
+
+  let html = `<div class="legend-title">${ramp.title}</div>`;
+
+  if (ramp.categorical) {
+    html += ramp.classes.map(c =>
+      `<div class="legend-row"><span class="legend-swatch" style="background:${c.color}"></span>${c.label}</div>`
+    ).join('');
+  } else {
+    // Gradient bar
+    const colors = [];
+    for (let i = 0; i < ramp.stops.length; i += 2) colors.push(ramp.stops[i + 1]);
+    html += `<div class="legend-gradient" style="background:linear-gradient(to right, ${colors.join(',')})"></div>`;
+    if (ramp.labels) {
+      const labels = ramp.labels.filter(Boolean);
+      html += `<div class="legend-labels">
+        <span>${labels[0]}</span>
+        <span>${labels[labels.length - 1]}</span>
+      </div>`;
+    }
+  }
+
+  container.innerHTML = html;
+  container.classList.remove('hidden');
+}
+
+function clearLegend() {
+  const container = document.getElementById('legend-container');
+  if (container) { container.innerHTML = ''; container.classList.add('hidden'); }
+  state.activeLegend = null;
+}
+
+// ─── PIXEL INSPECT ──────────────────────────────────────────
+function initPixelInspect() {
+  const box = document.getElementById('info-box');
+
+  state.map.on('mousemove', e => {
+    const features = state.map.queryRenderedFeatures(e.point);
+    if (!features.length) { box.classList.add('hidden'); return; }
+    const f = features[0];
+    // Show layer id + properties for vector layers
+    if (f.properties && Object.keys(f.properties).length > 0) {
+      const entries = Object.entries(f.properties)
+        .slice(0, 5)
+        .map(([k, v]) => `<b>${k}:</b> ${typeof v === 'number' ? v.toFixed(3) : v}`)
+        .join('<br>');
+      box.innerHTML = `<small>${f.layer.id.replace('lyr-','').replace('-fill','').replace('-line','')}</small><br>${entries}`;
+      box.style.left = (e.point.x + 12) + 'px';
+      box.style.top  = (e.point.y + 12) + 'px';
+      box.classList.remove('hidden');
+    } else {
+      box.classList.add('hidden');
+    }
+  });
+
+  state.map.on('mouseleave', () => box.classList.add('hidden'));
+}
+
+// ─── BASEMAP SWITCHER ────────────────────────────────────────
+function switchBasemap(key) {
+  state.currentBasemap = key;
+  const style = CONFIG.basemaps[key].style;
+
+  // Snapshot active layers to re-add after basemap change
+  const activeLayers = [...state.activeLayers];
+  activeLayers.forEach(id => {
+    const cfg = findLayer(id);
+    if (cfg) removeLayer(cfg);
+  });
+
+  state.map.setStyle(style);
+
+  state.map.once('styledata', () => {
+    registerAllSources();
+    activeLayers.forEach(id => {
+      const cfg = findLayer(id);
+      if (cfg) addLayer(cfg);
+    });
+  });
+
+  // Update button states
+  document.querySelectorAll('.basemap-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.basemap === key);
+  });
+}
+
+// ─── SIDEBAR BUILD ───────────────────────────────────────────
+function buildSidebar() {
+  const sidebar = document.getElementById('mySidebar');
+
+  // Basemap buttons
+  const basemapSection = document.createElement('div');
+  basemapSection.className = 'sidebar-section';
+  basemapSection.innerHTML = `
+    <button class="accordion">Basemaps</button>
+    <div class="panel">
+      ${Object.entries(CONFIG.basemaps).map(([key, bm]) =>
+        `<button class="basemap-btn${key === (CONFIG.defaultBasemap || 'dark') ? ' active' : ''}"
+           data-basemap="${key}">${bm.label}</button>`
+      ).join('')}
+    </div>
+  `;
+  sidebar.appendChild(basemapSection);
+
+  // Layer groups
+  CONFIG.layerGroups.forEach(group => {
+    sidebar.appendChild(buildGroupSection(group));
+  });
+
+  // Accordion behavior
+  document.querySelectorAll('.accordion').forEach(btn => {
+    btn.addEventListener('click', function() {
+      this.classList.toggle('active');
+      const panel = this.nextElementSibling;
+      panel.style.maxHeight = panel.style.maxHeight ? null : panel.scrollHeight + 'px';
+    });
+  });
+
+  // Sub-accordion
+  document.querySelectorAll('.sub-accordion').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      this.classList.toggle('active');
+      const panel = this.nextElementSibling;
+      panel.style.maxHeight = panel.style.maxHeight ? null : panel.scrollHeight + 2000 + 'px';
+      // Resize parent panels
+      let parent = this.closest('.panel');
+      while (parent) {
+        parent.style.maxHeight = (parseInt(parent.style.maxHeight) || 0) + 2000 + 'px';
+        parent = parent.parentElement?.closest('.panel');
+      }
+    });
+  });
+
+  // Basemap buttons
+  document.querySelectorAll('.basemap-btn').forEach(btn => {
+    btn.addEventListener('click', () => switchBasemap(btn.dataset.basemap));
+  });
+}
+
+function buildGroupSection(group) {
+  const section = document.createElement('div');
+  section.className = 'sidebar-section';
+
+  // Group header with optional group-level download
+  let headerInner = group.label;
+  if (group.download) {
+    headerInner = `<span style="flex:1;color:${group.labelColor || 'inherit'}">${group.label}</span>
+      <a href="${group.download}" download class="header-dl" onclick="event.stopPropagation()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zm-7 2V5h2v6h1.17L12 13.17 8.83 11H10zm-8 6h18v2H4z"/></svg>
+      </a>`;
+  } else {
+    headerInner = `<span style="color:${group.labelColor || 'inherit'}">${group.label}</span>`;
+  }
+
+  let panelHTML = '';
+
+  if (group.subGroups) {
+    // Pillar sub-groups
+    panelHTML = group.subGroups.map(sg => `
+      <div class="sub-group">
+        <button class="sub-accordion">
+          <span>${sg.label}</span>
+          ${sg.download ? `<a href="${sg.download}" download class="header-dl" onclick="event.stopPropagation()">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zm-7 2V5h2v6h1.17L12 13.17 8.83 11H10zm-8 6h18v2H4z"/></svg>
+          </a>` : ''}
+        </button>
+        <div class="sub-panel">
+          ${buildLayerTable(sg.layers)}
+        </div>
+      </div>
+    `).join('');
+  } else if (group.layers) {
+    panelHTML = buildLayerTable(group.layers);
+  }
+
+  section.innerHTML = `
+    <button class="accordion">${headerInner}</button>
+    <div class="panel">${panelHTML}</div>
+  `;
+  return section;
+}
+
+function buildLayerTable(layers) {
+  return `<table class="layer-table">` +
+    layers.map(layer => `
+      <tr data-layer-id="${layer.id}">
+        <td class="col-label">
+          <a class="toc-link toc-off" href="#" data-layer="${layer.id}">${layer.label}</a>
+        </td>
+        <td class="col-ctrl">
+          ${layer.colorPicker
+            ? `<input type="color" class="color-picker" data-layer="${layer.id}" value="#ffffff">`
+            : `<input type="range" min="0" max="100" value="${Math.round((layer.defaultOpacity ?? 0.85) * 100)}"
+                 class="opacity-slider" data-layer="${layer.id}">`
+          }
+        </td>
+        <td class="col-info">
+          ${layer.tooltip
+            ? `<span class="info-tip" title="${layer.tooltip}">&#9432;</span>`
+            : ''
+          }
+          ${layer.download
+            ? `<a href="${layer.download}" download class="dl-icon">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zm-7 2V5h2v6h1.17L12 13.17 8.83 11H10zm-8 6h18v2H4z"/></svg>
+               </a>`
+            : ''
+          }
+        </td>
+      </tr>
+    `).join('') +
+  `</table>`;
+}
+
+// ─── LAYER TOC EVENT DELEGATION ──────────────────────────────
+// Single delegated listener handles all toc-link clicks.
+document.addEventListener('click', e => {
+  const link = e.target.closest('.toc-link');
+  if (!link) return;
+  e.preventDefault();
+
+  const layerId = link.dataset.layer;
+  const layerCfg = findLayer(layerId);
+  if (!layerCfg) return;
+
+  if (state.map.loaded()) {
+    toggleLayer(link, layerCfg);
+  } else {
+    state.map.once('load', () => toggleLayer(link, layerCfg));
+  }
+});
+
+function toggleLayer(link, layerCfg) {
+  if (link.classList.contains('toc-off')) {
+    link.classList.replace('toc-off', 'toc-on');
+    addLayer(layerCfg);
+  } else {
+    link.classList.replace('toc-on', 'toc-off');
+    removeLayer(layerCfg);
+  }
+}
+
+// ─── OPACITY SLIDER EVENT DELEGATION ────────────────────────
+document.addEventListener('input', e => {
+  const slider = e.target.closest('.opacity-slider');
+  if (!slider) return;
+  const layerCfg = findLayer(slider.dataset.layer);
+  if (!layerCfg) return;
+  setLayerOpacity(layerCfg, slider.value / 100);
+});
+
+// ─── COLOR PICKER EVENT DELEGATION ───────────────────────────
+document.addEventListener('change', e => {
+  const picker = e.target.closest('.color-picker');
+  if (!picker) return;
+  const layerCfg = findLayer(picker.dataset.layer);
+  if (!layerCfg) return;
+  setLineColor(layerCfg, picker.value);
+});
+
+// ─── HAMBURGER ────────────────────────────────────────────────
+function initHamburger() {
+  const hamburger = document.querySelector('.hamburger');
+  const sidebar   = document.getElementById('mySidebar');
+  let open = true;
+
+  hamburger?.addEventListener('click', () => {
+    open = !open;
+    hamburger.classList.toggle('is-active', open);
+    sidebar.style.width = open ? (window.innerWidth > 700 ? '330px' : '100%') : '0';
+  });
+}
+
+// ─── INFO PANEL (bottom panel with up/down arrow) ─────────────
+function initInfoPanel() {
+  const arrow = document.getElementById('info-arrow');
+  const panel = document.getElementById('info-panel');
+  let expanded = false;
+
+  arrow?.addEventListener('click', () => {
+    expanded = !expanded;
+    arrow.classList.toggle('flipped', expanded);
+    panel.classList.toggle('expanded', expanded);
+  });
+
+  // Tools button (right mini-sidebar) scrolls to info
+  document.getElementById('tools-btn')?.addEventListener('click', () => {
+    expanded = true;
+    arrow?.classList.add('flipped');
+    panel?.classList.add('expanded');
+  });
+}
+
+// ─── UTILITY ─────────────────────────────────────────────────
+function getAllLayers() {
+  const layers = [];
+  CONFIG.layerGroups.forEach(group => {
+    if (group.layers) layers.push(...group.layers);
+    if (group.subGroups) group.subGroups.forEach(sg => layers.push(...sg.layers));
+  });
+  return layers;
+}
+
+function findLayer(id) {
+  return getAllLayers().find(l => l.id === id) || null;
+}

@@ -1,0 +1,680 @@
+/**
+ * tcsi_config.js
+ * TCSI PROMOTE DST — MapLibre GL JS 4.x configuration
+ *
+ * COLOR RAMPS use MapLibre's raster-color paint property (v4+).
+ * Each raster layer stores a single-band uint8 or uint16 greyscale value.
+ * rasterColorRange maps [0,255] → [dataMin, dataMax] so MapLibre can
+ * reconstruct original data values and apply the color stops below.
+ *
+ * DATA PREP (see README_data_prep.md):
+ *   COG/GeoTIFF → normalize to uint8 → gdal2tiles → PMTiles
+ */
+
+// ─────────────────────────────────────────────────────────────
+// CAMERA / BOUNDS
+// ─────────────────────────────────────────────────────────────
+const CONFIG = {
+
+  title: 'TCSI BLUEPRINT v3',
+  center: [-120.548, 39.146],
+  zoom: 9,
+  minZoom: 8,
+  maxZoom: 17,
+  bounds: [[-121.22, 38.614], [-119.876, 39.678]],
+
+  // ─── BASEMAPS ───────────────────────────────────────────────
+  // All free/open; no Mapbox token required.
+  // Swap 'dark' for your Mapbox custom style if desired.
+  basemaps: {
+    dark: {
+      label: 'Relief',
+      style: 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json'
+    },
+    satellite: {
+      label: 'Satellite',
+      // ESRI World Imagery — no key needed
+      style: {
+        version: 8,
+        sources: {
+          esri: {
+            type: 'raster',
+            tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],
+            tileSize: 256,
+            attribution: 'Esri, Maxar, Earthstar Geographics'
+          }
+        },
+        layers: [{ id: 'esri-satellite', type: 'raster', source: 'esri' }]
+      }
+    },
+    hillshade: {
+      label: 'Hillshade',
+      style: {
+        version: 8,
+        sources: {
+          hillshade: {
+            type: 'raster',
+            tiles: ['https://tiles.stadiamaps.com/tiles/stamen_terrain/{z}/{x}/{y}.png'],
+            tileSize: 256,
+            attribution: '© Stadia Maps © Stamen Design © OpenStreetMap'
+          }
+        },
+        layers: [{ id: 'hillshade-base', type: 'raster', source: 'hillshade' }]
+      }
+    }
+  },
+
+  // ─── COLOR RAMPS ────────────────────────────────────────────
+  // Used with MapLibre's raster-color paint property.
+  // Format: flat array of [value, color, value, color, ...]
+  // Values correspond to the *original* data range (not 0-255).
+  colorRamps: {
+
+    // Current / Future condition departure score: -1 (bad) → +1 (good)
+    departure: {
+      title: 'Condition score',
+      stops: [
+        -1.0, '#F5191C',  // fully departed
+        -0.71, '#E97000',
+        -0.43, '#E79812',
+        -0.14, '#EABA21',
+        0.14,  '#C1C88C',
+        0.43,  '#8BBD94',
+        0.71,  '#4CAFA1',
+        1.0,   '#3B99B1'  // fully within target
+      ],
+      labels: ['Fully departed','','','','','','','Within target']
+    },
+
+    // Impact (Adapt/Protect) score: red = high mgmt benefit
+    apScore: {
+      title: 'Mgmt benefit',
+      stops: [
+        -1.0, '#3B99B1',
+        -0.71, '#4CAFA1',
+        -0.43, '#8BBD94',
+        -0.14, '#C1C88C',
+        0.14,  '#EABA21',
+        0.43,  '#E79812',
+        0.71,  '#E97000',
+        1.0,   '#F5191C'
+      ],
+      labels: ['Lowest benefit','','','','','','','Highest benefit']
+    },
+
+    // Adapt score: light → dark purple
+    adapt: {
+      title: 'Adapt score',
+      stops: [
+        0,   '#FCFBFF',
+        0.14,'#EAE9F7',
+        0.29,'#D1CDE8',
+        0.43,'#B4AED6',
+        0.57,'#968CC2',
+        0.71,'#7867AF',
+        0.86,'#5C3E9E',
+        1.0, '#3D1778'
+      ],
+      labels: ['Lowest','','','','','','','Highest']
+    },
+
+    // Protect score: light → dark orange
+    protect: {
+      title: 'Protect score',
+      stops: [
+        0,   '#FEF5EC',
+        0.14,'#FFE2C6',
+        0.29,'#FFC693',
+        0.43,'#FBA453',
+        0.57,'#F27E00',
+        0.71,'#DE5600',
+        0.86,'#B03F00',
+        1.0, '#802A07'
+      ],
+      labels: ['Lowest','','','','','','','Highest']
+    },
+
+    // Monitor score: light → dark blue
+    monitor: {
+      title: 'Monitor score',
+      stops: [
+        0,   '#EBF5FB',
+        0.14,'#C2DFEF',
+        0.29,'#99CAE3',
+        0.43,'#6FB5D7',
+        0.57,'#469FCB',
+        0.71,'#2185B8',
+        0.86,'#1A6A94',
+        1.0, '#273871'
+      ],
+      labels: ['Lowest','','','','','','','Highest']
+    },
+
+    // Transform score: light → dark crimson
+    transform: {
+      title: 'Transform score',
+      stops: [
+        0,   '#FFF0F3',
+        0.14,'#FFD0D9',
+        0.29,'#FFAABB',
+        0.43,'#FF7A93',
+        0.57,'#E84D6A',
+        0.71,'#C23054',
+        0.86,'#971040',
+        1.0, '#6D0026'
+      ],
+      labels: ['Lowest','','','','','','','Highest']
+    },
+
+    // Strategy score (8-class categorical)
+    strategy: {
+      title: 'Strategy',
+      categorical: true,
+      classes: [
+        { value: 1, color: '#273871', label: 'Monitor — strong' },
+        { value: 2, color: '#6FB5D7', label: 'Monitor — weak' },
+        { value: 3, color: '#802A07', label: 'Protect — strong' },
+        { value: 4, color: '#FBA453', label: 'Protect — weak' },
+        { value: 5, color: '#3D1778', label: 'Adapt — strong' },
+        { value: 6, color: '#968CC2', label: 'Adapt — weak' },
+        { value: 7, color: '#6D0026', label: 'Transform — strong' },
+        { value: 8, color: '#FF7A93', label: 'Transform — weak' }
+      ]
+    },
+
+    // pDRID: 0–1 continuous, red = high disturbance
+    drid: {
+      title: 'pDRID',
+      stops: [0, '#ffffcc', 0.25,'#fd8d3c', 0.5,'#f03b20', 0.75,'#bd0026', 1.0,'#67000d'],
+      labels: ['Low','','','','High']
+    },
+
+    // Time since last disturbance: 0–50 yrs, dark = recent
+    tsld: {
+      title: 'Yrs since disturbance',
+      stops: [0,'#67000d', 12,'#f03b20', 25,'#fd8d3c', 37,'#ffffcc', 50,'#f7f7f7'],
+      labels: ['Recent (0 yr)','','','','Old (50+ yr)']
+    },
+
+    // Number of disturbances: 0–10
+    nDist: {
+      title: '# disturbances',
+      stops: [0,'#f7f7f7', 2,'#fc9272', 4,'#ef3b2c', 6,'#cb181d', 10,'#67000d'],
+      labels: ['None','','','','Many']
+    },
+
+    // Operability class (1–5 categorical)
+    operability: {
+      title: 'Operability',
+      categorical: true,
+      classes: [
+        { value: 1, color: '#1a9641', label: 'Class 1 — most operable' },
+        { value: 2, color: '#a6d96a', label: 'Class 2' },
+        { value: 3, color: '#ffffbf', label: 'Class 3' },
+        { value: 4, color: '#fdae61', label: 'Class 4' },
+        { value: 5, color: '#d7191c', label: 'Class 5 — least operable' }
+      ]
+    },
+
+    // HUC12 summary score: 0–1
+    huc12score: {
+      title: 'HUC-12 score',
+      stops: [0,'#f7f7f7', 0.25,'#fec44f', 0.5,'#fe9929', 0.75,'#d95f0e', 1.0,'#662506'],
+      labels: ['Low','','','','High']
+    },
+
+    // LMU / climate classes — generic categorical
+    lmu: {
+      title: 'LMU',
+      categorical: true,
+      classes: [
+        { value: 1,  color: '#1f78b4', label: 'LMU 1' },
+        { value: 2,  color: '#33a02c', label: 'LMU 2' },
+        { value: 3,  color: '#e31a1c', label: 'LMU 3' },
+        { value: 4,  color: '#ff7f00', label: 'LMU 4' },
+        { value: 5,  color: '#6a3d9a', label: 'LMU 5' },
+        { value: 6,  color: '#b15928', label: 'LMU 6' },
+        { value: 7,  color: '#a6cee3', label: 'LMU 7' },
+        { value: 8,  color: '#b2df8a', label: 'LMU 8' },
+        { value: 9,  color: '#fb9a99', label: 'LMU 9' },
+        { value: 10, color: '#fdbf6f', label: 'LMU 10' }
+      ]
+    },
+
+    // Binary / presence-absence (CSO habitat, etc.)
+    binary: {
+      title: 'Presence',
+      stops: [0,'transparent', 1,'#2ca25f'],
+      labels: ['Absent','Present']
+    }
+  },
+
+  // ─── LAYER GROUPS ───────────────────────────────────────────
+  // Each group corresponds to an accordion section in the sidebar.
+  // layer.type:
+  //   'raster-pmtiles'  → single-band greyscale PMTiles; colorized via raster-color
+  //   'vector-pmtiles'  → vector PMTiles (boundaries, polygons)
+  //   'geojson'         → small GeoJSON loaded at runtime
+  //
+  // layer.rasterColorRange: [0, 100]   //   MapLibre maps rasterColorRange → [0,255] so raster-color stops
+  //   can use original data units.
+  //
+  // layer.colorRamp: key into CONFIG.colorRamps above
+  //
+  // PMTiles URLs below use placeholder paths. Update to match
+  // your hosting (S3, GitHub Releases, CDN, etc.).
+  // See README_data_prep.md for the GeoTIFF → PMTiles pipeline.
+
+  layerGroups: [
+
+    // ── BOUNDARY LAYERS ─────────────────────────────────────
+    {
+      id: 'boundary',
+      label: 'Boundary layers',
+      layers: [
+        {
+          id: 'tcsiBounds',
+          label: 'TCSI boundary',
+          type: 'vector-pmtiles',
+          url: 'pmtiles://./pmtiles/TCSI_boundary.pmtiles',
+          sourceLayer: 'TCSI_boundary',
+          paint: { 'line-color': '#ffffff', 'line-width': 1.5, 'line-opacity': 1 },
+          colorPicker: true,       // show color picker in sidebar
+          defaultOpacity: 1,
+          download: './rasters/TCSI_boundary.zip'
+        },
+        {
+          id: 'tcsiHUC12',
+          label: 'HUC-12',
+          type: 'vector-pmtiles',
+          url: 'pmtiles://./pmtiles/huc12.pmtiles',
+          sourceLayer: 'huc12',
+          paint: { 'line-color': '#ffffff', 'line-width': 1, 'line-opacity': 0.8, 'fill-opacity': 0 },
+          colorPicker: true,
+          defaultOpacity: 1,
+          download: './rasters/HUC12.zip'
+        },
+        {
+          id: 'tcsiHUC10',
+          label: 'HUC-10',
+          type: 'vector-pmtiles',
+          url: 'pmtiles://./pmtiles/huc10.pmtiles',
+          sourceLayer: 'huc10',
+          paint: { 'line-color': '#ffffff', 'line-width': 1.2, 'line-opacity': 0.8 },
+          colorPicker: true,
+          defaultOpacity: 1,
+          download: './rasters/HUC10.zip'
+        },
+        {
+          id: 'lmu',
+          label: 'LMU',
+          type: 'raster-pmtiles',
+          url: 'pmtiles://./pmtiles/lmu.pmtiles',
+          colorRamp: 'lmu',
+          rasterColorRange: [1, 10],
+          defaultOpacity: 0.8,
+          download: './rasters/climClasses_v02_015m_int.zip'
+        },
+        {
+          id: 'climClass',
+          label: 'Climate class',
+          type: 'raster-pmtiles',
+          url: 'pmtiles://./pmtiles/clim_class.pmtiles',
+          colorRamp: 'lmu',
+          rasterColorRange: [1, 10],
+          defaultOpacity: 0.8,
+          download: './rasters/ClimClass_TCSI.zip'
+        },
+        {
+          id: 'natForest',
+          label: 'National Forest',
+          type: 'vector-pmtiles',
+          url: 'pmtiles://./pmtiles/national_forest.pmtiles',
+          sourceLayer: 'national_forest',
+          paint: { 'line-color': '#4CAF50', 'line-width': 1.5, 'fill-color': '#4CAF50', 'fill-opacity': 0.15 },
+          defaultOpacity: 0.8,
+          download: './rasters/national_forest.zip'
+        }
+      ]
+    },
+
+    // ── DISTURBANCE LAYERS ──────────────────────────────────
+    {
+      id: 'disturbance',
+      label: 'Disturbance layers',
+      layers: [
+        {
+          id: 'drid',
+          label: 'pDRID',
+          type: 'raster-pmtiles',
+          url: 'pmtiles://./pmtiles/drid.pmtiles',
+          colorRamp: 'drid',
+          rasterColorRange: [0, 1],
+          defaultOpacity: 0.85,
+          tooltip: 'Probability of Disturbance-caused Resource Impact and Degradation (1970–2019).',
+          download: './rasters/drid_1970_2019_final_TCSI.tif'
+        },
+        {
+          id: 'tsld',
+          label: 'Years since last disturbance',
+          type: 'raster-pmtiles',
+          url: 'pmtiles://./pmtiles/tsld.pmtiles',
+          colorRamp: 'tsld',
+          rasterColorRange: [0, 50],
+          defaultOpacity: 0.85,
+          tooltip: 'Years since last recorded disturbance event (1970–2019).',
+          download: './rasters/tsld_1970_2019_TCSI.tif'
+        },
+        {
+          id: 'nDist',
+          label: 'Number of disturbances',
+          type: 'raster-pmtiles',
+          url: 'pmtiles://./pmtiles/n_disturbances.pmtiles',
+          colorRamp: 'nDist',
+          rasterColorRange: [0, 10],
+          defaultOpacity: 0.85,
+          tooltip: 'Total number of disturbance events recorded 1970–2019.',
+          download: './rasters/n_disturbances_1970_2019_TCSI.tif'
+        },
+        {
+          id: 'firePerims',
+          label: 'Fires',
+          type: 'vector-pmtiles',
+          url: 'pmtiles://./pmtiles/fire_perims.pmtiles',
+          sourceLayer: 'fire_perims',
+          paint: { 'fill-color': '#E25822', 'fill-opacity': 0.5, 'line-color': '#E25822', 'line-width': 0.5 },
+          defaultOpacity: 0.8,
+          download: './rasters/fire_perims_1970_2021.zip'
+        },
+        {
+          id: 'rxBurns',
+          label: 'Rx fires',
+          type: 'vector-pmtiles',
+          url: 'pmtiles://./pmtiles/rxburn.pmtiles',
+          sourceLayer: 'rxburn',
+          paint: { 'fill-color': '#9B59B6', 'fill-opacity': 0.5, 'line-color': '#9B59B6', 'line-width': 0.5 },
+          defaultOpacity: 0.8,
+          download: './rasters/rxburn_1970_2020.zip'
+        }
+      ]
+    },
+
+    // ── RESOURCE LAYERS ─────────────────────────────────────
+    {
+      id: 'resource',
+      label: 'Resource layers',
+      layers: [
+        {
+          id: 'icluse',
+          label: 'Management zones',
+          type: 'raster-pmtiles',
+          url: 'pmtiles://./pmtiles/icluse.pmtiles',
+          colorRamp: 'lmu',
+          rasterColorRange: [1, 8],
+          defaultOpacity: 0.8,
+          download: './rasters/iCluse.zip'
+        },
+        {
+          id: 'csoHab',
+          label: 'CSO modeled habitat',
+          type: 'raster-pmtiles',
+          url: 'pmtiles://./pmtiles/cso_habitat.pmtiles',
+          colorRamp: 'binary',
+          rasterColorRange: [0, 1],
+          defaultOpacity: 0.75,
+          download: './rasters/cso_habitat_18Oct2021.tif'
+        },
+        {
+          id: 'csoPacs',
+          label: 'CSO PACs',
+          type: 'vector-pmtiles',
+          url: 'pmtiles://./pmtiles/cso_pacs.pmtiles',
+          sourceLayer: 'cso_pacs',
+          paint: { 'fill-color': '#2ECC71', 'fill-opacity': 0.4, 'line-color': '#2ECC71', 'line-width': 1 },
+          defaultOpacity: 0.8,
+          download: './rasters/CSO_PACS_TCSI.zip'
+        },
+        {
+          id: 'electricLines',
+          label: 'Power lines',
+          type: 'vector-pmtiles',
+          url: 'pmtiles://./pmtiles/electric_lines.pmtiles',
+          sourceLayer: 'electric_lines',
+          paint: { 'line-color': '#F1C40F', 'line-width': 1 },
+          defaultOpacity: 0.8,
+          download: './rasters/electric_lines.zip'
+        },
+        {
+          id: 'highways',
+          label: 'Highways',
+          type: 'vector-pmtiles',
+          url: 'pmtiles://./pmtiles/highways.pmtiles',
+          sourceLayer: 'highways',
+          paint: { 'line-color': '#95A5A6', 'line-width': 1.5 },
+          defaultOpacity: 0.8,
+          download: './rasters/highways_tcsi.zip'
+        },
+        {
+          id: 'dams',
+          label: 'Dams',
+          type: 'vector-pmtiles',
+          url: 'pmtiles://./pmtiles/dams.pmtiles',
+          sourceLayer: 'dams',
+          paint: { 'circle-color': '#3498DB', 'circle-radius': 5, 'circle-stroke-color': '#ffffff', 'circle-stroke-width': 1 },
+          defaultOpacity: 0.9,
+          download: './rasters/dams_tcsi.zip'
+        },
+        {
+          id: 'streams',
+          label: 'Streams',
+          type: 'vector-pmtiles',
+          url: 'pmtiles://./pmtiles/streams.pmtiles',
+          sourceLayer: 'streams',
+          paint: { 'line-color': '#3498DB', 'line-width': 0.8 },
+          defaultOpacity: 0.8,
+          download: './rasters/Streams.zip'
+        },
+        {
+          id: 'lakes',
+          label: 'Lakes',
+          type: 'vector-pmtiles',
+          url: 'pmtiles://./pmtiles/lakes.pmtiles',
+          sourceLayer: 'lakes',
+          paint: { 'fill-color': '#3498DB', 'fill-opacity': 0.6, 'line-color': '#2980B9', 'line-width': 0.5 },
+          defaultOpacity: 0.8,
+          download: './rasters/lakes_tcsi.zip'
+        }
+      ]
+    },
+
+    // ── PROMOTE ECOSYSTEM SCORES ────────────────────────────
+    {
+      id: 'ecosystem',
+      label: 'Ecosystem scores',
+      labelColor: '#6e6112',
+      download: './rasters/PROMOTE_v3/ecosystem.zip',
+      layers: [
+        {
+          id: 'currentEcosystem',
+          label: 'Current',
+          type: 'raster-pmtiles',
+          url: 'pmtiles://./pmtiles/promote/ecosystem/current.pmtiles',
+          colorRamp: 'departure',
+          rasterColorRange: [-1, 1],
+          defaultOpacity: 0.85,
+          tooltip: 'Final current condition score averaged across all pillars. Values range from -1 (fully departed) to +1 (within target).'
+        },
+        {
+          id: 'futureEcosystem',
+          label: 'Future',
+          type: 'raster-pmtiles',
+          url: 'pmtiles://./pmtiles/promote/ecosystem/future.pmtiles',
+          colorRamp: 'departure',
+          rasterColorRange: [-1, 1],
+          defaultOpacity: 0.85,
+          tooltip: 'Future condition score (2020–2060) averaged across all pillars using LANDIS-II projections.'
+        },
+        {
+          id: 'apEcosystem',
+          label: 'Impact score',
+          type: 'raster-pmtiles',
+          url: 'pmtiles://./pmtiles/promote/ecosystem/ap_score.pmtiles',
+          colorRamp: 'apScore',
+          rasterColorRange: [-1, 1],
+          defaultOpacity: 0.85,
+          tooltip: 'Impact scores represent the opportunity for management to protect existing resources or adapt them to maintain resources over time.'
+        },
+        {
+          id: 'strategyEcosystem',
+          label: 'Strategy score',
+          type: 'raster-pmtiles',
+          url: 'pmtiles://./pmtiles/promote/ecosystem/strategy.pmtiles',
+          colorRamp: 'strategy',
+          rasterColorRange: [1, 8],
+          defaultOpacity: 0.85,
+          tooltip: 'Dominant restoration strategy (Monitor / Protect / Adapt / Transform) with strong/weak classification.'
+        },
+        {
+          id: 'monitorEcosystem',
+          label: 'Monitor',
+          type: 'raster-pmtiles',
+          url: 'pmtiles://./pmtiles/promote/ecosystem/monitor.pmtiles',
+          colorRamp: 'monitor',
+          rasterColorRange: [0, 1],
+          defaultOpacity: 0.85,
+          tooltip: 'Monitor areas are in good condition now and into the future.'
+        },
+        {
+          id: 'protectEcosystem',
+          label: 'Protect',
+          type: 'raster-pmtiles',
+          url: 'pmtiles://./pmtiles/promote/ecosystem/protect.pmtiles',
+          colorRamp: 'protect',
+          rasterColorRange: [0, 1],
+          defaultOpacity: 0.85,
+          tooltip: 'Protect areas are in good condition now but fall out of desired conditions over time.'
+        },
+        {
+          id: 'adaptEcosystem',
+          label: 'Adapt',
+          type: 'raster-pmtiles',
+          url: 'pmtiles://./pmtiles/promote/ecosystem/adapt.pmtiles',
+          colorRamp: 'adapt',
+          rasterColorRange: [0, 1],
+          defaultOpacity: 0.85,
+          tooltip: 'Adapt areas are in poor condition now but achieve desired conditions in the future.'
+        },
+        {
+          id: 'transformEcosystem',
+          label: 'Transform',
+          type: 'raster-pmtiles',
+          url: 'pmtiles://./pmtiles/promote/ecosystem/transform.pmtiles',
+          colorRamp: 'transform',
+          rasterColorRange: [0, 1],
+          defaultOpacity: 0.85,
+          tooltip: 'Transform areas are in poor condition now and remain so over time.'
+        }
+      ]
+    },
+
+    // ── PILLAR-LEVEL SCORES ─────────────────────────────────
+    // Sub-grouped: Forest Resilience, Fire Dynamics,
+    //              Fire Adapted Communities, Carbon, Biodiversity.
+    // Each sub-group follows the same 7-layer pattern.
+    {
+      id: 'pillars',
+      label: 'Pillar-level scores',
+      subGroups: [
+
+        {
+          id: 'forestResilience',
+          label: 'Forest resilience',
+          download: './rasters/PROMOTE_v3/forestResilience.zip',
+          layers: makePillarLayers('ForestResilience', 'forestResilience')
+        },
+        {
+          id: 'fireDynamics',
+          label: 'Fire dynamics',
+          download: './rasters/PROMOTE_v3/fireDynamics.zip',
+          layers: makePillarLayers('FireDynamics', 'fireDynamics')
+        },
+        {
+          id: 'fireAdaptedComm',
+          label: 'Fire adapted communities',
+          download: './rasters/PROMOTE_v3/fireAdaptedComm.zip',
+          layers: makePillarLayers('FireAdaptedComm', 'fireAdaptedComm')
+        },
+        {
+          id: 'carbon',
+          label: 'Carbon sequestration',
+          download: './rasters/PROMOTE_v3/carbon.zip',
+          layers: makePillarLayers('Carbon', 'carbon')
+        },
+        {
+          id: 'biodiversity',
+          label: 'Biodiversity',
+          download: './rasters/PROMOTE_v3/biodiversity.zip',
+          layers: makePillarLayers('Biodiversity', 'biodiversity')
+        }
+      ]
+    },
+
+    // ── OPTIMIZATION ────────────────────────────────────────
+    {
+      id: 'optimization',
+      label: 'Optimization',
+      layers: [
+        {
+          id: 'operab',
+          label: 'Operability',
+          type: 'raster-pmtiles',
+          url: 'pmtiles://./pmtiles/operability.pmtiles',
+          colorRamp: 'operability',
+          rasterColorRange: [1, 5],
+          defaultOpacity: 0.8,
+          download: './rasters/operability_class_with_scA_final.tif'
+        },
+        {
+          id: 'huc12_summary',
+          label: 'HUC-12 score',
+          type: 'vector-pmtiles',
+          url: 'pmtiles://./pmtiles/huc12_summary.pmtiles',
+          sourceLayer: 'huc12_summary',
+          paint: {
+            'fill-color': ['interpolate',['linear'],['get','score'],
+              0,'#f7f7f7', 0.25,'#fec44f', 0.5,'#fe9929', 0.75,'#d95f0e', 1,'#662506'],
+            'fill-opacity': 0.75,
+            'line-color': '#333',
+            'line-width': 0.5
+          },
+          defaultOpacity: 0.8,
+          tooltip: 'HUC-12 watershed-level priority score from optimization model.',
+          download: './rasters/huc12_sequenced_weightedacres_01182022.zip'
+        }
+      ]
+    }
+  ]
+};
+
+// ─── HELPER: build standard 7-layer pillar config ────────────
+function makePillarLayers(folder, idPrefix) {
+  const fp = folder.toLowerCase();
+  const tooltips = {
+    current:   'Current condition score (-1 to +1).',
+    future:    'Future condition score using LANDIS-II projections (-1 to +1).',
+    ap:        'Impact score: opportunity for management to protect or adapt.',
+    monitor:   'Monitor: good condition now and into the future.',
+    protect:   'Protect: good condition now, deteriorates over time.',
+    adapt:     'Adapt: poor condition now, capacity to reach desired state.',
+    transform: 'Transform: poor condition now and remains so over time.'
+  };
+  return [
+    { id: `current${idPrefix.charAt(0).toUpperCase()+idPrefix.slice(1)}`,  label: 'Current',      type:'raster-pmtiles', url:`pmtiles://./pmtiles/promote/${fp}/current.pmtiles`,   colorRamp:'departure', rasterColorRange:[-1,1], defaultOpacity:0.85, tooltip: tooltips.current  },
+    { id: `future${idPrefix.charAt(0).toUpperCase()+idPrefix.slice(1)}`,   label: 'Future',       type:'raster-pmtiles', url:`pmtiles://./pmtiles/promote/${fp}/future.pmtiles`,    colorRamp:'departure', rasterColorRange:[-1,1], defaultOpacity:0.85, tooltip: tooltips.future   },
+    { id: `ap${idPrefix.charAt(0).toUpperCase()+idPrefix.slice(1)}`,       label: 'Impact score', type:'raster-pmtiles', url:`pmtiles://./pmtiles/promote/${fp}/ap.pmtiles`,        colorRamp:'apScore',   rasterColorRange:[-1,1], defaultOpacity:0.85, tooltip: tooltips.ap      },
+    { id: `monitor${idPrefix.charAt(0).toUpperCase()+idPrefix.slice(1)}`,  label: 'Monitor',      type:'raster-pmtiles', url:`pmtiles://./pmtiles/promote/${fp}/monitor.pmtiles`,   colorRamp:'monitor',   rasterColorRange:[0,1],  defaultOpacity:0.85, tooltip: tooltips.monitor  },
+    { id: `protect${idPrefix.charAt(0).toUpperCase()+idPrefix.slice(1)}`,  label: 'Protect',      type:'raster-pmtiles', url:`pmtiles://./pmtiles/promote/${fp}/protect.pmtiles`,   colorRamp:'protect',   rasterColorRange:[0,1],  defaultOpacity:0.85, tooltip: tooltips.protect  },
+    { id: `adapt${idPrefix.charAt(0).toUpperCase()+idPrefix.slice(1)}`,    label: 'Adapt',        type:'raster-pmtiles', url:`pmtiles://./pmtiles/promote/${fp}/adapt.pmtiles`,     colorRamp:'adapt',     rasterColorRange:[0,1],  defaultOpacity:0.85, tooltip: tooltips.adapt    },
+    { id: `transform${idPrefix.charAt(0).toUpperCase()+idPrefix.slice(1)}`,label: 'Transform',    type:'raster-pmtiles', url:`pmtiles://./pmtiles/promote/${fp}/transform.pmtiles`, colorRamp:'transform', rasterColorRange:[0,1],  defaultOpacity:0.85, tooltip: tooltips.transform }
+  ];
+}
