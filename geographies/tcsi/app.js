@@ -34,10 +34,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // ─── PMTILES PROTOCOL ───────────────────────────────────────
 function initPMTiles() {
-  // Register the pmtiles:// protocol with MapLibre
-  // https://protomaps.com/docs/pmtiles/maplibre
   const protocol = new pmtiles.Protocol();
-  maplibregl.addProtocol('pmtiles', protocol.tile);
+  maplibregl.addProtocol('pmtiles', protocol.tile.bind(protocol));
 }
 
 // ─── MAP INIT ────────────────────────────────────────────────

@@ -11,7 +11,7 @@
  *   COG/GeoTIFF → normalize to uint8 → gdal2tiles → PMTiles
  */
 
-const RELEASE_URL = 'pmtiles://https://pub-79bd7cf474e04912a703cf917dd8855e.r2.dev';
+const RELEASE_URL = 'https://pub-79bd7cf474e04912a703cf917dd8855e.r2.dev';
 
 
 
