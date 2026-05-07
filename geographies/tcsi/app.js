@@ -114,7 +114,7 @@ function addLayer(layerCfg) {
       paint: {
         'raster-opacity': layerCfg.defaultOpacity ?? 0.85,
         'raster-color-range': layerCfg.rasterColorRange,
-        'raster-color': buildRasterColorExpr(ramp, layerCfg.rasterColorRange)
+        //'raster-color': buildRasterColorExpr(ramp, layerCfg.rasterColorRange)
       }
     });
 
