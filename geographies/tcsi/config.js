@@ -590,7 +590,7 @@ const CONFIG = {
 
 // ─── HELPER: build standard 7-layer pillar config ────────────
 function makePillarLayers(folder, idPrefix) {
-  const fp = folder.toLowerCase();
+  const fp = folder;
   const base = `pmtiles://${RELEASE_URL}`;
 
 const tooltips = {
