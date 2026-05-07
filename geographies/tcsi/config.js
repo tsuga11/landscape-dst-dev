@@ -118,7 +118,7 @@ const CONFIG = {
     71,  '#8BBD94',
     85,  '#4CAFA1',
     100, '#3B99B1'
-  ],,
+  ],
       labels: ['Lowest','','','','','','','Highest']
     },
 
