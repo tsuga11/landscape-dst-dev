@@ -522,31 +522,31 @@ const CONFIG = {
           id: 'forestResilience',
           label: 'Forest resilience',
           download: './rasters/PROMOTE_v3/forestResilience.zip',
-          layers: makePillarLayers('ForestResilience', 'forestResilience')
+          layers: makePillarLayers('forestResilience', 'forestResilience')
         },
         {
           id: 'fireDynamics',
           label: 'Fire dynamics',
           download: './rasters/PROMOTE_v3/fireDynamics.zip',
-          layers: makePillarLayers('FireDynamics', 'fireDynamics')
+          layers: makePillarLayers('fireDynamics', 'fireDynamics')
         },
         {
           id: 'fireAdaptedComm',
           label: 'Fire adapted communities',
           download: './rasters/PROMOTE_v3/fireAdaptedComm.zip',
-          layers: makePillarLayers('FireAdaptedComm', 'fireAdaptedComm')
+          layers: makePillarLayers('fireAdaptedComm', 'fireAdaptedComm')
         },
         {
           id: 'carbon',
           label: 'Carbon sequestration',
           download: './rasters/PROMOTE_v3/carbon.zip',
-          layers: makePillarLayers('Carbon', 'carbon')
+          layers: makePillarLayers('carbon', 'carbon')
         },
         {
           id: 'biodiversity',
           label: 'Biodiversity',
           download: './rasters/PROMOTE_v3/biodiversity.zip',
-          layers: makePillarLayers('Biodiversity', 'biodiversity')
+          layers: makePillarLayers('biodiversity', 'biodiversity')
         }
       ]
     },
