@@ -74,19 +74,19 @@ const CONFIG = {
   // Values correspond to the *original* data range (not 0-255).
   colorRamps: {
 
-    // Current / Future condition departure score: -1 (bad) → +1 (good)
+    // Current / Future condition departure score: 0 (bad) → 100 (good)
     departure: {
       title: 'Condition score',
       stops: [
-        -1.0, '#F5191C',  // fully departed
-        -0.71, '#E97000',
-        -0.43, '#E79812',
-        -0.14, '#EABA21',
-        0.14,  '#C1C88C',
-        0.43,  '#8BBD94',
-        0.71,  '#4CAFA1',
-        1.0,   '#3B99B1'  // fully within target
-      ],
+    0,   '#F5191C',
+    14,  '#E97000',
+    28,  '#E79812',
+    43,  '#EABA21',
+    57,  '#C1C88C',
+    71,  '#8BBD94',
+    85,  '#4CAFA1',
+    100, '#3B99B1'
+  ],
       labels: ['Fully departed','','','','','','','Within target']
     },
 
@@ -94,15 +94,15 @@ const CONFIG = {
     apScore: {
       title: 'Mgmt benefit',
       stops: [
-        -1.0, '#3B99B1',
-        -0.71, '#4CAFA1',
-        -0.43, '#8BBD94',
-        -0.14, '#C1C88C',
-        0.14,  '#EABA21',
-        0.43,  '#E79812',
-        0.71,  '#E97000',
-        1.0,   '#F5191C'
-      ],
+    0,   '#F5191C',
+    14,  '#E97000',
+    28,  '#E79812',
+    43,  '#EABA21',
+    57,  '#C1C88C',
+    71,  '#8BBD94',
+    85,  '#4CAFA1',
+    100, '#3B99B1'
+  ],
       labels: ['Lowest benefit','','','','','','','Highest benefit']
     },
 
@@ -110,15 +110,15 @@ const CONFIG = {
     adapt: {
       title: 'Adapt score',
       stops: [
-        0,   '#FCFBFF',
-        0.14,'#EAE9F7',
-        0.29,'#D1CDE8',
-        0.43,'#B4AED6',
-        0.57,'#968CC2',
-        0.71,'#7867AF',
-        0.86,'#5C3E9E',
-        1.0, '#3D1778'
-      ],
+    0,   '#F5191C',
+    14,  '#E97000',
+    28,  '#E79812',
+    43,  '#EABA21',
+    57,  '#C1C88C',
+    71,  '#8BBD94',
+    85,  '#4CAFA1',
+    100, '#3B99B1'
+  ],,
       labels: ['Lowest','','','','','','','Highest']
     },
 
@@ -126,15 +126,15 @@ const CONFIG = {
     protect: {
       title: 'Protect score',
       stops: [
-        0,   '#FEF5EC',
-        0.14,'#FFE2C6',
-        0.29,'#FFC693',
-        0.43,'#FBA453',
-        0.57,'#F27E00',
-        0.71,'#DE5600',
-        0.86,'#B03F00',
-        1.0, '#802A07'
-      ],
+    0,   '#F5191C',
+    14,  '#E97000',
+    28,  '#E79812',
+    43,  '#EABA21',
+    57,  '#C1C88C',
+    71,  '#8BBD94',
+    85,  '#4CAFA1',
+    100, '#3B99B1'
+  ],
       labels: ['Lowest','','','','','','','Highest']
     },
 
@@ -142,15 +142,15 @@ const CONFIG = {
     monitor: {
       title: 'Monitor score',
       stops: [
-        0,   '#EBF5FB',
-        0.14,'#C2DFEF',
-        0.29,'#99CAE3',
-        0.43,'#6FB5D7',
-        0.57,'#469FCB',
-        0.71,'#2185B8',
-        0.86,'#1A6A94',
-        1.0, '#273871'
-      ],
+    0,   '#F5191C',
+    14,  '#E97000',
+    28,  '#E79812',
+    43,  '#EABA21',
+    57,  '#C1C88C',
+    71,  '#8BBD94',
+    85,  '#4CAFA1',
+    100, '#3B99B1'
+  ],
       labels: ['Lowest','','','','','','','Highest']
     },
 
@@ -158,15 +158,15 @@ const CONFIG = {
     transform: {
       title: 'Transform score',
       stops: [
-        0,   '#FFF0F3',
-        0.14,'#FFD0D9',
-        0.29,'#FFAABB',
-        0.43,'#FF7A93',
-        0.57,'#E84D6A',
-        0.71,'#C23054',
-        0.86,'#971040',
-        1.0, '#6D0026'
-      ],
+    0,   '#F5191C',
+    14,  '#E97000',
+    28,  '#E79812',
+    43,  '#EABA21',
+    57,  '#C1C88C',
+    71,  '#8BBD94',
+    85,  '#4CAFA1',
+    100, '#3B99B1'
+  ],
       labels: ['Lowest','','','','','','','Highest']
     },
 
@@ -260,7 +260,7 @@ const CONFIG = {
   //   'vector-pmtiles'  → vector PMTiles (boundaries, polygons)
   //   'geojson'         → small GeoJSON loaded at runtime
   //
-  // layer.rasterColorRange: [0, 100]   //   MapLibre maps rasterColorRange → [0,255] so raster-color stops
+  // layer.rasterColorRange: [0, 255]   //   MapLibre maps rasterColorRange → [0,255] so raster-color stops
   //   can use original data units.
   //
   // layer.colorRamp: key into CONFIG.colorRamps above
@@ -498,14 +498,14 @@ const CONFIG = {
       labelColor: '#6e6112',
       download: './rasters/PROMOTE_v3/ecosystem.zip',
       layers: [
-        { id: 'currentEcosystem',  label: 'Current',      type:'raster-pmtiles', url:`pmtiles://${RELEASE_URL}/ecosystem_current.pmtiles`,   colorRamp:'departure', rasterColorRange:[0,100], defaultOpacity:0.85 },
-        { id: 'futureEcosystem',   label: 'Future',       type:'raster-pmtiles', url:`pmtiles://${RELEASE_URL}/ecosystem_future.pmtiles`,    colorRamp:'departure', rasterColorRange:[0,100], defaultOpacity:0.85 },
-        { id: 'apEcosystem',       label: 'Impact score', type:'raster-pmtiles', url:`pmtiles://${RELEASE_URL}/ecosystem_ap.pmtiles`,        colorRamp:'apScore',   rasterColorRange:[0,100], defaultOpacity:0.85 },
+        { id: 'currentEcosystem',  label: 'Current',      type:'raster-pmtiles', url:`pmtiles://${RELEASE_URL}/ecosystem_current.pmtiles`,   colorRamp:'departure', rasterColorRange:[0,255], defaultOpacity:0.85 },
+        { id: 'futureEcosystem',   label: 'Future',       type:'raster-pmtiles', url:`pmtiles://${RELEASE_URL}/ecosystem_future.pmtiles`,    colorRamp:'departure', rasterColorRange:[0,255], defaultOpacity:0.85 },
+        { id: 'apEcosystem',       label: 'Impact score', type:'raster-pmtiles', url:`pmtiles://${RELEASE_URL}/ecosystem_ap.pmtiles`,        colorRamp:'apScore',   rasterColorRange:[0,255], defaultOpacity:0.85 },
         { id: 'strategyEcosystem', label: 'Strategy',     type:'raster-pmtiles', url:`pmtiles://${RELEASE_URL}/ecosystem_strategy.pmtiles`,  colorRamp:'strategy',  rasterColorRange:[1,8],   defaultOpacity:0.85 },
-        { id: 'monitorEcosystem',  label: 'Monitor',      type:'raster-pmtiles', url:`pmtiles://${RELEASE_URL}/ecosystem_monitor.pmtiles`,   colorRamp:'monitor',   rasterColorRange:[0,100], defaultOpacity:0.85 },
-        { id: 'protectEcosystem',  label: 'Protect',      type:'raster-pmtiles', url:`pmtiles://${RELEASE_URL}/ecosystem_protect.pmtiles`,   colorRamp:'protect',   rasterColorRange:[0,100], defaultOpacity:0.85 },
-        { id: 'adaptEcosystem',    label: 'Adapt',        type:'raster-pmtiles', url:`pmtiles://${RELEASE_URL}/ecosystem_adapt.pmtiles`,     colorRamp:'adapt',     rasterColorRange:[0,100], defaultOpacity:0.85 },
-        { id: 'transformEcosystem',label: 'Transform',    type:'raster-pmtiles', url:`pmtiles://${RELEASE_URL}/ecosystem_transform.pmtiles`, colorRamp:'transform', rasterColorRange:[0,100], defaultOpacity:0.85 }
+        { id: 'monitorEcosystem',  label: 'Monitor',      type:'raster-pmtiles', url:`pmtiles://${RELEASE_URL}/ecosystem_monitor.pmtiles`,   colorRamp:'monitor',   rasterColorRange:[0,255], defaultOpacity:0.85 },
+        { id: 'protectEcosystem',  label: 'Protect',      type:'raster-pmtiles', url:`pmtiles://${RELEASE_URL}/ecosystem_protect.pmtiles`,   colorRamp:'protect',   rasterColorRange:[0,255], defaultOpacity:0.85 },
+        { id: 'adaptEcosystem',    label: 'Adapt',        type:'raster-pmtiles', url:`pmtiles://${RELEASE_URL}/ecosystem_adapt.pmtiles`,     colorRamp:'adapt',     rasterColorRange:[0,255], defaultOpacity:0.85 },
+        { id: 'transformEcosystem',label: 'Transform',    type:'raster-pmtiles', url:`pmtiles://${RELEASE_URL}/ecosystem_transform.pmtiles`, colorRamp:'transform', rasterColorRange:[0,255], defaultOpacity:0.85 }
       ]
     },
 
@@ -604,12 +604,12 @@ const tooltips = {
   };
   
   return [
-    { id: `current${idPrefix}`,  label: 'Current',      type:'raster-pmtiles', url:`${base}/${fp}_current.pmtiles`,   colorRamp:'departure', rasterColorRange:[0,100], defaultOpacity:0.85, tooltip: tooltips.current  },
-    { id: `future${idPrefix}`,   label: 'Future',       type:'raster-pmtiles', url:`${base}/${fp}_future.pmtiles`,    colorRamp:'departure', rasterColorRange:[0,100], defaultOpacity:0.85, tooltip: tooltips.future   },
-    { id: `ap${idPrefix}`,       label: 'Impact score', type:'raster-pmtiles', url:`${base}/${fp}_ap.pmtiles`,        colorRamp:'apScore',   rasterColorRange:[0,100], defaultOpacity:0.85, tooltip: tooltips.ap      },
-    { id: `monitor${idPrefix}`,  label: 'Monitor',      type:'raster-pmtiles', url:`${base}/${fp}_monitor.pmtiles`,   colorRamp:'monitor',   rasterColorRange:[0,100], defaultOpacity:0.85, tooltip: tooltips.monitor  },
-    { id: `protect${idPrefix}`,  label: 'Protect',      type:'raster-pmtiles', url:`${base}/${fp}_protect.pmtiles`,   colorRamp:'protect',   rasterColorRange:[0,100], defaultOpacity:0.85, tooltip: tooltips.protect  },
-    { id: `adapt${idPrefix}`,    label: 'Adapt',        type:'raster-pmtiles', url:`${base}/${fp}_adapt.pmtiles`,     colorRamp:'adapt',     rasterColorRange:[0,100], defaultOpacity:0.85, tooltip: tooltips.adapt    },
-    { id: `transform${idPrefix}`,label: 'Transform',    type:'raster-pmtiles', url:`${base}/${fp}_transform.pmtiles`, colorRamp:'transform', rasterColorRange:[0,100], defaultOpacity:0.85, tooltip: tooltips.transform }
+    { id: `current${idPrefix}`,  label: 'Current',      type:'raster-pmtiles', url:`${base}/${fp}_current.pmtiles`,   colorRamp:'departure', rasterColorRange:[0,255], defaultOpacity:0.85, tooltip: tooltips.current  },
+    { id: `future${idPrefix}`,   label: 'Future',       type:'raster-pmtiles', url:`${base}/${fp}_future.pmtiles`,    colorRamp:'departure', rasterColorRange:[0,255], defaultOpacity:0.85, tooltip: tooltips.future   },
+    { id: `ap${idPrefix}`,       label: 'Impact score', type:'raster-pmtiles', url:`${base}/${fp}_ap.pmtiles`,        colorRamp:'apScore',   rasterColorRange:[0,255], defaultOpacity:0.85, tooltip: tooltips.ap      },
+    { id: `monitor${idPrefix}`,  label: 'Monitor',      type:'raster-pmtiles', url:`${base}/${fp}_monitor.pmtiles`,   colorRamp:'monitor',   rasterColorRange:[0,255], defaultOpacity:0.85, tooltip: tooltips.monitor  },
+    { id: `protect${idPrefix}`,  label: 'Protect',      type:'raster-pmtiles', url:`${base}/${fp}_protect.pmtiles`,   colorRamp:'protect',   rasterColorRange:[0,255], defaultOpacity:0.85, tooltip: tooltips.protect  },
+    { id: `adapt${idPrefix}`,    label: 'Adapt',        type:'raster-pmtiles', url:`${base}/${fp}_adapt.pmtiles`,     colorRamp:'adapt',     rasterColorRange:[0,255], defaultOpacity:0.85, tooltip: tooltips.adapt    },
+    { id: `transform${idPrefix}`,label: 'Transform',    type:'raster-pmtiles', url:`${base}/${fp}_transform.pmtiles`, colorRamp:'transform', rasterColorRange:[0,255], defaultOpacity:0.85, tooltip: tooltips.transform }
   ];
 }
