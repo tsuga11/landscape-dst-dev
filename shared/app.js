@@ -35,18 +35,23 @@ const AHP_LABELS = [
   'critically more important than','absolutely more important than'
 ];
 
-function sliderPctToAhpValue(pct) {
-  const idx = AHP_STEPS.indexOf(Math.round(pct));
-  return idx >= 0 ? AHP_VALUES[idx] : 1;
+function sliderToIndex(val) {
+  // val is now 0-16 directly — no lookup needed
+  return Math.max(0, Math.min(16, Math.round(val)));
 }
-function sliderPctToAhpLabel(pct) {
-  const idx = AHP_STEPS.indexOf(Math.round(pct));
-  return idx >= 0 ? AHP_LABELS[idx] : 'equal to';
+
+function sliderPctToAhpValue(val) {
+  return AHP_VALUES[sliderToIndex(val)];
 }
-function sliderPctToDisplayStr(pct) {
-  const val = sliderPctToAhpValue(pct);
-  if (val >= 1) return String(Math.round(val));
-  return `1/${Math.round(1/val)}`;
+
+function sliderPctToAhpLabel(val) {
+  return AHP_LABELS[sliderToIndex(val)];
+}
+
+function sliderPctToDisplayStr(val) {
+  const v = sliderPctToAhpValue(val);
+  if (v >= 1) return String(Math.round(v));
+  return `1/${Math.round(1/v)}`;
 }
 
 // =============================================================================
@@ -702,7 +707,7 @@ function buildDSTPanel() {
         <div class="slider-wrap">
           <input type="range" class="ahp-slider" id="${prefix}-slider-${i}"
             data-prefix="${prefix}" data-idx="${i}"
-            min="0" max="100" step="1" value="50">
+            min="0" max="16" step="1" value="8">
           <span class="slider-val" id="${prefix}-val-${i}">1</span>
         </div>
       </div>`).join('');
@@ -787,7 +792,8 @@ function onSliderMove(e) {
 
 function resetDST() {
   document.querySelectorAll('.ahp-slider').forEach(s => {
-    s.value = 50; onSliderMove({ target: s });
+    s.value = 8;   // ← was 50
+    onSliderMove({ target: s });
   });
   initAHPMatrices(CONFIG.dst.restoration.criteria.length, CONFIG.dst.protection.criteria.length);
 }
