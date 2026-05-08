@@ -38,51 +38,59 @@ function initPMTiles() {
   maplibregl.addProtocol('pmtiles', protocol.tile.bind(protocol));
   const pmtilesCache = {};
 
-  maplibregl.addProtocol('pmtiles-color', async (params) => {
-    const parts = params.url.replace('pmtiles-color://', '').split('|');
-    const rampName = parts[0];
-    const cleanUrl = parts[1].replace(/^pmtiles:\/\//, '');
+maplibregl.addProtocol('pmtiles-color', async (params) => {
+  // URL format: pmtiles-color://rampName|pmtiles://https://.../{z}/{x}/{y}
+  const urlWithoutProto = params.url.replace('pmtiles-color://', '');
+  
+  // Extract z/x/y from end of URL
+  const zxyMatch = urlWithoutProto.match(/\/(\d+)\/(\d+)\/(\d+)$/);
+  if (!zxyMatch) return { data: new ArrayBuffer(0) };
+  
+  const z = parseInt(zxyMatch[1]);
+  const x = parseInt(zxyMatch[2]);
+  const y = parseInt(zxyMatch[3]);
+  
+  // Extract ramp and base URL (strip /{z}/{x}/{y})
+  const baseUrl = urlWithoutProto.replace(/\/\d+\/\d+\/\d+$/, '');
+  const [rampName, pmtilesUrl] = baseUrl.split('|');
+  const cleanUrl = pmtilesUrl.replace(/^pmtiles:\/\//, '');
 
-    console.log('rampName:', rampName);
-    console.log('cleanUrl:', cleanUrl);
-    console.log('z/x/y:', params.z, params.x, params.y);
+  console.log('rampName:', rampName, 'z/x/y:', z, x, y);
 
-    const ramp = CONFIG.colorRamps[rampName];  // ← was missing
+  const ramp = CONFIG.colorRamps[rampName];
+  if (!pmtilesCache[cleanUrl]) {
+    pmtilesCache[cleanUrl] = new pmtiles.PMTiles(cleanUrl);
+  }
+  const pt = pmtilesCache[cleanUrl];
 
-    if (!pmtilesCache[cleanUrl]) {             // ← cache check was missing
-      pmtilesCache[cleanUrl] = new pmtiles.PMTiles(cleanUrl);
+  try {
+    const tile = await pt.getZxy(z, x, y);
+    if (!tile || !tile.data) return { data: new ArrayBuffer(0) };
+    const blob = new Blob([tile.data], { type: 'image/png' });
+    const imageBitmap = await createImageBitmap(blob);
+    const canvas = new OffscreenCanvas(imageBitmap.width, imageBitmap.height);
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(imageBitmap, 0, 0);
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const pixels = imageData.data;
+    for (let i = 0; i < pixels.length; i += 4) {
+      if (pixels[i + 3] === 0) continue;
+      const val = pixels[i];
+      const color = interpolateColor(ramp, val);
+      pixels[i]     = color[0];
+      pixels[i + 1] = color[1];
+      pixels[i + 2] = color[2];
+      pixels[i + 3] = 255;
     }
-    const pt = pmtilesCache[cleanUrl];
-
-    const { x, y, z } = params;
-    try {
-      const tile = await pt.getZxy(z, x, y);
-      if (!tile || !tile.data) return { data: new ArrayBuffer(0) };
-      const blob = new Blob([tile.data], { type: 'image/png' });
-      const imageBitmap = await createImageBitmap(blob);
-      const canvas = new OffscreenCanvas(imageBitmap.width, imageBitmap.height);
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(imageBitmap, 0, 0);
-      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      const pixels = imageData.data;
-      for (let i = 0; i < pixels.length; i += 4) {
-        if (pixels[i + 3] === 0) continue;
-        const val = pixels[i];
-        const color = interpolateColor(ramp, val);
-        pixels[i]     = color[0];
-        pixels[i + 1] = color[1];
-        pixels[i + 2] = color[2];
-        pixels[i + 3] = 255;
-      }
-      ctx.putImageData(imageData, 0, 0);
-      const outBlob = await canvas.convertToBlob({ type: 'image/png' });
-      const arrayBuffer = await outBlob.arrayBuffer();
-      return { data: arrayBuffer };
-    } catch (e) {
-      console.warn('Tile error:', e);
-      return { data: new ArrayBuffer(0) };
-    }
-  });
+    ctx.putImageData(imageData, 0, 0);
+    const outBlob = await canvas.convertToBlob({ type: 'image/png' });
+    const arrayBuffer = await outBlob.arrayBuffer();
+    return { data: arrayBuffer };
+  } catch (e) {
+    console.warn('Tile error:', e);
+    return { data: new ArrayBuffer(0) };
+  }
+});
 }
 
 // ── COLOR INTERPOLATION ──────────────────────────────────
@@ -196,16 +204,16 @@ function addLayer(layerCfg) {
 
   // Register source only when needed
   if (!state.map.getSource(srcId)) {
-    if (layerCfg.type === 'raster-pmtiles') {
-      const colorUrl = `pmtiles-color://${layerCfg.colorRamp}|${layerCfg.url}`;
-      state.map.addSource(srcId, {
-        type: 'raster',
-        url: colorUrl,
-        tileSize: 256,
-        minzoom: 9,
-        maxzoom: 14
-      });
-    } else if (layerCfg.type === 'vector-pmtiles') {
+if (layerCfg.type === 'raster-pmtiles') {
+  const colorUrl = `pmtiles-color://${layerCfg.colorRamp}|${layerCfg.url}`;
+  state.map.addSource(srcId, {
+    type: 'raster',
+    tiles: [colorUrl + '/{z}/{x}/{y}'],
+    tileSize: 256,
+    minzoom: 9,
+    maxzoom: 14
+  });
+} else if (layerCfg.type === 'vector-pmtiles') {
       state.map.addSource(srcId, {
         type: 'vector',
         url: layerCfg.url
