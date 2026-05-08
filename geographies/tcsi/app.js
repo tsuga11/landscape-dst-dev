@@ -147,7 +147,7 @@ function initMap() {
 
   state.map.on('load', () => {
     // Pre-register all sources (but don't add layers yet)
-    registerAllSources();
+    //registerAllSources();
 
     // Click/hover handlers for raster pixel inspection
     initPixelInspect();
@@ -194,16 +194,36 @@ function addLayer(layerCfg) {
 
   if (state.map.getLayer(lyrId)) return; // already added
 
-if (layerCfg.type === 'raster-pmtiles') {
-  state.map.addLayer({
-    id: lyrId,
-    type: 'raster',
-    source: srcId,
-    paint: {
-      'raster-opacity': layerCfg.defaultOpacity ?? 0.85
+  // Register source only when needed
+  if (!state.map.getSource(srcId)) {
+    if (layerCfg.type === 'raster-pmtiles') {
+      const colorUrl = `pmtiles-color://${layerCfg.colorRamp}|${layerCfg.url}`;
+      state.map.addSource(srcId, {
+        type: 'raster',
+        url: colorUrl,
+        tileSize: 256,
+        minzoom: 9,
+        maxzoom: 14
+      });
+    } else if (layerCfg.type === 'vector-pmtiles') {
+      state.map.addSource(srcId, {
+        type: 'vector',
+        url: layerCfg.url
+      });
     }
-  });
-} else if (layerCfg.type === 'vector-pmtiles') {
+  }
+
+  // Then add the layer
+  if (layerCfg.type === 'raster-pmtiles') {
+    state.map.addLayer({
+      id: lyrId,
+      type: 'raster',
+      source: srcId,
+      paint: {
+        'raster-opacity': layerCfg.defaultOpacity ?? 0.85
+      }
+    });
+  } else if (layerCfg.type === 'vector-pmtiles') {
     const p = layerCfg.paint;
     // Detect geometry type from paint keys
     if ('line-color' in p && !('fill-color' in p)) {
