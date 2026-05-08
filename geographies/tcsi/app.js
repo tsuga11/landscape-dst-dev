@@ -93,6 +93,22 @@ maplibregl.addProtocol('pmtiles-color', async (params) => {
 });
 }
 
+
+// Add 3D terrain model from Maptiler with my API key...
+function addTerrain() {
+  if (!state.map.getSource('terrain-dem')) {
+    state.map.addSource('terrain-dem', {
+      type: 'raster-dem',
+      url: 'https://api.maptiler.com/tiles/terrain-rgb-v2/tiles.json?key=cv4A9SfoJm6F3eii0Yjy',
+      tileSize: 256
+    });
+  }
+  state.map.setTerrain({
+    source: 'terrain-dem',
+    exaggeration: 1.5
+  });
+}
+
 // ── COLOR INTERPOLATION ──────────────────────────────────
 function interpolateColor(ramp, value) {
   if (ramp.categorical) {
@@ -154,6 +170,9 @@ function initMap() {
   state.map.addControl(new maplibregl.ScaleControl({ unit: 'imperial' }), 'bottom-left');
 
   state.map.on('load', () => {
+    // 3D Terrain model from Maptiler with my API Key....
+    addTerrain(); 
+    
     // Pre-register all sources (but don't add layers yet)
     //registerAllSources();
 
@@ -410,7 +429,8 @@ function switchBasemap(key) {
   state.map.setStyle(style);
 
   state.map.once('styledata', () => {
-    registerAllSources();
+    addTerrain();
+    //registerAllSources();
     activeLayers.forEach(id => {
       const cfg = findLayer(id);
       if (cfg) addLayer(cfg);
