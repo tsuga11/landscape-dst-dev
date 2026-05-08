@@ -111,7 +111,7 @@ function addTerrain() {
 
 function addHillshadeOverlay() {
   if (!state.map.getSource('hillshade-overlay')) {
-    state.map.addSource('hillshade-overlay', HILLSHADE_OVERLAY);
+    state.map.addSource('hillshade-overlay', CONFIG.hillshadeOverlay);  // ← was HILLSHADE_OVERLAY
   }
   if (!state.map.getLayer('hillshade-overlay-layer')) {
     state.map.addLayer({
@@ -119,7 +119,7 @@ function addHillshadeOverlay() {
       type: 'raster',
       source: 'hillshade-overlay',
       paint: {
-        'raster-opacity': 0.3,        // adjust to taste
+        'raster-opacity': 0.3,
         'raster-contrast': 0.2,
         'raster-brightness-min': 0.1
       }
@@ -130,6 +130,9 @@ function addHillshadeOverlay() {
 function removeHillshadeOverlay() {
   if (state.map.getLayer('hillshade-overlay-layer')) {
     state.map.removeLayer('hillshade-overlay-layer');
+  }
+  if (state.map.getSource('hillshade-overlay')) {
+    state.map.removeSource('hillshade-overlay');
   }
 }
 
@@ -457,14 +460,18 @@ function switchBasemap(key) {
 
   state.map.setStyle(style);
 
-  state.map.once('styledata', () => {
-    addTerrain();
-    //registerAllSources();
-    activeLayers.forEach(id => {
-      const cfg = findLayer(id);
-      if (cfg) addLayer(cfg);
-    });
+state.map.once('styledata', () => {
+  addTerrain();
+  activeLayers.forEach(id => {
+    const cfg = findLayer(id);
+    if (cfg) addLayer(cfg);
   });
+  // Re-add hillshade if it was active
+  const hsBtn = document.getElementById('hillshade-toggle');
+  if (hsBtn && hsBtn.dataset.active === 'true') {
+    addHillshadeOverlay();
+  }
+});
 
   // Update button states
   document.querySelectorAll('.basemap-btn').forEach(btn => {
@@ -526,6 +533,7 @@ function buildSidebar() {
 
   // Basemap buttons
   document.querySelectorAll('.basemap-btn').forEach(btn => {
+    if (btn.id === 'hillshade-toggle') return;  // ← add this
     btn.addEventListener('click', () => switchBasemap(btn.dataset.basemap));
   });
 }
