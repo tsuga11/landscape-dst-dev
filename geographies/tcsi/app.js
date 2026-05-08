@@ -109,6 +109,30 @@ function addTerrain() {
   });
 }
 
+function addHillshadeOverlay() {
+  if (!state.map.getSource('hillshade-overlay')) {
+    state.map.addSource('hillshade-overlay', HILLSHADE_OVERLAY);
+  }
+  if (!state.map.getLayer('hillshade-overlay-layer')) {
+    state.map.addLayer({
+      id: 'hillshade-overlay-layer',
+      type: 'raster',
+      source: 'hillshade-overlay',
+      paint: {
+        'raster-opacity': 0.3,        // adjust to taste
+        'raster-contrast': 0.2,
+        'raster-brightness-min': 0.1
+      }
+    });
+  }
+}
+
+function removeHillshadeOverlay() {
+  if (state.map.getLayer('hillshade-overlay-layer')) {
+    state.map.removeLayer('hillshade-overlay-layer');
+  }
+}
+
 // ── COLOR INTERPOLATION ──────────────────────────────────
 function interpolateColor(ramp, value) {
   if (ramp.categorical) {
@@ -278,6 +302,11 @@ if (layerCfg.type === 'raster-pmtiles') {
 
   // Show legend
   showLegend(layerCfg);
+
+  // Keep hillshade on top if active
+  if (state.map.getLayer('hillshade-overlay-layer')) {
+    state.map.moveLayer('hillshade-overlay-layer');
+  }
 }
 
 function removeLayer(layerCfg) {
@@ -457,6 +486,10 @@ function buildSidebar() {
         `<button class="basemap-btn${key === (CONFIG.defaultBasemap || 'dark') ? ' active' : ''}"
            data-basemap="${key}">${bm.label}</button>`
       ).join('')}
+
+      <button class="basemap-btn" id="hillshade-toggle" data-active="false">
+        Hillshade overlay
+      </button>
     </div>
   `;
   sidebar.appendChild(basemapSection);
@@ -615,6 +648,22 @@ document.addEventListener('change', e => {
   const layerCfg = findLayer(picker.dataset.layer);
   if (!layerCfg) return;
   setLineColor(layerCfg, picker.value);
+});
+
+// HILLSHADE LISTENER
+document.addEventListener('click', e => {
+  const btn = e.target.closest('#hillshade-toggle');
+  if (!btn) return;
+  const active = btn.dataset.active === 'true';
+  if (active) {
+    removeHillshadeOverlay();
+    btn.dataset.active = 'false';
+    btn.classList.remove('active');
+  } else {
+    addHillshadeOverlay();
+    btn.dataset.active = 'true';
+    btn.classList.add('active');
+  }
 });
 
 // ─── HAMBURGER ────────────────────────────────────────────────

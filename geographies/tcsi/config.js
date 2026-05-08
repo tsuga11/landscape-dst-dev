@@ -50,126 +50,65 @@ const CONFIG = {
         },
         layers: [{ id: 'esri-satellite', type: 'raster', source: 'esri' }]
       }
-    },
-// ── UPDATE the hillshade basemap in config.js ─────────────
-hillshade: {
-  label: 'Hillshade',
-  style: {
-    version: 8,
-    sources: {
-      hillshade: {
-        type: 'raster',
-        tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief/MapServer/tile/{z}/{y}/{x}'],
-        tileSize: 256,
-        attribution: 'Esri'
-      }
-    },
-    layers: [{ id: 'hillshade-base', type: 'raster', source: 'hillshade' }]
-  }
-}
+    }
+  },
+  // ── HILLSHADE OVERLAY ──────────────────────────────────────
+  // Semi-transparent hillshade that sits on top of any basemap
+  // and under/over data layers to give terrain texture
+  hillshadeOverlay: {
+    type: 'raster',
+    tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/Elevation/World_Hillshade/MapServer/tile/{z}/{y}/{x}'],
+    tileSize: 256,
+    attribution: 'Esri'
   },
 
   // ─── COLOR RAMPS ────────────────────────────────────────────
   // Used with MapLibre's raster-color paint property.
   // Format: flat array of [value, color, value, color, ...]
   // Values correspond to the *original* data range (not 0-255).
-  colorRamps: {
+colorRamps: {
 
-    // Current / Future condition departure score: 0 (bad) → 100 (good)
-    departure: {
-      title: 'Condition score',
-      stops: [
-    0,   '#F5191C',
-    14,  '#E97000',
-    28,  '#E79812',
-    43,  '#EABA21',
-    57,  '#C1C88C',
-    71,  '#8BBD94',
-    85,  '#4CAFA1',
-    100, '#3B99B1'
-  ],
-      labels: ['Fully departed','','','','','','','Within target']
-    },
+  departure: {
+    title: 'Condition score',
+    stops: [0,'#F5191C', 14,'#E97000', 28,'#E79812', 43,'#EABA21',
+            57,'#C1C88C', 71,'#8BBD94', 85,'#4CAFA1', 100,'#3B99B1'],
+    labels: ['Fully departed','','','','','','','Within target']
+  },
 
-    // Impact (Adapt/Protect) score: red = high mgmt benefit
-    apScore: {
-      title: 'Mgmt benefit',
-      stops: [
-    0,   '#F5191C',
-    14,  '#E97000',
-    28,  '#E79812',
-    43,  '#EABA21',
-    57,  '#C1C88C',
-    71,  '#8BBD94',
-    85,  '#4CAFA1',
-    100, '#3B99B1'
-  ],
-      labels: ['Lowest benefit','','','','','','','Highest benefit']
-    },
+  apScore: {
+    title: 'Mgmt benefit',
+    stops: [0,'#3B99B1', 14,'#4CAFA1', 28,'#8BBD94', 43,'#C1C88C',
+            57,'#EABA21', 71,'#E79812', 85,'#E97000', 100,'#F5191C'],
+    labels: ['Lowest benefit','','','','','','','Highest benefit']
+  },
 
-    // Adapt score: light → dark purple
-    adapt: {
-      title: 'Adapt score',
-      stops: [
-    0,   '#F5191C',
-    14,  '#E97000',
-    28,  '#E79812',
-    43,  '#EABA21',
-    57,  '#C1C88C',
-    71,  '#8BBD94',
-    85,  '#4CAFA1',
-    100, '#3B99B1'
-  ],
-      labels: ['Lowest','','','','','','','Highest']
-    },
+  adapt: {
+    title: 'Adapt score',
+    stops: [0,'#FCFBFF', 14,'#EAE9F7', 28,'#D1CDE8', 43,'#B4AED6',
+            57,'#968CC2', 71,'#7867AF', 86,'#5C3E9E', 100,'#3D1778'],
+    labels: ['Lowest','','','','','','','Highest']
+  },
 
-    // Protect score: light → dark orange
-    protect: {
-      title: 'Protect score',
-      stops: [
-    0,   '#F5191C',
-    14,  '#E97000',
-    28,  '#E79812',
-    43,  '#EABA21',
-    57,  '#C1C88C',
-    71,  '#8BBD94',
-    85,  '#4CAFA1',
-    100, '#3B99B1'
-  ],
-      labels: ['Lowest','','','','','','','Highest']
-    },
+  protect: {
+    title: 'Protect score',
+    stops: [0,'#FEF5EC', 14,'#FFE2C6', 28,'#FFC693', 43,'#FBA453',
+            57,'#F27E00', 71,'#DE5600', 86,'#B03F00', 100,'#802A07'],
+    labels: ['Lowest','','','','','','','Highest']
+  },
 
-    // Monitor score: light → dark blue
-    monitor: {
-      title: 'Monitor score',
-      stops: [
-    0,   '#F5191C',
-    14,  '#E97000',
-    28,  '#E79812',
-    43,  '#EABA21',
-    57,  '#C1C88C',
-    71,  '#8BBD94',
-    85,  '#4CAFA1',
-    100, '#3B99B1'
-  ],
-      labels: ['Lowest','','','','','','','Highest']
-    },
+  monitor: {
+    title: 'Monitor score',
+    stops: [0,'#EBF5FB', 14,'#C2DFEF', 28,'#99CAE3', 43,'#6FB5D7',
+            57,'#469FCB', 71,'#2185B8', 86,'#1A6A94', 100,'#273871'],
+    labels: ['Lowest','','','','','','','Highest']
+  },
 
-    // Transform score: light → dark crimson
-    transform: {
-      title: 'Transform score',
-      stops: [
-    0,   '#F5191C',
-    14,  '#E97000',
-    28,  '#E79812',
-    43,  '#EABA21',
-    57,  '#C1C88C',
-    71,  '#8BBD94',
-    85,  '#4CAFA1',
-    100, '#3B99B1'
-  ],
-      labels: ['Lowest','','','','','','','Highest']
-    },
+  transform: {
+    title: 'Transform score',
+    stops: [0,'#FFF0F3', 14,'#FFD0D9', 28,'#FFAABB', 43,'#FF7A93',
+            57,'#E84D6A', 71,'#C23054', 86,'#971040', 100,'#6D0026'],
+    labels: ['Lowest','','','','','','','Highest']
+  },
 
     // Strategy score (8-class categorical)
     strategy: {
@@ -188,25 +127,22 @@ hillshade: {
     },
 
     // pDRID: 0–1 continuous, red = high disturbance
-    drid: {
-      title: 'pDRID',
-      stops: [0, '#ffffcc', 0.25,'#fd8d3c', 0.5,'#f03b20', 0.75,'#bd0026', 1.0,'#67000d'],
-      labels: ['Low','','','','High']
-    },
+drid: {
+  stops: [0,'#ffffcc', 25,'#fd8d3c', 50,'#f03b20', 75,'#bd0026', 100,'#67000d'],
+  labels: ['Low','','','','High']
+},
 
     // Time since last disturbance: 0–50 yrs, dark = recent
-    tsld: {
-      title: 'Yrs since disturbance',
-      stops: [0,'#67000d', 12,'#f03b20', 25,'#fd8d3c', 37,'#ffffcc', 50,'#f7f7f7'],
-      labels: ['Recent (0 yr)','','','','Old (50+ yr)']
-    },
+tsld: {
+  stops: [0,'#67000d', 25,'#f03b20', 50,'#fd8d3c', 75,'#ffffcc', 100,'#f7f7f7'],
+  labels: ['Recent (0 yr)','','','','Old (50+ yr)']
+},
 
     // Number of disturbances: 0–10
-    nDist: {
-      title: '# disturbances',
-      stops: [0,'#f7f7f7', 2,'#fc9272', 4,'#ef3b2c', 6,'#cb181d', 10,'#67000d'],
-      labels: ['None','','','','Many']
-    },
+nDist: {
+  stops: [0,'#f7f7f7', 25,'#fc9272', 50,'#ef3b2c', 75,'#cb181d', 100,'#67000d'],
+  labels: ['None','','','','Many']
+},
 
     // Operability class (1–5 categorical)
     operability: {
