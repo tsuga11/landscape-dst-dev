@@ -51,21 +51,22 @@ const CONFIG = {
         layers: [{ id: 'esri-satellite', type: 'raster', source: 'esri' }]
       }
     },
-    hillshade: {
-      label: 'Hillshade',
-      style: {
-        version: 8,
-        sources: {
-          hillshade: {
-            type: 'raster',
-            tiles: ['https://tiles.stadiamaps.com/tiles/stamen_terrain/{z}/{x}/{y}.png'],
-            tileSize: 256,
-            attribution: '© Stadia Maps © Stamen Design © OpenStreetMap'
-          }
-        },
-        layers: [{ id: 'hillshade-base', type: 'raster', source: 'hillshade' }]
+// ── UPDATE the hillshade basemap in config.js ─────────────
+hillshade: {
+  label: 'Hillshade',
+  style: {
+    version: 8,
+    sources: {
+      hillshade: {
+        type: 'raster',
+        tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief/MapServer/tile/{z}/{y}/{x}'],
+        tileSize: 256,
+        attribution: 'Esri'
       }
-    }
+    },
+    layers: [{ id: 'hillshade-base', type: 'raster', source: 'hillshade' }]
+  }
+}
   },
 
   // ─── COLOR RAMPS ────────────────────────────────────────────
