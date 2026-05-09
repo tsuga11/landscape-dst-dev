@@ -209,18 +209,7 @@
       animation: bounce 2s infinite;
     }
 
-    .hero-shimmer {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 35%;           /* only affects bottom third */
-      z-index: 3;
-      filter: url(#shimmer);
-      pointer-events: none;
-      opacity: 0;
-      background: transparent;
-    }
+
 
     @keyframes bounce {
 
@@ -506,6 +495,9 @@
       object-fit: cover;
       transition: transform 0.4s ease;
       filter: brightness(0.85);
+      -webkit-user-drag: none;
+      user-select: none;
+      pointer-events: none;  /* ← add this */      
     }
 
     .project-card:not(.wip):hover .card-img-wrap img {
@@ -937,7 +929,9 @@
     <div class="hero-bg-img">
       <img src="assets/wildfire-on-mountain_1600.jpg" alt="Burning forest landscape">
     </div>
+    <!--
     <div class="hero-shimmer" id="hero-shimmer"></div>
+    -->
     <nav class="hero-nav">
       <span class="site-name">Nicholas Povak</span>
       <a href="mailto:napovak@gmail.com">napovak@gmail.com</a>
@@ -1355,6 +1349,7 @@
       grid.style.cursor = 'grab';
 
       grid.addEventListener('mousedown', e => {
+        e.preventDefault();  // ← stops browser image drag
         isDown = true;
         startX = e.pageX - grid.offsetLeft;
         scrollLeft = grid.scrollLeft;
@@ -1385,48 +1380,40 @@
     });
 
       // ── Heat shimmer ───────────────────────────────────────────
-      (function () {
-        const disp = document.getElementById('shimmer-disp');
-        const turb = document.getElementById('shimmer-turb');
-        const layer = document.getElementById('hero-shimmer');
-        if (!disp || !layer) return;
+        // ── Heat shimmer ───────────────────────────────────────────
+        (function () {
+          const disp = document.getElementById('shimmer-disp');
+          const heroImg = document.querySelector('.hero-bg-img');
+          if (!disp || !heroImg) return;
 
-        let scale = 0;
-        let phase = 0;
-        let elapsed = 0;
-        let lastTime = null;
-        const duration = 4000;  // shimmer lasts 4 seconds
+          let elapsed = 0;
+          let lastTime = null;
+          const duration = 5000;
 
-        layer.style.opacity = '1';
+          heroImg.style.filter = 'url(#shimmer)';
 
-        function animate(ts) {
-          if (!lastTime) lastTime = ts;
-          const dt = ts - lastTime;
-          lastTime = ts;
-          elapsed += dt;
+          function animate(ts) {
+            if (!lastTime) lastTime = ts;
+            const dt = ts - lastTime;
+            lastTime = ts;
+            elapsed += dt;
 
-          // Ramp up then fade out
-          const progress = elapsed / duration;
-          const envelope = progress < 0.3
-            ? progress / 0.3              // ramp up
-            : 1 - (progress - 0.3) / 0.7; // fade out
+            const progress = elapsed / duration;
+            const envelope = progress < 0.25
+              ? progress / 0.25          // ramp up
+              : 1 - (progress - 0.25) / 0.75; // fade out
 
-          scale = Math.max(0, envelope * 18);
-          phase += dt * 0.0004;
+            disp.setAttribute('scale', Math.max(0, envelope * 14));
 
-          disp.setAttribute('scale', scale);
-          turb.setAttribute('seed', Math.floor(phase * 10) % 100);
-
-          if (elapsed < duration) {
-            requestAnimationFrame(animate);
-          } else {
-            layer.style.opacity = '0';
+            if (elapsed < duration) {
+              requestAnimationFrame(animate);
+            } else {
+              heroImg.style.filter = '';  // clean up
+            }
           }
-        }
 
-        // Start after a brief pause so page loads first
-        setTimeout(() => requestAnimationFrame(animate), 800);
-      })();
+          setTimeout(() => requestAnimationFrame(animate), 600);
+        })();
 
 
   </script>
