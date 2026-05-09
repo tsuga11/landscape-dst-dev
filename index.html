@@ -2,6 +2,12 @@
 <html lang="en">
 
 <head>
+
+  <script>
+    if (history.scrollRestoration) history.scrollRestoration = 'manual';
+    window.scrollTo(0, 0);
+  </script>
+
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Nicholas Povak — Landscape Ecology Research</title>
@@ -52,6 +58,31 @@
       /* ← pushes first section below the fixed hero */
     }
 
+    @keyframes heatRise {
+      0%   { opacity: 0; transform: translateY(0px)   scaleX(1); }
+      15%  { opacity: 1; }
+      40%  { opacity: 0.7; transform: translateY(-3px) scaleX(1.002); }
+      70%  { opacity: 0.5; transform: translateY(2px)  scaleX(0.999); }
+      100% { opacity: 0; transform: translateY(0px)   scaleX(1); }
+    }
+
+    .heat-shimmer {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 40%;
+      z-index: 3;
+      pointer-events: none;
+      background: linear-gradient(
+        to top,
+        rgba(255, 120, 20, 0.06) 0%,
+        rgba(255, 80, 0, 0.03) 50%,
+        transparent 100%
+      );
+      backdrop-filter: blur(1px);
+      -webkit-backdrop-filter: blur(1px);
+      opacity: 0;
+      animation: heatRise 4s ease-out 0.8s forwards;
+    }
     /* ══════════════════════════════════════════════════════════
        HERO
     ══════════════════════════════════════════════════════════ */
@@ -932,6 +963,7 @@
     <!--
     <div class="hero-shimmer" id="hero-shimmer"></div>
     -->
+    <div class="heat-shimmer"></div>
     <nav class="hero-nav">
       <span class="site-name">Nicholas Povak</span>
       <a href="mailto:napovak@gmail.com">napovak@gmail.com</a>
