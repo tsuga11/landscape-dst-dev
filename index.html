@@ -822,7 +822,7 @@
       }
 
       .carousel-btn {
-        display: flex;
+        top: 40%;
       }
 
       .card-grid {
@@ -844,8 +844,8 @@
         width: 100%;
       }     
       
-      .carousel-btn.prev { left: 8px; }
-      .carousel-btn.next { right: 8px; }      
+      .carousel-btn.prev { left: 8px; right: auto; }
+      .carousel-btn.next { right: 8px; left: auto; }      
 
       .card-grid::-webkit-scrollbar {
         display: none;
@@ -856,6 +856,7 @@
       .project-card {
         flex: 0 0 78vw;
         min-width: 0;
+        max-width: 78vw;   /* ← add this */
         scroll-snap-align: center;
         transform: none !important;
       }
@@ -869,6 +870,12 @@
       .split-left {
         width: 100%;
       }
+
+      .split-right {
+        overflow: hidden;    /* clips cards at this boundary */
+        position: relative;  /* makes buttons position relative to this */
+        width: 100%;
+      }      
 
       .split-sticky {
         position: static;
