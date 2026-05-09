@@ -66,23 +66,23 @@
       100% { opacity: 0; transform: translateY(0px)   scaleX(1); }
     }
 
-    .heat-shimmer {
-      position: absolute;
-      bottom: 0; left: 0; right: 0;
-      height: 40%;
-      z-index: 3;
-      pointer-events: none;
-      background: linear-gradient(
-        to top,
-        rgba(255, 120, 20, 0.06) 0%,
-        rgba(255, 80, 0, 0.03) 50%,
-        transparent 100%
-      );
-      backdrop-filter: blur(1px);
-      -webkit-backdrop-filter: blur(1px);
-      opacity: 0;
-      animation: heatRise 4s ease-out 0.8s forwards;
-    }
+.heat-shimmer {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 40%;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    to top,
+    rgba(255, 100, 10, 0.18) 0%,
+    rgba(255, 60, 0, 0.08) 50%,
+    transparent 100%
+  );
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  opacity: 0;
+  animation: heatRise 5s ease-out 1s forwards;
+}
     /* ══════════════════════════════════════════════════════════
        HERO
     ══════════════════════════════════════════════════════════ */
@@ -1250,217 +1250,145 @@
   <!-- ══════════════════════════════════════════════════════════
        SCRIPTS
   ══════════════════════════════════════════════════════════ -->
-  <script>
+<script>
+  // ── Prevent scroll restoration and URL fragment jumps ──────
+  if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+  if (window.location.hash) {
+    history.replaceState(null, null, window.location.pathname);
+  }
+  document.addEventListener('DOMContentLoaded', () => window.scrollTo(0, 0));
+  window.addEventListener('load', () => window.scrollTo(0, 0));
 
-    // Prevent browser scroll restoration on mobile
-    if (history.scrollRestoration) {
-      history.scrollRestoration = 'manual';
-    }
-    window.scrollTo(0, 0);
+  // ── Parallax hero ──────────────────────────────────────────
+  const hero = document.querySelector('.hero');
+  const heroContent = document.querySelector('.hero-content');
 
-    // ── Parallax hero ──────────────────────────────────────────
-    const hero = document.querySelector('.hero');
-    const heroContent = document.querySelector('.hero-content');
+  window.addEventListener('scroll', () => {
+    const scrollY = window.scrollY;
+    const heroH = hero.offsetHeight;
+    const progress = Math.min(scrollY / heroH, 1);
+    heroContent.style.opacity = Math.max(1 - progress * 2, 0);
+    heroContent.style.transform = `translateY(${scrollY * 0.2}px)`;
+  }, { passive: true });
 
-    window.addEventListener('scroll', () => {
-      const scrollY = window.scrollY;
-      const heroH = hero.offsetHeight;
-      const progress = Math.min(scrollY / heroH, 1);
-      heroContent.style.opacity = Math.max(1 - progress * 2, 0);
-      heroContent.style.transform = `translateY(${scrollY * 0.2}px)`;
-    }, { passive: true });
+  // ── Card reveal ────────────────────────────────────────────
+  document.querySelectorAll('.project-card').forEach((card, i) => {
+    setTimeout(() => card.classList.add('visible'), 200 + i * 100);
+  });
 
-    // ── Card reveal ────────────────────────────────────────────
-    const cards = document.querySelectorAll('.project-card');
-    cards.forEach((card, i) => {
-      setTimeout(() => card.classList.add('visible'), 200 + i * 100);
-    });
+  // ── Section nav highlighting ───────────────────────────────
+  const sections = document.querySelectorAll('.page-section[id]');
+  const navItems = document.querySelectorAll('.nav-item[data-section]');
 
-    // ── Section nav highlighting ───────────────────────────────
-    const sections = document.querySelectorAll('.page-section[id]');
-    const navItems = document.querySelectorAll('.nav-item[data-section]');
-
-  // Small delay prevents observer from firing on initial layout
   setTimeout(() => {
     const sectionObserver = new IntersectionObserver(entries => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
           navItems.forEach(n => n.classList.remove('active'));
-          const match = document.querySelector(
+          document.querySelector(
             `.nav-item[data-section="${entry.target.id}"]`
-          );
-          if (match) match.classList.add('active');
+          )?.classList.add('active');
         }
       });
-    }, {
-      threshold: 0.3,
-      rootMargin: '0px 0px -30% 0px'  // ← section must be 30% into view
-    });
+    }, { threshold: 0.3, rootMargin: '0px 0px -30% 0px' });
 
     sections.forEach(s => sectionObserver.observe(s));
-  }, 800);  // ← increase delay to 800ms
+  }, 800);
 
+  // ── Mobile menu ────────────────────────────────────────────
+  const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+  const mobileMenu = document.getElementById('mobile-menu');
 
-    // ── Mobile menu ────────────────────────────────────────────
-    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-    const mobileMenu = document.getElementById('mobile-menu');
+  mobileMenuBtn?.addEventListener('click', () => {
+    mobileMenu.classList.toggle('open');
+    mobileMenuBtn.textContent = mobileMenu.classList.contains('open') ? '✕' : '☰';
+  });
 
-    mobileMenuBtn?.addEventListener('click', () => {
-      mobileMenu.classList.toggle('open');
-      mobileMenuBtn.textContent = mobileMenu.classList.contains('open') ? '✕' : '☰';
-    });
+  function closeMobileMenu() {
+    mobileMenu?.classList.remove('open');
+    if (mobileMenuBtn) mobileMenuBtn.textContent = '☰';
+  }
 
-    function closeMobileMenu() {
-      mobileMenu?.classList.remove('open');
-      mobileMenuBtn.textContent = '☰';
+  document.addEventListener('click', e => {
+    if (!mobileMenu?.contains(e.target) && e.target !== mobileMenuBtn) {
+      closeMobileMenu();
     }
+  });
 
-    // Close menu if clicking outside
-    document.addEventListener('click', e => {
-      if (!mobileMenu?.contains(e.target) && e.target !== mobileMenuBtn) {
-        closeMobileMenu();
-      }
+  // ── Carousel: dots, auto-advance, click-drag, fade ────────
+  document.querySelectorAll('.split-right').forEach(wrap => {
+    const grid = wrap.querySelector('.card-grid');
+    const dotsContainer = wrap.querySelector('.carousel-dots');
+    if (!grid || !dotsContainer) return;
+
+    const cards = grid.querySelectorAll('.project-card');
+    if (cards.length < 2) return;
+
+    const getCardWidth = () => cards[0].getBoundingClientRect().width + 16;
+
+    // Build dots
+    cards.forEach((_, i) => {
+      const dot = document.createElement('button');
+      dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
+      dot.setAttribute('aria-label', `Card ${i + 1}`);
+      dot.addEventListener('click', () => {
+        grid.scrollTo({ left: getCardWidth() * i, behavior: 'smooth' });
+      });
+      dotsContainer.appendChild(dot);
     });
 
+    const dots = dotsContainer.querySelectorAll('.carousel-dot');
 
-  // ── Carousel dots ──────────────────────────────────────────
-    // ── Carousel: dots, auto-advance, click-drag, fade ─────────
-    document.querySelectorAll('.split-right').forEach(wrap => {
-      const grid = wrap.querySelector('.card-grid');
-      const dotsContainer = wrap.querySelector('.carousel-dots');
-      if (!grid || !dotsContainer) return;
-
-      const cards = grid.querySelectorAll('.project-card');
-      if (cards.length < 2) return;
-
-      const getCardWidth = () => cards[0].getBoundingClientRect().width + 16;
-
-      // ── Build dots ──────────────────────────────────────────
-      cards.forEach((_, i) => {
-        const dot = document.createElement('button');
-        dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
-        dot.setAttribute('aria-label', `Card ${i + 1}`);
-        dot.addEventListener('click', () => {
-          grid.scrollTo({ left: getCardWidth() * i, behavior: 'smooth' });
-        });
-        dotsContainer.appendChild(dot);
+    // Update dot + fade on scroll
+    grid.addEventListener('scroll', () => {
+      const idx = Math.round(grid.scrollLeft / getCardWidth());
+      const gridRect = grid.getBoundingClientRect();
+      dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+      cards.forEach(card => {
+        card.style.opacity = card.getBoundingClientRect().left >= gridRect.left - 10
+          ? '1' : '0.35';
       });
+    }, { passive: true });
 
-      const dots = dotsContainer.querySelectorAll('.carousel-dot');
+    // Auto-advance
+    let current = 0, timer;
+    const startTimer = () => {
+      timer = setInterval(() => {
+        current = (current + 1) % cards.length;
+        grid.scrollTo({ left: getCardWidth() * current, behavior: 'smooth' });
+      }, 4000);
+    };
+    const stopTimer = () => clearInterval(timer);
+    startTimer();
 
-      // ── Update active dot on scroll ─────────────────────────
-      grid.addEventListener('scroll', () => {
-        const idx = Math.round(grid.scrollLeft / getCardWidth());
-        dots.forEach((d, i) => d.classList.toggle('active', i === idx));
-        // Fade non-active cards
-        const gridRect = grid.getBoundingClientRect();
-        cards.forEach(card => {
-          const isActive = card.getBoundingClientRect().left >= gridRect.left - 10;
-          card.style.opacity = isActive ? '1' : '0.35';
-        });
-      }, { passive: true });
+    // Click-drag on desktop
+    let isDown = false, startX, scrollLeft;
+    grid.style.cursor = 'grab';
 
-      // ── Auto-advance ────────────────────────────────────────
-      let current = 0;
-      let timer;
-
-      const startTimer = () => {
-        timer = setInterval(() => {
-          current = (current + 1) % cards.length;
-          grid.scrollTo({ left: getCardWidth() * current, behavior: 'smooth' });
-        }, 4000);
-      };
-
-      const stopTimer = () => clearInterval(timer);
-
-      startTimer();
-
-      // ── Click-drag on desktop ───────────────────────────────
-      let isDown = false, startX, scrollLeft;
-
-      grid.style.cursor = 'grab';
-
-      grid.addEventListener('mousedown', e => {
-        e.preventDefault();  // ← stops browser image drag
-        isDown = true;
-        startX = e.pageX - grid.offsetLeft;
-        scrollLeft = grid.scrollLeft;
-        grid.style.cursor = 'grabbing';
-        stopTimer();
-      });
-
-      grid.addEventListener('mouseleave', () => {
-        isDown = false;
-        grid.style.cursor = 'grab';
-      });
-
-      grid.addEventListener('mouseup', () => {
-        isDown = false;
-        grid.style.cursor = 'grab';
-        startTimer();
-      });
-
-      grid.addEventListener('mousemove', e => {
-        if (!isDown) return;
-        e.preventDefault();
-        grid.scrollLeft = scrollLeft - (e.pageX - grid.offsetLeft - startX) * 1.5;
-      });
-
-      // ── Pause auto-advance on touch ─────────────────────────
-      grid.addEventListener('touchstart', stopTimer, { passive: true });
-      grid.addEventListener('touchend', startTimer, { passive: true });
+    grid.addEventListener('mousedown', e => {
+      e.preventDefault();
+      isDown = true;
+      startX = e.pageX - grid.offsetLeft;
+      scrollLeft = grid.scrollLeft;
+      grid.style.cursor = 'grabbing';
+      stopTimer();
+    });
+    grid.addEventListener('mouseleave', () => { isDown = false; grid.style.cursor = 'grab'; });
+    grid.addEventListener('mouseup', () => { isDown = false; grid.style.cursor = 'grab'; startTimer(); });
+    grid.addEventListener('mousemove', e => {
+      if (!isDown) return;
+      e.preventDefault();
+      grid.scrollLeft = scrollLeft - (e.pageX - grid.offsetLeft - startX) * 1.5;
     });
 
-      // ── Heat shimmer ───────────────────────────────────────────
-        // ── Heat shimmer ───────────────────────────────────────────
-        (function () {
-          const disp = document.getElementById('shimmer-disp');
-          const heroImg = document.querySelector('.hero-bg-img');
-          if (!disp || !heroImg) return;
+    grid.addEventListener('touchstart', stopTimer, { passive: true });
+    grid.addEventListener('touchend', startTimer, { passive: true });
+  });
 
-          let elapsed = 0;
-          let lastTime = null;
-          const duration = 5000;
-
-          heroImg.style.filter = 'url(#shimmer)';
-
-          function animate(ts) {
-            if (!lastTime) lastTime = ts;
-            const dt = ts - lastTime;
-            lastTime = ts;
-            elapsed += dt;
-
-            const progress = elapsed / duration;
-            const envelope = progress < 0.25
-              ? progress / 0.25          // ramp up
-              : 1 - (progress - 0.25) / 0.75; // fade out
-
-            disp.setAttribute('scale', Math.max(0, envelope * 14));
-
-            if (elapsed < duration) {
-              requestAnimationFrame(animate);
-            } else {
-              heroImg.style.filter = '';  // clean up
-            }
-          }
-
-          setTimeout(() => requestAnimationFrame(animate), 600);
-        })();
+</script>
 
 
-  </script>
 
-
-<svg id="heat-filter" style="position:absolute;width:0;height:0;">
-  <defs>
-    <filter id="shimmer" x="0" y="0" width="100%" height="100%" color-interpolation-filters="linearRGB">
-      <feTurbulence id="shimmer-turb" type="fractalNoise" baseFrequency="0.015 0.08" numOctaves="3" seed="4"
-        result="noise" />
-      <feDisplacementMap in="SourceGraphic" in2="noise" scale="0" xChannelSelector="R" yChannelSelector="G"
-        id="shimmer-disp" />
-    </filter>
-  </defs>
-</svg>
 
 
 </body>
