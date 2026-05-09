@@ -812,99 +812,68 @@
       }
     }
 
-    @media (max-width: 900px) {
-      #mobile-header {
-        display: flex;
-      }
+@media (max-width: 900px) {
+  #mobile-header { display: flex; }
 
-      #tools {
-        margin-top: calc(100vh + 52px);
-      }
+  #tools { margin-top: calc(100vh + 52px); }
 
-      .carousel-btn {
-        top: 40%;
-      }
+  .split-layout {
+    flex-direction: column;
+    padding: 1.5rem;
+    gap: 1.5rem;
+  }
 
-      .card-grid {
-        display: flex;
-        flex-direction: row;
-        overflow-x: scroll;
-        overflow-y: visible;
-        scroll-snap-type: x mandatory;
-        -webkit-overflow-scrolling: touch;
-        gap: 1rem;
-        padding: 0.5rem 2rem 1.5rem;
-        scrollbar-width: none;
-      }
+  .split-left  { width: 100%; }
+  .split-sticky { position: static; }
 
-      .carousel-wrap {
-        overflow: hidden;              /* clips cards at panel edges */
-        border-radius: 6px;
-        position: relative;
-        width: 100%;
-      }     
-      
-      .carousel-btn.prev { left: 8px; right: auto; }
-      .carousel-btn.next { right: 8px; left: auto; }      
+  .split-right {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+  }
 
-      .card-grid::-webkit-scrollbar {
-        display: none;
-        overscroll-behavior-x: contain; /* prevents swipe from scrolling the page */
-        padding: 0.5rem 1rem 1.5rem;   /* reduce padding so cards don't start outside */        
-      }
+  .carousel-wrap { width: 100%; }
 
-      .project-card {
-        flex: 0 0 78vw;
-        min-width: 0;
-        max-width: 78vw;   /* ← add this */
-        scroll-snap-align: center;
-        transform: none !important;
-      }
+  .card-grid {
+    display: flex;
+    flex-direction: row;
+    overflow-x: scroll;
+    overflow-y: visible;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+    gap: 1rem;
+    padding: 0.5rem 1rem 1.5rem;
+    scrollbar-width: none;
+  }
 
-      .split-layout {
-        flex-direction: column;
-        padding: 1.5rem;
-        gap: 1.5rem;
-      }
+  .card-grid::-webkit-scrollbar { display: none; }
 
-      .split-left {
-        width: 100%;
-      }
+  .project-card {
+    flex: 0 0 82%;
+    max-width: 82%;
+    min-width: 0;
+    scroll-snap-align: start;
+    transform: none !important;
+  }
 
-      .split-right {
-        overflow: hidden;    /* clips cards at this boundary */
-        position: relative;  /* makes buttons position relative to this */
-        width: 100%;
-      }      
+  /* Buttons — visible, positioned relative to .split-right */
+  .carousel-btn {
+    display: flex;
+    top: 80px;
+    transform: none;
+  }
 
-      .split-sticky {
-        position: static;
-      }
+  .carousel-btn.prev { left: 8px;  right: auto; }
+  .carousel-btn.next { right: 8px; left: auto; }
 
-      #section-nav {
-        display: none;
-      }
-
-      .hero-nav {
-        display: none;
-      }
-
-      .hero-content {
-        padding: 1.5rem 1.5rem 4rem;
-      }
-
-      .hero-title {
-        font-size: 2.5rem;
-      }
-
-      .page-section {
-        margin: 0.75rem;
-      }
-
-      .simple-section {
-        padding: 1.5rem;
-      }
-    }
+  #section-nav   { display: none; }
+  .hero-nav      { display: none; }
+  .hero-content  { padding: 1.5rem 1.5rem 4rem; }
+  .hero-title    { font-size: 2.5rem; }
+  .page-section  { margin: 0.75rem; }
+  .simple-section { padding: 1.5rem; }
+}
   </style>
 </head>
 
@@ -1008,7 +977,6 @@
       </div>
       <div class="split-right">
         <div class="carousel-wrap">
-          <button class="carousel-btn prev" aria-label="Previous">&#8592;</button>
 
           <div class="card-grid">
 
@@ -1069,8 +1037,11 @@
             </article>
 
           </div>
-          <button class="carousel-btn next" aria-label="Next">&#8594;</button>
+
         </div>
+        <button class="carousel-btn prev" aria-label="Previous">&#8592;</button>
+        <button class="carousel-btn next" aria-label="Next">&#8594;</button>
+
       </div>
     </div>
   </section>
@@ -1089,8 +1060,7 @@
       </div>
       <div class="split-right">
         <div class="carousel-wrap">
-          <button class="carousel-btn prev" aria-label="Previous">&#8592;</button>
-  
+            
           <div class="card-grid">
   
             <article class="project-card">
@@ -1154,8 +1124,10 @@
             </article>
   
           </div>
-          <button class="carousel-btn next" aria-label="Next">&#8594;</button>
+          
         </div>
+        <button class="carousel-btn prev" aria-label="Previous">&#8592;</button>
+        <button class="carousel-btn next" aria-label="Next">&#8594;</button>
       </div>
     </div>
   </section>
@@ -1312,22 +1284,22 @@
     });
 
     // ── Carousel arrows ────────────────────────────────────────
-    document.querySelectorAll('.carousel-wrap').forEach(wrap => {
-      const grid = wrap.querySelector('.card-grid');
-      const prev = wrap.querySelector('.carousel-btn.prev');
-      const next = wrap.querySelector('.carousel-btn.next');
+  document.querySelectorAll('.split-right').forEach(wrap => {
+    const grid = wrap.querySelector('.card-grid');
+    const prev = wrap.querySelector('.carousel-btn.prev');
+    const next = wrap.querySelector('.carousel-btn.next');
 
-      if (!grid) return;
+    if (!grid) return;
 
-      const getScrollAmt = () => {
-        const card = grid.querySelector('.project-card');
-        if (!card) return 280;
-        return card.getBoundingClientRect().width + 16;
-      };
+    const getScrollAmt = () => {
+      const card = grid.querySelector('.project-card');
+      if (!card) return 280;
+      return card.getBoundingClientRect().width + 16;
+    };
 
-      prev?.addEventListener('click', () => grid.scrollBy({ left: -getScrollAmt(), behavior: 'smooth' }));
-      next?.addEventListener('click', () => grid.scrollBy({ left: getScrollAmt(), behavior: 'smooth' }));
-    });
+    prev?.addEventListener('click', () => grid.scrollBy({ left: -getScrollAmt(), behavior: 'smooth' }));
+    next?.addEventListener('click', () => grid.scrollBy({ left: getScrollAmt(), behavior: 'smooth' }));
+  });
 
   </script>
 
