@@ -209,6 +209,19 @@
       animation: bounce 2s infinite;
     }
 
+    .hero-shimmer {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 35%;           /* only affects bottom third */
+      z-index: 3;
+      filter: url(#shimmer);
+      pointer-events: none;
+      opacity: 0;
+      background: transparent;
+    }
+
     @keyframes bounce {
 
       0%,
@@ -924,6 +937,7 @@
     <div class="hero-bg-img">
       <img src="assets/wildfire-on-mountain_1600.jpg" alt="Burning forest landscape">
     </div>
+    <div class="hero-shimmer" id="hero-shimmer"></div>
     <nav class="hero-nav">
       <span class="site-name">Nicholas Povak</span>
       <a href="mailto:napovak@gmail.com">napovak@gmail.com</a>
@@ -1252,10 +1266,13 @@
           if (match) match.classList.add('active');
         }
       });
-    }, { threshold: 0.25 });
+    }, {
+      threshold: 0.3,
+      rootMargin: '0px 0px -30% 0px'  // ← section must be 30% into view
+    });
 
     sections.forEach(s => sectionObserver.observe(s));
-  }, 500);
+  }, 800);  // ← increase delay to 800ms
 
 
     // ── Mobile menu ────────────────────────────────────────────
@@ -1281,52 +1298,151 @@
 
 
   // ── Carousel dots ──────────────────────────────────────────
-  document.querySelectorAll('.split-right').forEach(wrap => {
-    const grid = wrap.querySelector('.card-grid');
-    const dotsContainer = wrap.querySelector('.carousel-dots');
-    if (!grid || !dotsContainer) return;
+    // ── Carousel: dots, auto-advance, click-drag, fade ─────────
+    document.querySelectorAll('.split-right').forEach(wrap => {
+      const grid = wrap.querySelector('.card-grid');
+      const dotsContainer = wrap.querySelector('.carousel-dots');
+      if (!grid || !dotsContainer) return;
 
-    const cards = grid.querySelectorAll('.project-card');
-    if (!cards.length) return;
+      const cards = grid.querySelectorAll('.project-card');
+      if (cards.length < 2) return;
 
-    // Build dots
-    cards.forEach((_, i) => {
-      const dot = document.createElement('button');
-      dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
-      dot.setAttribute('aria-label', `Card ${i + 1}`);
-      dot.addEventListener('click', () => {
-        const cardWidth = cards[0].getBoundingClientRect().width + 16;
-        grid.scrollTo({ left: cardWidth * i, behavior: 'smooth' });
+      const getCardWidth = () => cards[0].getBoundingClientRect().width + 16;
+
+      // ── Build dots ──────────────────────────────────────────
+      cards.forEach((_, i) => {
+        const dot = document.createElement('button');
+        dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
+        dot.setAttribute('aria-label', `Card ${i + 1}`);
+        dot.addEventListener('click', () => {
+          grid.scrollTo({ left: getCardWidth() * i, behavior: 'smooth' });
+        });
+        dotsContainer.appendChild(dot);
       });
-      dotsContainer.appendChild(dot);
+
+      const dots = dotsContainer.querySelectorAll('.carousel-dot');
+
+      // ── Update active dot on scroll ─────────────────────────
+      grid.addEventListener('scroll', () => {
+        const idx = Math.round(grid.scrollLeft / getCardWidth());
+        dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+        // Fade non-active cards
+        const gridRect = grid.getBoundingClientRect();
+        cards.forEach(card => {
+          const isActive = card.getBoundingClientRect().left >= gridRect.left - 10;
+          card.style.opacity = isActive ? '1' : '0.35';
+        });
+      }, { passive: true });
+
+      // ── Auto-advance ────────────────────────────────────────
+      let current = 0;
+      let timer;
+
+      const startTimer = () => {
+        timer = setInterval(() => {
+          current = (current + 1) % cards.length;
+          grid.scrollTo({ left: getCardWidth() * current, behavior: 'smooth' });
+        }, 4000);
+      };
+
+      const stopTimer = () => clearInterval(timer);
+
+      startTimer();
+
+      // ── Click-drag on desktop ───────────────────────────────
+      let isDown = false, startX, scrollLeft;
+
+      grid.style.cursor = 'grab';
+
+      grid.addEventListener('mousedown', e => {
+        isDown = true;
+        startX = e.pageX - grid.offsetLeft;
+        scrollLeft = grid.scrollLeft;
+        grid.style.cursor = 'grabbing';
+        stopTimer();
+      });
+
+      grid.addEventListener('mouseleave', () => {
+        isDown = false;
+        grid.style.cursor = 'grab';
+      });
+
+      grid.addEventListener('mouseup', () => {
+        isDown = false;
+        grid.style.cursor = 'grab';
+        startTimer();
+      });
+
+      grid.addEventListener('mousemove', e => {
+        if (!isDown) return;
+        e.preventDefault();
+        grid.scrollLeft = scrollLeft - (e.pageX - grid.offsetLeft - startX) * 1.5;
+      });
+
+      // ── Pause auto-advance on touch ─────────────────────────
+      grid.addEventListener('touchstart', stopTimer, { passive: true });
+      grid.addEventListener('touchend', startTimer, { passive: true });
     });
 
-    const dots = dotsContainer.querySelectorAll('.carousel-dot');
+      // ── Heat shimmer ───────────────────────────────────────────
+      (function () {
+        const disp = document.getElementById('shimmer-disp');
+        const turb = document.getElementById('shimmer-turb');
+        const layer = document.getElementById('hero-shimmer');
+        if (!disp || !layer) return;
 
-    // Update active dot on scroll
-    grid.addEventListener('scroll', () => {
-      const cardWidth = cards[0].getBoundingClientRect().width + 16;
-      const idx = Math.round(grid.scrollLeft / cardWidth);
-      dots.forEach((d, i) => d.classList.toggle('active', i === idx));
-    }, { passive: true });
-  });
+        let scale = 0;
+        let phase = 0;
+        let elapsed = 0;
+        let lastTime = null;
+        const duration = 4000;  // shimmer lasts 4 seconds
 
-  // Fade non-active carousel cards
-  document.querySelectorAll('.card-grid').forEach(grid => {
-    const updateFade = () => {
-      const cards = grid.querySelectorAll('.project-card');
-      cards.forEach(card => {
-        const rect = card.getBoundingClientRect();
-        const gridRect = grid.getBoundingClientRect();
-        const isActive = rect.left >= gridRect.left - 10;
-        card.style.opacity = isActive ? '1' : '0.35';
-      });
-    };
-    grid.addEventListener('scroll', updateFade);
-    updateFade();
-  });  
+        layer.style.opacity = '1';
+
+        function animate(ts) {
+          if (!lastTime) lastTime = ts;
+          const dt = ts - lastTime;
+          lastTime = ts;
+          elapsed += dt;
+
+          // Ramp up then fade out
+          const progress = elapsed / duration;
+          const envelope = progress < 0.3
+            ? progress / 0.3              // ramp up
+            : 1 - (progress - 0.3) / 0.7; // fade out
+
+          scale = Math.max(0, envelope * 18);
+          phase += dt * 0.0004;
+
+          disp.setAttribute('scale', scale);
+          turb.setAttribute('seed', Math.floor(phase * 10) % 100);
+
+          if (elapsed < duration) {
+            requestAnimationFrame(animate);
+          } else {
+            layer.style.opacity = '0';
+          }
+        }
+
+        // Start after a brief pause so page loads first
+        setTimeout(() => requestAnimationFrame(animate), 800);
+      })();
+
 
   </script>
+
+
+<svg id="heat-filter" style="position:absolute;width:0;height:0;">
+  <defs>
+    <filter id="shimmer" x="0" y="0" width="100%" height="100%" color-interpolation-filters="linearRGB">
+      <feTurbulence id="shimmer-turb" type="fractalNoise" baseFrequency="0.015 0.08" numOctaves="3" seed="4"
+        result="noise" />
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="0" xChannelSelector="R" yChannelSelector="G"
+        id="shimmer-disp" />
+    </filter>
+  </defs>
+</svg>
+
 
 </body>
 
