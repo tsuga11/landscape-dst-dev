@@ -351,7 +351,7 @@
       margin: var(--section-margin) var(--section-right-margin) var(--section-margin) calc(var(--section-margin) * 1.5);
       border-radius: var(--section-radius);
       isolation: isolate;
-      background: rgba(15, 12, 10, 0.18);
+      background: rgba(15, 12, 10, 0.10);
       backdrop-filter: blur(28px) saturate(180%) brightness(1.15) contrast(1.05);
       -webkit-backdrop-filter: blur(28px) saturate(180%) brightness(1.15) contrast(1.05);
       border: 1px solid rgba(255, 255, 255, 0.1);
@@ -850,18 +850,19 @@
   .card-grid::-webkit-scrollbar { display: none; }
 
   .project-card {
-    flex: 0 0 82%;
-    max-width: 82%;
+    flex: 0 0 88%;
+    max-width: 88%;
     min-width: 0;
     scroll-snap-align: start;
     transform: none !important;
+    transition: opacity 0.3s ease;
   }
 
   /* Buttons — visible, positioned relative to .split-right */
   .carousel-btn {
     display: flex;
-    top: 80px;
-    transform: none;
+    top: calc(160px / 2);
+    transform: translateY(-50%);
   }
 
   .carousel-btn.prev { left: 8px;  right: auto; }
@@ -1300,6 +1301,21 @@
     prev?.addEventListener('click', () => grid.scrollBy({ left: -getScrollAmt(), behavior: 'smooth' }));
     next?.addEventListener('click', () => grid.scrollBy({ left: getScrollAmt(), behavior: 'smooth' }));
   });
+
+  // Fade non-active carousel cards
+  document.querySelectorAll('.card-grid').forEach(grid => {
+    const updateFade = () => {
+      const cards = grid.querySelectorAll('.project-card');
+      cards.forEach(card => {
+        const rect = card.getBoundingClientRect();
+        const gridRect = grid.getBoundingClientRect();
+        const isActive = rect.left >= gridRect.left - 10;
+        card.style.opacity = isActive ? '1' : '0.35';
+      });
+    };
+    grid.addEventListener('scroll', updateFade);
+    updateFade();
+  });  
 
   </script>
 
