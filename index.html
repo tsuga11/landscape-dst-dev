@@ -309,39 +309,6 @@
       position: relative;
     }
 
-    .carousel-btn {
-      display: none;
-      /* hidden on desktop */
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      z-index: 10;
-      background: rgba(15, 12, 10, 0.7);
-      color: rgba(255, 255, 255, 0.8);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      font-size: 1rem;
-      cursor: pointer;
-      align-items: center;
-      justify-content: center;
-      transition: background 0.2s;
-      backdrop-filter: blur(8px);
-    }
-
-    .carousel-btn:hover {
-      background: rgba(196, 150, 58, 0.7);
-    }
-
-    .carousel-btn.prev {
-      left: -18px;
-    }
-
-    .carousel-btn.next {
-      right: -18px;
-    }
-
     /* ══════════════════════════════════════════════════════════
     FLOATING SECTION WRAPPER
     ══════════════════════════════════════════════════════════ */
@@ -792,6 +759,30 @@
       background: rgba(255, 255, 255, 0.6);
     }
 
+    .carousel-dots {
+      display: none;  /* hidden on desktop */
+      justify-content: center;
+      gap: 6px;
+      padding: 0.75rem 0 0.25rem;
+    }
+
+    .carousel-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.25);
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      transition: background 0.2s, transform 0.2s;
+      flex-shrink: 0;
+    }
+
+    .carousel-dot.active {
+      background: var(--gold);
+      transform: scale(1.3);
+    }    
+
     /* ══════════════════════════════════════════════════════════
     RESPONSIVE — single consolidated block
     ══════════════════════════════════════════════════════════ */
@@ -812,69 +803,62 @@
       }
     }
 
-@media (max-width: 900px) {
-  #mobile-header { display: flex; }
+    @media (max-width: 900px) {
+      #mobile-header { display: flex; }
 
-  #tools { margin-top: calc(100vh + 52px); }
+      #tools { margin-top: calc(100vh + 52px); }
 
-  .split-layout {
-    flex-direction: column;
-    padding: 1.5rem;
-    gap: 1.5rem;
-  }
+      .split-layout {
+        flex-direction: column;
+        padding: 1.5rem;
+        gap: 1.5rem;
+      }
 
-  .split-left  { width: 100%; }
-  .split-sticky { position: static; }
+      .split-left  { width: 100%; }
+      .split-sticky { position: static; }
 
-  .split-right {
-    position: relative;
-    overflow: hidden;
-    width: 100%;
-  }
+      .split-right {
+        position: relative;
+        overflow: hidden;
+        width: 100%;
+      }
 
-  .carousel-wrap { width: 100%; }
+      .carousel-wrap { width: 100%; }
 
-  .card-grid {
-    display: flex;
-    flex-direction: row;
-    overflow-x: scroll;
-    overflow-y: visible;
-    scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
-    overscroll-behavior-x: contain;
-    gap: 1rem;
-    padding: 0.5rem 1rem 1.5rem;
-    scrollbar-width: none;
-  }
+      .carousel-dots { display: flex; }
 
-  .card-grid::-webkit-scrollbar { display: none; }
+      .card-grid {
+        display: flex;
+        flex-direction: row;
+        overflow-x: scroll;
+        overflow-y: visible;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior-x: contain;
+        gap: 1rem;
+        padding: 0.5rem 1rem 1.5rem;
+        scrollbar-width: none;
+      }
 
-  .project-card {
-    flex: 0 0 88%;
-    max-width: 88%;
-    min-width: 0;
-    scroll-snap-align: start;
-    transform: none !important;
-    transition: opacity 0.3s ease;
-  }
+      .card-grid::-webkit-scrollbar { display: none; }
 
-  /* Buttons — visible, positioned relative to .split-right */
-  .carousel-btn {
-    display: flex;
-    top: calc(160px / 2);
-    transform: translateY(-50%);
-  }
+      .project-card {
+        flex: 0 0 88%;
+        max-width: 88%;
+        min-width: 0;
+        scroll-snap-align: start;
+        transform: none !important;
+        transition: opacity 0.3s ease;
+      }
 
-  .carousel-btn.prev { left: 8px;  right: auto; }
-  .carousel-btn.next { right: 8px; left: auto; }
 
-  #section-nav   { display: none; }
-  .hero-nav      { display: none; }
-  .hero-content  { padding: 1.5rem 1.5rem 4rem; }
-  .hero-title    { font-size: 2.5rem; }
-  .page-section  { margin: 0.75rem; }
-  .simple-section { padding: 1.5rem; }
-}
+      #section-nav   { display: none; }
+      .hero-nav      { display: none; }
+      .hero-content  { padding: 1.5rem 1.5rem 4rem; }
+      .hero-title    { font-size: 2.5rem; }
+      .page-section  { margin: 0.75rem; }
+      .simple-section { padding: 1.5rem; }
+    }
   </style>
 </head>
 
@@ -1040,9 +1024,9 @@
           </div>
 
         </div>
-        <button class="carousel-btn prev" aria-label="Previous">&#8592;</button>
-        <button class="carousel-btn next" aria-label="Next">&#8594;</button>
-
+        <div class="carousel-dots">
+          <!-- populated by JS -->
+        </div>
       </div>
     </div>
   </section>
@@ -1127,8 +1111,9 @@
           </div>
           
         </div>
-        <button class="carousel-btn prev" aria-label="Previous">&#8592;</button>
-        <button class="carousel-btn next" aria-label="Next">&#8594;</button>
+        <div class="carousel-dots">
+          <!-- populated by JS -->
+        </div>
       </div>
     </div>
   </section>
@@ -1294,22 +1279,36 @@
       }
     });
 
-    // ── Carousel arrows ────────────────────────────────────────
+
+  // ── Carousel dots ──────────────────────────────────────────
   document.querySelectorAll('.split-right').forEach(wrap => {
     const grid = wrap.querySelector('.card-grid');
-    const prev = wrap.querySelector('.carousel-btn.prev');
-    const next = wrap.querySelector('.carousel-btn.next');
+    const dotsContainer = wrap.querySelector('.carousel-dots');
+    if (!grid || !dotsContainer) return;
 
-    if (!grid) return;
+    const cards = grid.querySelectorAll('.project-card');
+    if (!cards.length) return;
 
-    const getScrollAmt = () => {
-      const card = grid.querySelector('.project-card');
-      if (!card) return 280;
-      return card.getBoundingClientRect().width + 16;
-    };
+    // Build dots
+    cards.forEach((_, i) => {
+      const dot = document.createElement('button');
+      dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
+      dot.setAttribute('aria-label', `Card ${i + 1}`);
+      dot.addEventListener('click', () => {
+        const cardWidth = cards[0].getBoundingClientRect().width + 16;
+        grid.scrollTo({ left: cardWidth * i, behavior: 'smooth' });
+      });
+      dotsContainer.appendChild(dot);
+    });
 
-    prev?.addEventListener('click', () => grid.scrollBy({ left: -getScrollAmt(), behavior: 'smooth' }));
-    next?.addEventListener('click', () => grid.scrollBy({ left: getScrollAmt(), behavior: 'smooth' }));
+    const dots = dotsContainer.querySelectorAll('.carousel-dot');
+
+    // Update active dot on scroll
+    grid.addEventListener('scroll', () => {
+      const cardWidth = cards[0].getBoundingClientRect().width + 16;
+      const idx = Math.round(grid.scrollLeft / cardWidth);
+      dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+    }, { passive: true });
   });
 
   // Fade non-active carousel cards
