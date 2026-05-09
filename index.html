@@ -1226,6 +1226,13 @@
        SCRIPTS
   ══════════════════════════════════════════════════════════ -->
   <script>
+
+    // Prevent browser scroll restoration on mobile
+    if (history.scrollRestoration) {
+      history.scrollRestoration = 'manual';
+    }
+    window.scrollTo(0, 0);
+
     // ── Parallax hero ──────────────────────────────────────────
     const hero = document.querySelector('.hero');
     const heroContent = document.querySelector('.hero-content');
@@ -1248,6 +1255,8 @@
     const sections = document.querySelectorAll('.page-section[id]');
     const navItems = document.querySelectorAll('.nav-item[data-section]');
 
+  // Small delay prevents observer from firing on initial layout
+  setTimeout(() => {
     const sectionObserver = new IntersectionObserver(entries => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
@@ -1261,6 +1270,7 @@
     }, { threshold: 0.25 });
 
     sections.forEach(s => sectionObserver.observe(s));
+  }, 500);
 
 
     // ── Mobile menu ────────────────────────────────────────────
