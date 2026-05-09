@@ -226,12 +226,14 @@
     #mobile-header {
       display: none;
       position: fixed;
-      top: 0; left: 0; right: 0;
+      top: 0;
+      left: 0;
+      right: 0;
       height: 52px;
       background: rgba(15, 12, 10, 0.95);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
-      border-bottom: 1px solid rgba(255,255,255,0.08);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
       z-index: 3000;
       align-items: center;
       justify-content: space-between;
@@ -244,15 +246,16 @@
       font-weight: 600;
       letter-spacing: 0.12em;
       text-transform: uppercase;
-      color: rgba(255,255,255,0.7);
+      color: rgba(255, 255, 255, 0.7);
     }
 
     #mobile-menu-btn {
       background: none;
-      border: 1px solid rgba(255,255,255,0.2);
-      color: rgba(255,255,255,0.7);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: rgba(255, 255, 255, 0.7);
       font-size: 1.1rem;
-      width: 36px; height: 36px;
+      width: 36px;
+      height: 36px;
       border-radius: 4px;
       cursor: pointer;
       display: flex;
@@ -261,37 +264,43 @@
       transition: background 0.2s;
     }
 
-    #mobile-menu-btn:hover { background: rgba(255,255,255,0.1); }
+    #mobile-menu-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
 
     /* ── MOBILE DROPDOWN MENU ────────────────────────────────── */
     #mobile-menu {
       display: none;
       position: fixed;
-      top: 52px; left: 0; right: 0;
+      top: 52px;
+      left: 0;
+      right: 0;
       background: rgba(10, 8, 6, 0.97);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
       z-index: 2999;
-      border-bottom: 1px solid rgba(255,255,255,0.08);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
       flex-direction: column;
     }
 
-    #mobile-menu.open { display: flex; }
+    #mobile-menu.open {
+      display: flex;
+    }
 
     .mobile-menu-item {
       padding: 1rem 1.5rem;
-      color: rgba(255,255,255,0.7);
+      color: rgba(255, 255, 255, 0.7);
       text-decoration: none;
       font-size: 0.9rem;
       font-weight: 500;
       letter-spacing: 0.08em;
       text-transform: uppercase;
-      border-bottom: 1px solid rgba(255,255,255,0.06);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
       transition: background 0.15s, color 0.15s;
     }
 
     .mobile-menu-item:hover {
-      background: rgba(255,255,255,0.05);
+      background: rgba(255, 255, 255, 0.05);
       color: var(--gold-light);
     }
 
@@ -301,15 +310,17 @@
     }
 
     .carousel-btn {
-      display: none; /* hidden on desktop */
+      display: none;
+      /* hidden on desktop */
       position: absolute;
       top: 50%;
       transform: translateY(-50%);
       z-index: 10;
-      background: rgba(15,12,10,0.7);
-      color: rgba(255,255,255,0.8);
-      border: 1px solid rgba(255,255,255,0.15);
-      width: 36px; height: 36px;
+      background: rgba(15, 12, 10, 0.7);
+      color: rgba(255, 255, 255, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      width: 36px;
+      height: 36px;
       border-radius: 50%;
       font-size: 1rem;
       cursor: pointer;
@@ -319,62 +330,20 @@
       backdrop-filter: blur(8px);
     }
 
-    .carousel-btn:hover { background: rgba(196,150,58,0.7); }
-    .carousel-btn.prev  { left: -18px; }
-    .carousel-btn.next  { right: -18px; }
-
-    /* ── RESPONSIVE ──────────────────────────────────────────── */
-    @media (max-width: 900px) {
-      /* Show mobile header */
-      #mobile-header { display: flex; }
-
-      /* Push sections down below mobile header */
-      #tools { margin-top: calc(100vh + 52px); }
-
-      /* Show carousel arrows */
-      .carousel-btn { display: flex; }
-
-      /* Carousel card grid */
-      .card-grid {
-        display: flex;
-        flex-direction: row;
-        overflow-x: scroll;
-        overflow-y: visible;
-        scroll-snap-type: x mandatory;
-        -webkit-overflow-scrolling: touch;
-        gap: 1rem;
-        padding: 0.5rem 2rem 1.5rem;
-        scrollbar-width: none; /* hide scrollbar Firefox */
-      }
-
-      .card-grid::-webkit-scrollbar { display: none; } /* hide scrollbar Chrome */
-
-      .project-card {
-        flex: 0 0 78vw;      /* main card takes 78% — shows slivers either side */
-        scroll-snap-align: center;
-        min-width: 0;              /* ← prevents flex children from overflowing */
-        transform: none !important; /* disable hover lift on mobile */
-      }
-
-      /* Existing mobile rules */
-      .split-layout   { flex-direction: column; padding: 1.5rem; gap: 1.5rem; }
-      .split-left     { width: 100%; }
-      .split-sticky   { position: static; }
-      #section-nav    { display: none; }
-      .hero-nav       { display: none; } /* replaced by mobile header */
-      .hero-content   { padding: 1.5rem 1.5rem 4rem; }
-      .hero-title     { font-size: 2.5rem; }
-      .page-section   { margin: 0.75rem 0.75rem; }
-      .simple-section { padding: 1.5rem; }
+    .carousel-btn:hover {
+      background: rgba(196, 150, 58, 0.7);
     }
 
-    @media (max-width: 1100px) and (min-width: 901px) {
-      #section-nav { right: 0.5rem; }
-      .nav-label   { display: none; }
-    }    
+    .carousel-btn.prev {
+      left: -18px;
+    }
+
+    .carousel-btn.next {
+      right: -18px;
+    }
 
     /* ══════════════════════════════════════════════════════════
-       FLOATING SECTION WRAPPER
+    FLOATING SECTION WRAPPER
     ══════════════════════════════════════════════════════════ */
     .page-section {
       max-width: 100%;
@@ -382,16 +351,10 @@
       margin: var(--section-margin) var(--section-right-margin) var(--section-margin) calc(var(--section-margin) * 1.5);
       border-radius: var(--section-radius);
       isolation: isolate;
-
-      /* Dark glass — fire/smoke shows through */
-      background: rgba(15, 12, 10, 0.38);
+      background: rgba(15, 12, 10, 0.18);
       backdrop-filter: blur(28px) saturate(180%) brightness(1.15) contrast(1.05);
       -webkit-backdrop-filter: blur(28px) saturate(180%) brightness(1.15) contrast(1.05);
-
-      /* Layered borders */
       border: 1px solid rgba(255, 255, 255, 0.1);
-
-      /* Outer shadow + inner highlight streak */
       box-shadow:
         0 12px 48px rgba(0, 0, 0, 0.45),
         0 2px 8px rgba(0, 0, 0, 0.25),
@@ -406,7 +369,6 @@
       border-color: rgba(100, 80, 50, 0.2);
     }
 
-    /* Top highlight streak — the "liquid" shine */
     .page-section::before {
       content: '';
       position: absolute;
@@ -425,7 +387,6 @@
       z-index: 2;
     }
 
-    /* Refraction shimmer — catches the warm fire tones */
     .page-section::after {
       content: '';
       position: absolute;
@@ -441,7 +402,7 @@
     }
 
     /* ══════════════════════════════════════════════════════════
-       SPLIT LAYOUT (sticky left title + scrolling right cards)
+    SPLIT LAYOUT
     ══════════════════════════════════════════════════════════ */
     .split-layout {
       display: flex;
@@ -458,7 +419,6 @@
       z-index: 2;
     }
 
-    /* Left — sticky title column */
     .split-left {
       width: 33%;
       flex-shrink: 0;
@@ -478,10 +438,6 @@
       margin-bottom: 0.65rem;
     }
 
-    .dark .section-eyebrow {
-      color: var(--gold);
-    }
-
     .section-title {
       font-family: 'Cormorant Garamond', serif;
       font-size: clamp(1.8rem, 3vw, 2.6rem);
@@ -491,10 +447,6 @@
       margin-bottom: 1rem;
     }
 
-    .dark .section-title {
-      color: #fff;
-    }
-
     .section-sub {
       font-size: 0.88rem;
       font-weight: 300;
@@ -502,23 +454,18 @@
       line-height: 1.65;
     }
 
-    .dark .section-sub {
-      color: rgba(255, 255, 255, 0.5);
-    }
-
-    /* Right — cards */
     .split-right {
       flex: 1;
+      min-width: 0;
     }
 
     /* ══════════════════════════════════════════════════════════
-       CARD GRID
+    CARD GRID
     ══════════════════════════════════════════════════════════ */
     .card-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
       gap: 1.25rem;
-      /*overflow: hidden;*/
     }
 
     .project-card {
@@ -530,8 +477,6 @@
       display: flex;
       flex-direction: column;
       position: relative;
-
-      /* Bright top edge + depth shadow */
       border: 1px solid rgba(255, 255, 255, 0.4);
       border-top: 1px solid rgba(255, 255, 255, 0.72);
       box-shadow:
@@ -539,20 +484,9 @@
         0 1px 4px rgba(0, 0, 0, 0.1),
         inset 0 1px 0 rgba(255, 255, 255, 0.9),
         inset 0 -1px 0 rgba(0, 0, 0, 0.04);
-
-      /* Reveal animation */
       opacity: 0;
       transform: translateY(20px);
-      transition: opacity 0.6s ease, transform 0.6s ease,
-        box-shadow 0.25s ease, border-color 0.25s ease;
-    }
-
-    .project-card:not(.wip):hover {
-      transform: translateY(-3px);
-      border-top-color: rgba(255, 255, 255, 0.9);
-      box-shadow:
-        0 12px 40px rgba(0, 0, 0, 0.25),
-        inset 0 1px 0 rgba(255, 255, 255, 0.95);
+      transition: opacity 0.6s ease, transform 0.6s ease, box-shadow 0.25s ease, border-color 0.25s ease;
     }
 
     .project-card.visible {
@@ -564,17 +498,18 @@
       opacity: 0.65;
     }
 
-    .project-card:not(.wip):hover {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 32px rgba(27, 58, 47, 0.14);
-    }
-
     .project-card.wip {
       cursor: default;
     }
 
     .project-card.wip:hover {
       transform: none;
+    }
+
+    .project-card:not(.wip):hover {
+      transform: translateY(-3px);
+      border-top-color: rgba(255, 255, 255, 0.9);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.95);
     }
 
     .card-img-wrap {
@@ -686,7 +621,7 @@
     }
 
     /* ══════════════════════════════════════════════════════════
-       SIMPLE SECTIONS (publications, cv, about — no card grid)
+    SIMPLE SECTIONS
     ══════════════════════════════════════════════════════════ */
     .simple-section {
       padding: 3.5rem;
@@ -756,7 +691,7 @@
     }
 
     /* ══════════════════════════════════════════════════════════
-       FOOTER SECTION
+    FOOTER
     ══════════════════════════════════════════════════════════ */
     .footer-inner {
       padding: 2rem 3.5rem;
@@ -783,7 +718,7 @@
     }
 
     /* ══════════════════════════════════════════════════════════
-       FLOATING SECTION NAV (right side)
+    SECTION NAV
     ══════════════════════════════════════════════════════════ */
     #section-nav {
       position: fixed;
@@ -803,7 +738,6 @@
       gap: 0.55rem;
       text-decoration: none;
       padding: 0.55rem 0;
-      position: relative;
     }
 
     .nav-label {
@@ -820,7 +754,6 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      position: relative;
     }
 
     .nav-dot {
@@ -832,7 +765,6 @@
       flex-shrink: 0;
     }
 
-    /* Vertical line between dots */
     .nav-item:not(:last-child) .nav-dot-wrap::after {
       content: '';
       display: block;
@@ -842,7 +774,6 @@
       margin-top: 2px;
     }
 
-    /* Active state */
     .nav-item.active .nav-label {
       color: rgba(255, 255, 255, 0.9);
       font-weight: 500;
@@ -862,7 +793,7 @@
     }
 
     /* ══════════════════════════════════════════════════════════
-       RESPONSIVE
+    RESPONSIVE — single consolidated block
     ══════════════════════════════════════════════════════════ */
 
     @media (max-width: 1100px) {
@@ -873,18 +804,54 @@
       .nav-label {
         display: none;
       }
-
-      /* hide text, keep dots */
     }
 
     @media (min-width: 901px) {
-      .card-grid { overflow: hidden; }
-    }    
+      .card-grid {
+        overflow: hidden;
+      }
+    }
 
     @media (max-width: 900px) {
+      #mobile-header {
+        display: flex;
+      }
+
+      #tools {
+        margin-top: calc(100vh + 52px);
+      }
+
+      .carousel-btn {
+        display: flex;
+      }
+
+      .card-grid {
+        display: flex;
+        flex-direction: row;
+        overflow-x: scroll;
+        overflow-y: visible;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+        gap: 1rem;
+        padding: 0.5rem 2rem 1.5rem;
+        scrollbar-width: none;
+      }
+
+      .card-grid::-webkit-scrollbar {
+        display: none;
+      }
+
+      .project-card {
+        flex: 0 0 78vw;
+        min-width: 0;
+        scroll-snap-align: center;
+        transform: none !important;
+      }
+
       .split-layout {
         flex-direction: column;
-        padding: 2rem;
+        padding: 1.5rem;
+        gap: 1.5rem;
       }
 
       .split-left {
@@ -899,18 +866,16 @@
         display: none;
       }
 
-      .hero-nav,
+      .hero-nav {
+        display: none;
+      }
+
       .hero-content {
-        padding-left: 1.5rem;
-        padding-right: 1.5rem;
+        padding: 1.5rem 1.5rem 4rem;
       }
 
       .hero-title {
         font-size: 2.5rem;
-      }
-
-      .card-grid {
-        grid-template-columns: 1fr;
       }
 
       .page-section {
@@ -918,7 +883,7 @@
       }
 
       .simple-section {
-        padding: 2rem;
+        padding: 1.5rem;
       }
     }
   </style>
@@ -1301,45 +1266,45 @@
     sections.forEach(s => sectionObserver.observe(s));
 
 
-      // ── Mobile menu ────────────────────────────────────────────
-      const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-      const mobileMenu = document.getElementById('mobile-menu');
+    // ── Mobile menu ────────────────────────────────────────────
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
 
-      mobileMenuBtn?.addEventListener('click', () => {
-        mobileMenu.classList.toggle('open');
-        mobileMenuBtn.textContent = mobileMenu.classList.contains('open') ? '✕' : '☰';
-      });
+    mobileMenuBtn?.addEventListener('click', () => {
+      mobileMenu.classList.toggle('open');
+      mobileMenuBtn.textContent = mobileMenu.classList.contains('open') ? '✕' : '☰';
+    });
 
-      function closeMobileMenu() {
-        mobileMenu?.classList.remove('open');
-        mobileMenuBtn.textContent = '☰';
+    function closeMobileMenu() {
+      mobileMenu?.classList.remove('open');
+      mobileMenuBtn.textContent = '☰';
+    }
+
+    // Close menu if clicking outside
+    document.addEventListener('click', e => {
+      if (!mobileMenu?.contains(e.target) && e.target !== mobileMenuBtn) {
+        closeMobileMenu();
       }
+    });
 
-      // Close menu if clicking outside
-      document.addEventListener('click', e => {
-        if (!mobileMenu?.contains(e.target) && e.target !== mobileMenuBtn) {
-          closeMobileMenu();
-        }
+    // ── Carousel arrows ────────────────────────────────────────
+    document.querySelectorAll('.carousel-wrap').forEach(wrap => {
+      const grid = wrap.querySelector('.card-grid');
+      const prev = wrap.querySelector('.carousel-btn.prev');
+      const next = wrap.querySelector('.carousel-btn.next');
+
+      if (!grid) return;
+
+      const scrollBy = () => grid.querySelector('.project-card')?.offsetWidth + 16 || 300;
+
+      prev?.addEventListener('click', () => {
+        grid.scrollBy({ left: -scrollBy(), behavior: 'smooth' });
       });
 
-      // ── Carousel arrows ────────────────────────────────────────
-      document.querySelectorAll('.carousel-wrap').forEach(wrap => {
-        const grid = wrap.querySelector('.card-grid');
-        const prev = wrap.querySelector('.carousel-btn.prev');
-        const next = wrap.querySelector('.carousel-btn.next');
-
-        if (!grid) return;
-
-        const scrollBy = () => grid.querySelector('.project-card')?.offsetWidth + 16 || 300;
-
-        prev?.addEventListener('click', () => {
-          grid.scrollBy({ left: -scrollBy(), behavior: 'smooth' });
-        });
-
-        next?.addEventListener('click', () => {
-          grid.scrollBy({ left: scrollBy(), behavior: 'smooth' });
-        });
+      next?.addEventListener('click', () => {
+        grid.scrollBy({ left: scrollBy(), behavior: 'smooth' });
       });
+    });
 
   </script>
 
