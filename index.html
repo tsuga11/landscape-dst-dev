@@ -837,8 +837,18 @@
         scrollbar-width: none;
       }
 
+      .carousel-wrap {
+        overflow: hidden;              /* clips cards at panel edges */
+        border-radius: 6px;
+      }     
+      
+      .carousel-btn.prev { left: 8px; }
+      .carousel-btn.next { right: 8px; }      
+
       .card-grid::-webkit-scrollbar {
         display: none;
+        overscroll-behavior-x: contain; /* prevents swipe from scrolling the page */
+        padding: 0.5rem 1rem 1.5rem;   /* reduce padding so cards don't start outside */        
       }
 
       .project-card {
@@ -1295,15 +1305,14 @@
 
       if (!grid) return;
 
-      const scrollBy = () => grid.querySelector('.project-card')?.offsetWidth + 16 || 300;
+      const getScrollAmt = () => {
+        const card = grid.querySelector('.project-card');
+        if (!card) return 280;
+        return card.getBoundingClientRect().width + 16;
+      };
 
-      prev?.addEventListener('click', () => {
-        grid.scrollBy({ left: -scrollBy(), behavior: 'smooth' });
-      });
-
-      next?.addEventListener('click', () => {
-        grid.scrollBy({ left: scrollBy(), behavior: 'smooth' });
-      });
+      prev?.addEventListener('click', () => grid.scrollBy({ left: -getScrollAmt(), behavior: 'smooth' }));
+      next?.addEventListener('click', () => grid.scrollBy({ left: getScrollAmt(), behavior: 'smooth' }));
     });
 
   </script>
