@@ -58,31 +58,8 @@
       /* ← pushes first section below the fixed hero */
     }
 
-    @keyframes heatRise {
-      0%   { opacity: 0; transform: translateY(0px)   scaleX(1); }
-      15%  { opacity: 1; }
-      40%  { opacity: 0.7; transform: translateY(-3px) scaleX(1.002); }
-      70%  { opacity: 0.5; transform: translateY(2px)  scaleX(0.999); }
-      100% { opacity: 0; transform: translateY(0px)   scaleX(1); }
-    }
 
-.heat-shimmer {
-  position: absolute;
-  bottom: 0; left: 0; right: 0;
-  height: 40%;
-  z-index: 1;
-  pointer-events: none;
-  background: linear-gradient(
-    to top,
-    rgba(255, 100, 10, 0.60) 0%,
-    rgba(255, 60, 0, 0.20) 50%,
-    transparent 100%
-  );
-  backdrop-filter: blur(2px);
-  -webkit-backdrop-filter: blur(2px);
-  opacity: 0;
-  animation: heatRise 5s ease-out 1s forwards;
-}
+
     /* ══════════════════════════════════════════════════════════
        HERO
     ══════════════════════════════════════════════════════════ */
@@ -899,7 +876,21 @@
 </head>
 
 <body>
+  <svg xmlns="http://www.w3.org/2000/svg" style="position:absolute;width:0;height:0;overflow:hidden;">
+    <defs>
+      <filter id="heat" x="-5%" y="-5%" width="110%" height="110%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.012 0.06" numOctaves="3" seed="3" result="noise">
+          <animate attributeName="baseFrequency" values="0.012 0.06; 0.015 0.07; 0.010 0.055; 0.013 0.065; 0.012 0.06"
+            dur="7s" repeatCount="indefinite" />
+        </feTurbulence>
+        <feDisplacementMap id="heat-disp" in="SourceGraphic" in2="noise" scale="0" xChannelSelector="R"
+          yChannelSelector="G" result="displaced" />
+        <feGaussianBlur in="displaced" stdDeviation="0.4" />
+      </filter>
+    </defs>
+    </svg>
 
+  
 
   <!-- Mobile header (hidden on desktop) -->
   <header id="mobile-header">
@@ -963,7 +954,7 @@
     <!--
     <div class="hero-shimmer" id="hero-shimmer"></div>
     -->
-    <div class="heat-shimmer"></div>
+
     <nav class="hero-nav">
       <span class="site-name">Nicholas Povak</span>
       <a href="mailto:napovak@gmail.com">napovak@gmail.com</a>
@@ -1384,6 +1375,44 @@
     grid.addEventListener('touchstart', stopTimer, { passive: true });
     grid.addEventListener('touchend', startTimer, { passive: true });
   });
+
+
+
+    // ── Heat shimmer ───────────────────────────────────────────
+    window.addEventListener('load', () => {
+      const disp = document.getElementById('heat-disp');
+      const heroImg = document.querySelector('.hero-bg-img img');
+      if (!disp || !heroImg) return;
+
+      let elapsed = 0;
+      let lastTime = null;
+      const duration = 7000; // 7 seconds total
+
+      // Override the CSS filter to include our distortion
+      heroImg.style.filter = 'url(#heat) brightness(0.6)';
+
+      function animate(ts) {
+        if (!lastTime) lastTime = ts;
+        const dt = ts - lastTime;
+        lastTime = ts;
+        elapsed += dt;
+
+        const t = elapsed / duration;
+        const envelope = t < 0.15 ? t / 0.15        // ramp up
+          : t < 0.65 ? 1               // hold
+            : (1 - t) / 0.35;            // fade out
+
+        disp.setAttribute('scale', Math.max(0, envelope * 20));
+
+        if (elapsed < duration) {
+          requestAnimationFrame(animate);
+        } else {
+          heroImg.style.filter = ''; // restore CSS filter
+        }
+      }
+
+      setTimeout(() => requestAnimationFrame(animate), 1200);
+    });
 
 </script>
 
