@@ -489,6 +489,63 @@
       box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.95);
     }
 
+
+    /* ── JS-driven layout classes (applied by updateCarouselLayout()) ── */
+    .card-grid.layout-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 1.25rem;
+      overflow: hidden;
+      cursor: default;
+    }
+
+    .card-grid.layout-row {
+      display: flex;
+      flex-direction: row;
+      overflow-x: auto;
+      gap: 1rem;
+      padding-bottom: 0.75rem;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255,255,255,0.2) transparent;
+      cursor: grab;
+    }
+
+    .card-grid.layout-row:active { cursor: grabbing; }
+
+    .card-grid.layout-row .project-card {
+      flex: 0 0 280px;
+      max-width: 280px;
+      transform: none !important;
+    }
+
+    .card-grid.layout-carousel {
+      display: flex;
+      flex-direction: row;
+      overflow-x: scroll;
+      overflow-y: visible;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior-x: contain;
+      gap: 1rem;
+      padding: 0.5rem 1rem 1.5rem;
+      scrollbar-width: none;
+    }
+
+    .card-grid.layout-carousel::-webkit-scrollbar { display: none; }
+
+    .card-grid.layout-carousel .project-card {
+      flex: 0 0 88%;
+      max-width: 88%;
+      min-width: 0;
+      scroll-snap-align: start;
+      transform: none !important;
+      transition: opacity 0.3s ease;
+    }
+
+    /* ── Dots: hidden unless carousel ────────────────────────── */
+    .carousel-dots { display: none; }
+    .split-right.is-carousel .carousel-dots { display: flex; }    
+
     .card-img-wrap {
       height: 160px;
       overflow: hidden;
@@ -811,9 +868,7 @@
     }
 
     @media (min-width: 901px) {
-      .card-grid {
-        overflow: hidden;
-      }
+
     }
 
     @media (max-width: 900px) {
@@ -836,33 +891,6 @@
         width: 100%;
       }
 
-      .carousel-wrap { width: 100%; }
-
-      .carousel-dots { display: flex; }
-
-      .card-grid {
-        display: flex;
-        flex-direction: row;
-        overflow-x: scroll;
-        overflow-y: visible;
-        scroll-snap-type: x mandatory;
-        -webkit-overflow-scrolling: touch;
-        overscroll-behavior-x: contain;
-        gap: 1rem;
-        padding: 0.5rem 1rem 1.5rem;
-        scrollbar-width: none;
-      }
-
-      .card-grid::-webkit-scrollbar { display: none; }
-
-      .project-card {
-        flex: 0 0 88%;
-        max-width: 88%;
-        min-width: 0;
-        scroll-snap-align: start;
-        transform: none !important;
-        transition: opacity 0.3s ease;
-      }
 
 
       #section-nav   { display: none; }
@@ -1413,6 +1441,55 @@
 
       setTimeout(() => requestAnimationFrame(animate), 1200);
     });
+
+
+
+      // ── Responsive card layout strategy ───────────────────────
+      function updateCarouselLayout() {
+        const width = window.innerWidth;
+
+        document.querySelectorAll('.split-right').forEach(wrap => {
+          const grid = wrap.querySelector('.card-grid');
+          const dots = wrap.querySelector('.carousel-dots');
+          if (!grid) return;
+
+          const count = grid.querySelectorAll('.project-card').length;
+          const cardMinW = 240;  // minimum comfortable card width in px
+          const leftColW = width * 0.33; // split-left takes ~33%
+          const available = width - leftColW - 80; // subtract margins/padding
+          const fitCount = Math.floor(available / (cardMinW + 16)); // cards that fit
+
+          // Remove previous layout classes
+          grid.classList.remove('layout-grid', 'layout-row', 'layout-carousel');
+          wrap.classList.remove('is-carousel');
+
+          if (width < 600) {
+            // Always carousel on small screens
+            grid.classList.add('layout-carousel');
+            wrap.classList.add('is-carousel');
+            if (dots) dots.style.display = 'flex';
+
+          } else if (fitCount >= count) {
+            // All cards fit — use grid
+            grid.classList.add('layout-grid');
+            if (dots) dots.style.display = 'none';
+
+          } else if (fitCount >= 2) {
+            // Partial fit — scrollable row, no snap
+            grid.classList.add('layout-row');
+            if (dots) dots.style.display = 'none';
+
+          } else {
+            // Not enough room for 2 — carousel
+            grid.classList.add('layout-carousel');
+            wrap.classList.add('is-carousel');
+            if (dots) dots.style.display = 'flex';
+          }
+        });
+      }
+
+      updateCarouselLayout();
+      window.addEventListener('resize', updateCarouselLayout, { passive: true });
 
 </script>
 
