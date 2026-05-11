@@ -328,6 +328,7 @@
       margin: var(--section-margin) var(--section-right-margin) var(--section-margin) calc(var(--section-margin) * 1.5);
       border-radius: var(--section-radius);
       isolation: isolate;
+      /*
       background: rgba(15, 12, 10, 0.10);
       backdrop-filter: blur(28px) saturate(180%) brightness(1.15) contrast(1.05);
       -webkit-backdrop-filter: blur(28px) saturate(180%) brightness(1.15) contrast(1.05);
@@ -339,6 +340,14 @@
         inset 0 -1px 0 rgba(0, 0, 0, 0.18),
         inset 1px 0 0 rgba(255, 255, 255, 0.06),
         inset -1px 0 0 rgba(255, 255, 255, 0.06);
+        */
+        /* ← Replace everything below this line */
+        background: rgba(8, 6, 4, 0.08);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: none;
+        box-shadow: none;
+
     }
 
     .page-section.dark {
@@ -346,6 +355,7 @@
       border-color: rgba(100, 80, 50, 0.2);
     }
 
+    /*
     .page-section::before {
       content: '';
       position: absolute;
@@ -377,6 +387,7 @@
       pointer-events: none;
       z-index: 1;
     }
+      */
 
     /* ══════════════════════════════════════════════════════════
     SPLIT LAYOUT
