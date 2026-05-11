@@ -1406,7 +1406,7 @@
 
       let elapsed = 0;
       let lastTime = null;
-      const duration = 7000; // 7 seconds total
+      const duration = 5000; // 7 seconds total
 
       // Override the CSS filter to include our distortion
       heroImg.style.filter = 'url(#heat) brightness(0.6)';
@@ -1419,10 +1419,10 @@
 
         const t = elapsed / duration;
         const envelope = t < 0.15 ? t / 0.15        // ramp up
-          : t < 0.65 ? 1               // hold
+          : t < 0.4 ? 1               // hold, instead of 0.4 it was 0.65
             : (1 - t) / 0.35;            // fade out
 
-        disp.setAttribute('scale', Math.max(0, envelope * 20));
+        disp.setAttribute('scale', Math.max(0, envelope * 10)); // intensity, was 20
 
         if (elapsed < duration) {
           requestAnimationFrame(animate);
@@ -1431,7 +1431,7 @@
         }
       }
 
-      setTimeout(() => requestAnimationFrame(animate), 1200);
+      setTimeout(() => requestAnimationFrame(animate), 200); // <- ms before it starts, was 1200
     });
 
 
