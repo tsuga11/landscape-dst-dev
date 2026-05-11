@@ -510,25 +510,6 @@
       cursor: default;
     }
 
-    .card-grid.layout-row {
-      display: flex;
-      flex-direction: row;
-      overflow-x: auto;
-      gap: 1rem;
-      padding-bottom: 0.75rem;
-      scrollbar-width: thin;
-      scrollbar-color: rgba(255,255,255,0.2) transparent;
-      cursor: grab;
-    }
-
-    .card-grid.layout-row:active { cursor: grabbing; }
-
-    .card-grid.layout-row .project-card {
-      flex: 0 0 280px;
-      max-width: 280px;
-      transform: none !important;
-    }
-
     .card-grid.layout-carousel {
       display: flex;
       flex-direction: row;
@@ -1456,48 +1437,27 @@
 
 
       // ── Responsive card layout strategy ───────────────────────
-      function updateCarouselLayout() {
-        const width = window.innerWidth;
+  function updateCarouselLayout() {
+    const width = window.innerWidth;
 
-        document.querySelectorAll('.split-right').forEach(wrap => {
-          const grid = wrap.querySelector('.card-grid');
-          const dots = wrap.querySelector('.carousel-dots');
-          if (!grid) return;
+    document.querySelectorAll('.split-right').forEach(wrap => {
+      const grid = wrap.querySelector('.card-grid');
+      const dots = wrap.querySelector('.carousel-dots');
+      if (!grid) return;
 
-          const count = grid.querySelectorAll('.project-card').length;
-          const cardMinW = 240;  // minimum comfortable card width in px
-          const leftColW = width * 0.33; // split-left takes ~33%
-          const available = width - leftColW - 80; // subtract margins/padding
-          const fitCount = Math.floor(available / (cardMinW + 16)); // cards that fit
+      grid.classList.remove('layout-grid', 'layout-row', 'layout-carousel');
+      wrap.classList.remove('is-carousel');
 
-          // Remove previous layout classes
-          grid.classList.remove('layout-grid', 'layout-row', 'layout-carousel');
-          wrap.classList.remove('is-carousel');
-
-          if (width < 600) {
-            // Always carousel on small screens
-            grid.classList.add('layout-carousel');
-            wrap.classList.add('is-carousel');
-            if (dots) dots.style.display = 'flex';
-
-          } else if (fitCount >= count) {
-            // All cards fit — use grid
-            grid.classList.add('layout-grid');
-            if (dots) dots.style.display = 'none';
-
-          } else if (fitCount >= 2) {
-            // Partial fit — scrollable row, no snap
-            grid.classList.add('layout-row');
-            if (dots) dots.style.display = 'none';
-
-          } else {
-            // Not enough room for 2 — carousel
-            grid.classList.add('layout-carousel');
-            wrap.classList.add('is-carousel');
-            if (dots) dots.style.display = 'flex';
-          }
-        });
+      if (width <= 600) {
+        grid.classList.add('layout-carousel');
+        wrap.classList.add('is-carousel');
+        if (dots) dots.style.display = 'flex';
+      } else {
+        grid.classList.add('layout-grid');
+        if (dots) dots.style.display = 'none';
       }
+    });
+  }
 
       updateCarouselLayout();
       window.addEventListener('resize', updateCarouselLayout, { passive: true });
