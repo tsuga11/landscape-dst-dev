@@ -1332,34 +1332,42 @@
   });
 
   // ── Section nav highlighting ───────────────────────────────
-  const sections = document.querySelectorAll('.page-section[id]');
-  const navItems = document.querySelectorAll('.nav-item[data-section]');
+    // ── Nav state — single unified handler ─────────────────────
+    const sections = document.querySelectorAll('.page-section[id]');
+    const navItems = document.querySelectorAll('.nav-item[data-section]');
+    const navHome = document.getElementById('nav-home');
 
-  setTimeout(() => {
-    const sectionObserver = new IntersectionObserver(entries => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          navItems.forEach(n => n.classList.remove('active'));
-          document.querySelector(
-            `.nav-item[data-section="${entry.target.id}"]`
-          )?.classList.add('active');
+    function updateNavState() {
+      const scrollY = window.scrollY;
+      const viewportH = window.innerHeight;
+
+      // At top — activate home only
+      if (scrollY < viewportH * 0.5) {
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        navHome?.classList.add('active');
+        return;
+      }
+
+      // Find which section is currently most visible
+      let activeSection = null;
+      sections.forEach(section => {
+        const rect = section.getBoundingClientRect();
+        if (rect.top < viewportH * 0.6 && rect.bottom > 0) {
+          activeSection = section;
         }
       });
-    }, { threshold: 0.3, rootMargin: '0px 0px -30% 0px' });
 
-    sections.forEach(s => sectionObserver.observe(s));
-  }, 800);
-
-  // Home icon activates when scrolled near top
-  window.addEventListener('scroll', () => {
-    if (window.scrollY < window.innerHeight * 0.6) {
-      navItems.forEach(n => n.classList.remove('active'));
-      document.getElementById('nav-home')?.classList.add('active');
+      // Update nav
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      if (activeSection) {
+        document.querySelector(
+          `.nav-item[data-section="${activeSection.id}"]`
+        )?.classList.add('active');
+      }
     }
-  }, { passive: true });
 
-  // Activate home on load
-  document.getElementById('nav-home')?.classList.add('active');
+    window.addEventListener('scroll', updateNavState, { passive: true });
+    updateNavState(); // Set correct state on load
 
   // ── Mobile menu ────────────────────────────────────────────
   const mobileMenuBtn = document.getElementById('mobile-menu-btn');
