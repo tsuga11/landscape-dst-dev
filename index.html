@@ -42,9 +42,9 @@
       --section-radius: 10px;
     }
 
-    html {
+    /*html {
       scroll-behavior: smooth;
-    }
+    }*/
 
     body {
       font-family: 'DM Sans', sans-serif;
@@ -834,6 +834,10 @@
       stroke: var(--gold-light);
     }
 
+    #nav-home.active .nav-home-icon {
+      stroke: var(--gold);
+    }
+
     .carousel-dots {
       display: none;  /* hidden on desktop */
       justify-content: center;
@@ -993,6 +997,11 @@
   <!-- ══════════════════════════════════════════════════════════
        HERO
   ══════════════════════════════════════════════════════════ -->
+  <nav class="hero-nav">
+    <span class="site-name">Ecosystem Resilience Collaborative</span>
+    <a href="mailto:napovak@gmail.com">napovak@gmail.com</a>
+  </nav>
+  
   <section class="hero">
     <div class="hero-bg-img">
       <img src="assets/wildfire-on-mountain_1600.jpg" alt="Burning forest landscape">
@@ -1000,11 +1009,6 @@
     <!--
     <div class="hero-shimmer" id="hero-shimmer"></div>
     -->
-
-    <nav class="hero-nav">
-      <span class="site-name">Nicholas Povak</span>
-      <a href="mailto:napovak@gmail.com">napovak@gmail.com</a>
-    </nav>
     <div class="hero-content">
       <p class="hero-eyebrow">Landscape ecology · Decision support · Wildfire</p>
       <h1 class="hero-title">
@@ -1346,6 +1350,17 @@
     sections.forEach(s => sectionObserver.observe(s));
   }, 800);
 
+  // Home icon activates when scrolled near top
+  window.addEventListener('scroll', () => {
+    if (window.scrollY < window.innerHeight * 0.6) {
+      navItems.forEach(n => n.classList.remove('active'));
+      document.getElementById('nav-home')?.classList.add('active');
+    }
+  }, { passive: true });
+
+  // Activate home on load
+  document.getElementById('nav-home')?.classList.add('active');
+
   // ── Mobile menu ────────────────────────────────────────────
   const mobileMenuBtn = document.getElementById('mobile-menu-btn');
   const mobileMenu = document.getElementById('mobile-menu');
@@ -1365,6 +1380,19 @@
       closeMobileMenu();
     }
   });
+
+
+  // Smooth scroll for all internal anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', e => {
+        const target = document.querySelector(a.getAttribute('href'));
+        if (target) {
+          e.preventDefault();
+          target.scrollIntoView({ behavior: 'smooth' });
+        }
+      });
+    });
+
 
   // ── Carousel: dots, auto-advance, click-drag, fade ────────
   document.querySelectorAll('.split-right').forEach(wrap => {
