@@ -758,32 +758,33 @@
       background: #2b6fd4;
     }
 
+
+    .tools-section {
+      background: var(--cream);
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+    }
+
+    /* Fix text colors inside tools since background is now light */
+    .tools-section .section-title { color: var(--green-deep); }
+    .tools-section .section-eyebrow { color: var(--green-light); }
+    .tools-section .section-sub { color: var(--text-mid); }
+
     /* ══════════════════════════════════════════════════════════
     FOOTER
     ══════════════════════════════════════════════════════════ */
-    .footer-inner {
-      padding: 2rem 3.5rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 1rem;
+    .footer-section {
+      min-height: unset;           /* overrides the 100vh */
+      background: #1a1a14;         /* matches news section */
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+      border-radius: 0;            /* full bleed feel */
+      margin: 0;                   /* no floating margin */
     }
 
-    .footer-inner p {
-      font-size: 0.8rem;
-      color: rgba(255, 255, 255, 0.35);
-      letter-spacing: 0.04em;
-    }
-
-    .footer-inner a {
-      color: rgba(255, 255, 255, 0.45);
-      text-decoration: none;
-    }
-
-    .footer-inner a:hover {
-      color: var(--gold-light);
-    }
+    .footer-section .footer-inner p { color: rgba(240, 232, 208, 0.4); }
+    .footer-section .footer-inner a { color: rgba(240, 232, 208, 0.5); }
+    .footer-section .footer-inner a:hover { color: var(--gold-light); }
 
     /* ══════════════════════════════════════════════════════════
     SECTION NAV
@@ -1601,7 +1602,7 @@
   <!-- ══════════════════════════════════════════════════════════
       5. Tools — floating glass
   ══════════════════════════════════════════════════════════ -->
-  <section class="page-section" id="tools">
+  <section class="page-section tools-section" id="tools">
     <div class="split-layout">
       <div class="split-left">
         <div class="split-sticky">
@@ -1687,7 +1688,7 @@
   <!-- ══════════════════════════════════════════════════════════
        FOOTER
   ══════════════════════════════════════════════════════════ -->
-  <section class="page-section dark" style="margin-bottom: var(--section-margin);">
+  <section class="page-section footer-section" style="margin-bottom: var(--section-margin);">
     <div class="footer-inner">
       <p>© 2025 Nicholas Povak &nbsp;·&nbsp; <a href="http://northcoastxy.com">northcoastxy.com</a></p>
       <p><a href="mailto:napovak@gmail.com">napovak@gmail.com</a></p>
