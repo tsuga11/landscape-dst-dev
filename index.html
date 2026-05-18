@@ -1016,13 +1016,16 @@
 
 
     #section-nav.on-light .nav-label {
-      color: rgba(27, 58, 47, 0.5);
-      text-shadow: none;
+      background: transparent;          /* ← remove pill on light bg */
+      color: rgba(27, 58, 47, 0.6);
+      border: none;
     }
 
     #section-nav.on-light .nav-label:hover,
     #section-nav.on-light .nav-item.active .nav-label {
       color: var(--green-deep);
+      font-weight: 600;
+      background: transparent;
     }
 
     #section-nav.on-light .nav-dot {
