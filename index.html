@@ -790,7 +790,7 @@
       right: 1.75rem;
       top: 50%;
       transform: translateY(-50%);
-      z-index: 2000;
+      z-index: 3000;
       display: flex;
       flex-direction: column;
       align-items: flex-end;
@@ -812,7 +812,7 @@
       text-transform: uppercase;
       color: rgba(255, 255, 255, 0.35);
       transition: color 0.25s, font-weight 0.25s;
-      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+      text-shadow: 0 1px 4px rgba(0,0,0,0.6);  /* ← add this */
     }
 
     .nav-dot-wrap {
@@ -868,6 +868,38 @@
     #nav-home.active .nav-home-icon {
       stroke: var(--gold);
     }
+
+
+
+    #section-nav.on-light .nav-label {
+      color: rgba(27, 58, 47, 0.5);
+      text-shadow: none;
+    }
+
+    #section-nav.on-light .nav-label:hover,
+    #section-nav.on-light .nav-item.active .nav-label {
+      color: var(--green-deep);
+    }
+
+    #section-nav.on-light .nav-dot {
+      background: rgba(27, 58, 47, 0.25);
+    }
+
+    #section-nav.on-light .nav-item.active .nav-dot {
+      background: var(--gold);
+    }
+
+    #section-nav.on-light .nav-item:not(:last-child) .nav-dot-wrap::after {
+      background: rgba(27, 58, 47, 0.15);
+    }
+
+    #section-nav.on-light .nav-home-icon {
+      stroke: rgba(27, 58, 47, 0.4);
+    }
+
+    #section-nav.on-light #nav-home.active .nav-home-icon {
+      stroke: var(--gold);
+    }    
 
     .carousel-dots {
       display: none;  /* hidden on desktop */
@@ -1619,13 +1651,27 @@
 
   // ── Section nav highlighting ───────────────────────────────
     // ── Nav state — single unified handler ─────────────────────
-    const sections = document.querySelectorAll('.page-section[id]');
+    const sections = document.querySelectorAll('.page-section[id], .people-section[id]');
     const navItems = document.querySelectorAll('.nav-item[data-section]');
     const navHome = document.getElementById('nav-home');
 
     function updateNavState() {
       const scrollY = window.scrollY;
       const viewportH = window.innerHeight;
+      const peopleRect = peopleSect?.getBoundingClientRect();
+
+      // Check if people section is currently covering the viewport
+      const overPeople = peopleRect &&
+        peopleRect.top < viewportH * 0.5 &&
+        peopleRect.bottom > viewportH * 0.5;
+
+      // Switch nav dot colors for light background
+      const nav = document.getElementById('section-nav');
+      if (overPeople) {
+        nav?.classList.add('on-light');
+      } else {
+        nav?.classList.remove('on-light');
+      }
 
       // At top — activate home only
       if (scrollY < viewportH * 0.5) {
@@ -1869,7 +1915,7 @@
     entries.forEach(entry => {
       if (entry.isIntersecting) {
         entry.target.classList.add('in-view');
-        peopleAnimObserver.unobserve(entry.target); // only animate once
+        //peopleAnimObserver.unobserve(entry.target); // only animate once
       }
     });
   }, { threshold: 0.15 });
