@@ -123,6 +123,19 @@
       pointer-events: none;
     }
 
+    .hero-bg-secondary::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        135deg,
+        rgba(80, 85, 95, 0.92) 0%,
+        rgba(90, 90, 100, 0.80) 40%,
+        rgba(110, 105, 100, 0.40) 70%,
+        rgba(120, 110, 95, 0.08) 100%
+      );
+    }    
+
     .hero-nav {
       position: fixed;
       top: 0;
@@ -393,6 +406,23 @@
       z-index: 1;
     }
       */
+
+    /* ── People entrance animations ─────────────────────────── */
+    .people-animate {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    .people-animate.delay-1 { transition-delay: 0.1s; }
+    .people-animate.delay-2 { transition-delay: 0.25s; }
+    .people-animate.delay-3 { transition-delay: 0.4s; }
+    .people-animate.delay-4 { transition-delay: 0.55s; }
+
+    .people-animate.in-view {
+      opacity: 1;
+      transform: translateY(0);
+    }      
 
     /* ══════════════════════════════════════════════════════════
     SPLIT LAYOUT
@@ -1226,7 +1256,7 @@
   </nav>
 
   <div id="hero-bg-2" class="hero-bg-secondary">
-    <img src="assets/tahoe.jpg" alt="">
+    <img src="assets/washington.jpeg" alt=""> <!-- ← change this path -->
   </div>
 
   <!-- ══════════════════════════════════════════════════════════
@@ -1440,21 +1470,18 @@
     PEOPLE
   ══════════════════════════════════════════════════════════ -->
   <section id="people" class="people-section">
-  
+
     <div class="people-header">
-      <p class="people-eyebrow">Ecosystem Resilience Collaborative</p>
-      <h2 class="people-title">People</h2>
+      <p class="people-eyebrow people-animate">Ecosystem Resilience Collaborative</p>
+      <h2 class="people-title people-animate delay-1">People</h2>
     </div>
-  
-    <!-- Headshot strip -->
-    <div class="people-strip-outer">
-      <div class="people-strip" id="people-strip">
-        <!-- populated by JS -->
+    
+    <div class="people-strip-outer people-animate delay-2">
+      <div class="people-strip" id="people-strip"></div>
       </div>
-    </div>
   
     <!-- Detail panel -->
-    <div class="people-detail" id="people-detail">
+    <div class="people-detail people-animate delay-3" id="people-detail">
       <div class="people-detail-photo">
         <img id="pd-photo" src="" alt="">
       </div>
@@ -1823,6 +1850,21 @@
       ).join('');
     }
   })();
+
+
+  // ── People section entrance animation ─────────────────────
+  const peopleAnimEls = document.querySelectorAll('.people-animate');
+
+  const peopleAnimObserver = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('in-view');
+        peopleAnimObserver.unobserve(entry.target); // only animate once
+      }
+    });
+  }, { threshold: 0.15 });
+
+  peopleAnimEls.forEach(el => peopleAnimObserver.observe(el));  
 
   // ── Background crossfade ───────────────────────────────────
   const heroBg2 = document.getElementById('hero-bg-2');
