@@ -40,11 +40,19 @@
       --section-right-margin: 3.5rem;
       /* ← new — clears the nav dots */
       --section-radius: 10px;
+      --type-eyebrow:  0.7rem;
+      --type-hero:     clamp(3rem, 6vw, 5.5rem);
+      --type-heading:  clamp(2rem, 3.8vw, 3.2rem);
+      --type-subhead:  clamp(1.4rem, 2.2vw, 1.9rem);
+      --type-body:     0.92rem;
+      --type-small:    0.75rem;
+      --letter-eyebrow: 0.2em;      
     }
 
-    /*html {
-      scroll-behavior: smooth;
-    }*/
+    html {
+      /*scroll-behavior: smooth;*/
+      scroll-snap-type: y proximity; /* proximity = gentle, not jarring */
+    }
 
     body {
       font-family: 'DM Sans', sans-serif;
@@ -84,6 +92,7 @@
       object-position: center;
       filter: brightness(0.6) blur(0px);
       opacity: 0.6;
+      will-change: filter;
     }
 
     .hero-bg-img::after {
@@ -357,18 +366,18 @@
         inset 1px 0 0 rgba(255, 255, 255, 0.06),
         inset -1px 0 0 rgba(255, 255, 255, 0.06);
         */
-        /* ← Replace everything below this line */
-        background: rgba(8, 6, 4, 0.08);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        border: none;
-        box-shadow: none;
+      /* ← Replace everything below this line */
+      background: rgba(8, 6, 4, 0.08);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: none;
+      box-shadow: none;
 
-        /* ← add these three lines */
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;        
+      /* ← add these three lines */
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;        
 
     }
 
@@ -411,22 +420,17 @@
     }
       */
 
-    /* ── People entrance animations ─────────────────────────── */
-    .people-animate {
-      opacity: 0;
-      transform: translateY(28px);
-      transition: opacity 0.7s ease, transform 0.7s ease;
+  
+
+
+    .page-section,
+    .people-section,
+    .news-section,
+    .tools-section {
+      scroll-snap-align: start;
+      /* min-height: 100vh already set */
     }
 
-    .people-animate.delay-1 { transition-delay: 0.1s; }
-    .people-animate.delay-2 { transition-delay: 0.25s; }
-    .people-animate.delay-3 { transition-delay: 0.4s; }
-    .people-animate.delay-4 { transition-delay: 0.55s; }
-
-    .people-animate.in-view {
-      opacity: 1;
-      transform: translateY(0);
-    }      
 
     /* ══════════════════════════════════════════════════════════
     SPLIT LAYOUT
@@ -485,6 +489,50 @@
       flex: 1;
       min-width: 0;
     }
+
+
+    .section-eyebrow,
+    .people-eyebrow,
+    .news-eyebrow {
+      font-size: var(--type-eyebrow);
+      letter-spacing: var(--letter-eyebrow);
+      font-weight: 500;
+      text-transform: uppercase;
+    }
+
+    .section-title,
+    .people-title,
+    .news-heading {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: var(--type-heading);
+      font-weight: 700;
+      line-height: 1.1;
+    }
+
+    .section-sub,
+    .about-descriptor,
+    .news-item-text,
+    .pd-bio p {
+      font-size: var(--type-body);
+      line-height: 1.75;
+    }    
+
+    /* Animate text and graphics in specific sections*/
+    .section-animate {
+      opacity: 0;
+      transform: translateY(22px);
+      transition: opacity 0.65s ease, transform 0.65s ease;
+    }
+
+    .section-animate.delay-1 { transition-delay: 0.12s; }
+    .section-animate.delay-2 { transition-delay: 0.24s; }
+    .section-animate.delay-3 { transition-delay: 0.38s; }
+    .section-animate.delay-4 { transition-delay: 0.52s; }
+
+    .section-animate.in-view {
+      opacity: 1;
+      transform: translateY(0);
+    }    
 
     /* ══════════════════════════════════════════════════════════
     CARD GRID
@@ -788,38 +836,96 @@
     FOOTER
     ══════════════════════════════════════════════════════════ */
     .footer-section {
-      /* Reset floating panel */
       margin: 0;
       border-radius: 0;
       backdrop-filter: none;
       -webkit-backdrop-filter: none;
       border: none;
       box-shadow: none;
-
-      /* Dark flat style */
       background: #1a1a14;
       position: relative;
       z-index: 2;
-
-      /* Override min-height and flex from .page-section */
       min-height: unset;
-      display: block;        /* ← fixes the jumbled text */
-      padding: 3rem 0;       /* gives it comfortable height */
+      display: block;
+      padding: 3.5rem 4rem 2rem;
+      scroll-snap-align: none;
     }
 
-    .footer-section .footer-inner {
+    .footer-top {
       display: flex;
-      flex-direction: row;   /* restores horizontal side-by-side layout */
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 2rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .footer-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.1rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(240,232,208,0.8);
+      margin-bottom: 0.4rem;
+    }
+
+    .footer-tagline {
+      font-size: 0.72rem;
+      color: rgba(240,232,208,0.35);
+      letter-spacing: 0.12em;
+    }
+
+    .footer-nav {
+      display: flex;
+      gap: 2rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .footer-nav a {
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(240,232,208,0.45);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .footer-nav a:hover { color: var(--gold-light); }
+
+    .footer-rule {
+      width: 100%;
+      height: 1px;
+      background: rgba(240,232,208,0.1);
+      margin-bottom: 1.5rem;
+    }
+
+    .footer-bottom {
+      display: flex;
       justify-content: space-between;
       align-items: center;
       flex-wrap: wrap;
-      gap: 0.75rem;
-      padding: 0 3.5rem;
+      gap: 0.5rem;
     }
 
-    .footer-section .footer-inner p     { color: rgba(240, 232, 208, 0.35); }
-    .footer-section .footer-inner a     { color: rgba(240, 232, 208, 0.5); }
-    .footer-section .footer-inner a:hover { color: var(--gold-light); }
+    .footer-bottom p,
+    .footer-bottom a {
+      font-size: 0.75rem;
+      color: rgba(240,232,208,0.3);
+      text-decoration: none;
+    }
+
+    .footer-bottom a:hover { color: var(--gold-light); }
+
+    @media (max-width: 900px) {
+      .footer-section { padding: 2.5rem 1.5rem 1.5rem; }
+      .footer-top     { flex-direction: column; gap: 1.5rem; }
+      .footer-nav     { gap: 1rem; }
+    }
+
+
+
     /* ══════════════════════════════════════════════════════════
     SECTION NAV
     ══════════════════════════════════════════════════════════ */
@@ -938,6 +1044,46 @@
     #section-nav.on-light #nav-home.active .nav-home-icon {
       stroke: var(--gold);
     }    
+
+    /* ── BASE (outside all @media) ──────────────────────────── */
+    .nav-label {
+      font-size: var(--type-eyebrow);
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.75);
+      background: rgba(0,0,0,0.28);
+      padding: 0.18rem 0.5rem;
+      border-radius: 3px;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      transition: color 0.25s, background 0.25s;
+      text-shadow: none;
+    }
+
+    .nav-item.active .nav-label {
+      color: #fff;
+      background: rgba(0,0,0,0.45);
+      font-weight: 600;
+    }
+
+    .nav-item:hover .nav-label {
+      color: var(--gold-light);
+      background: rgba(0,0,0,0.38);
+    }
+
+    #section-nav.on-light .nav-label {
+      color: rgba(27,58,47,0.8);
+      background: rgba(245,240,232,0.7);
+      text-shadow: none;
+    }
+
+    #section-nav.on-light .nav-item.active .nav-label {
+      color: var(--green-deep);
+      background: rgba(245,240,232,0.9);
+    }
+
+
 
     .carousel-dots {
       display: none;  /* hidden on desktop */
@@ -1263,17 +1409,7 @@
     text-decoration-color: var(--gold-light);
   }
 
-  /* Scroll animation */
-  .news-animate {
-    opacity: 0;
-    transform: translateY(24px);
-    transition: opacity 0.65s ease, transform 0.65s ease;
-  }
 
-  .news-animate.in-view {
-    opacity: 1;
-    transform: translateY(0);
-  }
 
   @media (max-width: 900px) {
     .news-section  { padding: 3rem 1.5rem; }
@@ -1308,8 +1444,8 @@
         right: 0.5rem;
       }
 
-      .nav-label {
-        display: none;
+      .nav-label   { 
+        font-size: 0.6rem; padding: 0.15rem 0.4rem; 
       }
     }
 
@@ -1455,7 +1591,7 @@
         Spatial decision support tools for prioritizing ecological restoration
         and protection across western US forests and watersheds.
       </p>
-      <a class="hero-scroll" href="#tools">
+      <a class="hero-scroll" href="#about">
         <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
           <path d="M7 10.5L1.5 5h11L7 10.5z" />
         </svg>
@@ -1498,16 +1634,16 @@
     <section id="people" class="people-section">
     
       <div class="people-header">
-        <p class="people-eyebrow people-animate">Ecosystem Resilience Collaborative</p>
-        <h2 class="people-title people-animate delay-1">People</h2>
+        <p class="people-eyebrow section-animate">Ecosystem Resilience Collaborative</p>
+        <h2 class="people-title section-animate delay-1">People</h2>
       </div>
     
-      <div class="people-strip-outer people-animate delay-2">
+      <div class="people-strip-outer section-animate delay-2">
         <div class="people-strip" id="people-strip"></div>
       </div>
     
       <!-- Detail panel -->
-      <div class="people-detail people-animate delay-3" id="people-detail">
+      <div class="people-detail section-animate delay-3" id="people-detail">
         <div class="people-detail-photo">
           <img id="pd-photo" src="" alt="">
         </div>
@@ -1529,7 +1665,7 @@
 
     <section id="news" class="news-section">
       <div class="news-inner">
-        <div class="news-header-block news-animate">
+        <div class="news-header-block section-animate">
           <p class="news-eyebrow">Lab updates &amp; announcements</p>
           <h2 class="news-heading">
             Advancing forest and watershed resilience science.
@@ -1722,12 +1858,29 @@
   <!-- ══════════════════════════════════════════════════════════
        FOOTER
   ══════════════════════════════════════════════════════════ -->
-  <section class="page-section footer-section" style="margin-bottom: var(--section-margin);">
-    <div class="footer-inner">
-      <p>© 2025 Nicholas Povak &nbsp;·&nbsp; <a href="http://northcoastxy.com">northcoastxy.com</a></p>
-      <p><a href="mailto:napovak@gmail.com">napovak@gmail.com</a></p>
+  <footer class="footer-section">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <p class="footer-name">Ecosystem Resilience Collaborative</p>
+        <p class="footer-tagline">Landscape ecology · Decision support · Wildfire</p>
+      </div>
+      <nav class="footer-nav" aria-label="Footer navigation">
+        <a href="#about">About</a>
+        <a href="#people">People</a>
+        <a href="#news">News</a>
+        <a href="#blog">Blog</a>
+        <a href="#tools">Tools</a>
+      </nav>
     </div>
-  </section>
+    <div class="footer-rule"></div>
+    <div class="footer-bottom">
+      <p>© 2026 Ecosystem Resilience Collaborative
+        &nbsp;·&nbsp;
+        <a href="http://northcoastxy.com">northcoastxy.com</a>
+      </p>
+      <a href="mailto:napovak@gmail.com">napovak@gmail.com</a>
+    </div>
+    </footer>
 
   <!-- ══════════════════════════════════════════════════════════
        SCRIPTS
@@ -1775,6 +1928,91 @@
   document.querySelectorAll('.project-card').forEach((card, i) => {
     setTimeout(() => card.classList.add('visible'), 200 + i * 100);
   });
+
+
+  // ── Load data from JSON ────────────────────────────────────
+    async function loadData() {
+      try {
+        const [peopleRes, newsRes] = await Promise.all([
+          fetch('data/people.json'),
+          fetch('data/news.json')
+        ]);
+
+        const PEOPLE = await peopleRes.json();
+        const NEWS = await newsRes.json();
+
+        buildPeople(PEOPLE);
+        buildNews(NEWS);
+
+      } catch (err) {
+        console.warn('Could not load data:', err);
+      }
+    }
+
+    function buildPeople(PEOPLE) {
+      const strip = document.getElementById('people-strip');
+      const detail = document.getElementById('people-detail');
+      if (!strip || !detail) return;
+
+      PEOPLE.forEach((person, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'people-avatar-btn' + (i === 0 ? ' active' : '');
+        btn.innerHTML = `
+      <div class="people-avatar-wrap">
+        <img src="${person.photo}" alt="${person.name}">
+      </div>
+      <span class="people-avatar-name">${person.name.split(' ')[0]}</span>
+    `;
+        btn.addEventListener('click', () => selectPerson(i, PEOPLE, strip, detail));
+        strip.appendChild(btn);
+      });
+
+      showPerson(0, PEOPLE);
+    }
+
+    function selectPerson(idx, PEOPLE, strip, detail) {
+      strip.querySelectorAll('.people-avatar-btn')
+        .forEach((b, i) => b.classList.toggle('active', i === idx));
+      detail.classList.add('fading');
+      setTimeout(() => { showPerson(idx, PEOPLE); detail.classList.remove('fading'); }, 280);
+    }
+
+    function showPerson(idx, PEOPLE) {
+      const p = PEOPLE[idx];
+      document.getElementById('pd-photo').src = p.photo;
+      document.getElementById('pd-photo').alt = p.name;
+      document.getElementById('pd-name').textContent = p.name;
+      document.getElementById('pd-title').textContent = p.title;
+      document.getElementById('pd-affil').textContent = p.affiliation;
+      document.getElementById('pd-bio').innerHTML = p.bio;
+      document.getElementById('pd-links').innerHTML = p.links.map(l =>
+        `<a class="pd-link" href="${l.url}" target="_blank" rel="noopener">${l.label}</a>`
+      ).join('');
+    }
+
+    function buildNews(NEWS) {
+      const grid = document.getElementById('news-grid');
+      if (!grid) return;
+
+      NEWS.forEach((item, i) => {
+        const div = document.createElement('div');
+        div.className = 'news-item section-animate';
+        div.style.transitionDelay = `${(i % 3) * 0.1}s`;
+        div.innerHTML = `
+      <p class="news-item-category">${item.category}</p>
+      <h3 class="news-item-title">${item.title}</h3>
+      <p class="news-item-text">${item.text}</p>
+      <a class="news-item-link" href="${item.url}">Read more.</a>
+    `;
+        grid.appendChild(div);
+      });
+
+      // Re-observe newly added elements
+      grid.querySelectorAll('.section-animate').forEach(el => animObserver.observe(el));
+    }
+
+
+
 
   // ── Nav state ──────────────────────────────────────────────
   function updateNavState() {
@@ -1916,107 +2154,23 @@
     grid.addEventListener('touchend', startTimer, { passive: true });
   });
 
-  // ── People section ─────────────────────────────────────────
-  const PEOPLE = [
-    {
-      name: 'Nicholas Povak',
-      title: 'Research Ecologist',
-      affiliation: 'Spatial Informatics Group',
-      bio: `
-      <p>Nick is a Senior Research Scientist at the Spatial Informatics Group with expertise in landscape ecology, climate change
-      adaptation, and machine learning in landscape management. Broadly, Nick is interested in using landscape modeling to
-      understand how landscapes change over time under management and climate change and applying this knowledge into
-      actionable science through the development of interactive decision support models. Prior to working with SIG, Nick spent
-      the first 18 years of his career with the US Forest Service Pacific Northwest and Southwest Research stations studying
-      landscapes across the western US, Hawaii, and Palau.</p>
-
-      <p>Nick's research falls into three broad categories: decision support modeling, landscape simulation, and machine
-      learning. He co-developed PROMOTE, a climate-informed decision support model that incorporates future resource
-      vulnerability under climate change into landscape planning. Through this work, Nick has leveraged dynamic landscape
-      models, such as LANDIS-II, and climate analog modeling to help characterize potential vulnerability of ecosystem
-      resources under mid-century climate. He is also a co-developer of the REBURN model, which pairs state-and-transition
-      models and spatial wildfire simulations to improve our understanding of long-term wildfire-vegetation feedbacks.</p>
-
-      <p>Nick holds Forestry degrees from Virginia Tech (BS), University of Wisconsin – Madison (MS), and University of Washington (PhD).</p>
-    `,
-      photo: 'assets/hamakua.jpg',
-      links: [
-        { label: 'Google Scholar', url: 'https://scholar.google.com/' },
-        { label: 'LinkedIn', url: 'https://linkedin.com/' },
-        { label: 'northcoastxy.com', url: 'https://northcoastxy.com' },
-      ]
-    },
-    {
-      name: 'Team Member',
-      title: 'Title',
-      affiliation: 'Organization',
-      bio: '<p>Bio coming soon.</p>',
-      photo: 'assets/tahoe.jpg',
-      links: []
-    },
-    {
-      name: 'Team Member',
-      title: 'Title',
-      affiliation: 'Organization',
-      bio: '<p>Bio coming soon.</p>',
-      photo: 'assets/washington.jpeg',
-      links: []
-    },
-  ];
-
-  (function buildPeople() {
-    const strip = document.getElementById('people-strip');
-    const detail = document.getElementById('people-detail');
-    if (!strip || !detail) return;
-
-    PEOPLE.forEach((person, i) => {
-      const btn = document.createElement('button');
-      btn.className = 'people-avatar-btn' + (i === 0 ? ' active' : '');
-      btn.innerHTML = `
-      <div class="people-avatar-wrap">
-        <img src="${person.photo}" alt="${person.name}">
-      </div>
-      <span class="people-avatar-name">${person.name.split(' ')[0]}</span>
-    `;
-      btn.addEventListener('click', () => selectPerson(i));
-      strip.appendChild(btn);
-    });
-
-    showPerson(0);
-
-    function selectPerson(idx) {
-      strip.querySelectorAll('.people-avatar-btn')
-        .forEach((b, i) => b.classList.toggle('active', i === idx));
-      detail.classList.add('fading');
-      setTimeout(() => { showPerson(idx); detail.classList.remove('fading'); }, 280);
-    }
-
-    function showPerson(idx) {
-      const p = PEOPLE[idx];
-      document.getElementById('pd-photo').src = p.photo;
-      document.getElementById('pd-photo').alt = p.name;
-      document.getElementById('pd-name').textContent = p.name;
-      document.getElementById('pd-title').textContent = p.title;
-      document.getElementById('pd-affil').textContent = p.affiliation;
-      document.getElementById('pd-bio').innerHTML = p.bio;
-      document.getElementById('pd-links').innerHTML = p.links.map(l =>
-        `<a class="pd-link" href="${l.url}" target="_blank" rel="noopener">${l.label}</a>`
-      ).join('');
-    }
-  })();
+  
 
   // ── People entrance animation ──────────────────────────────
-  const peopleAnimEls = document.querySelectorAll('.people-animate');
+  const peopleAnimEls = document.querySelectorAll('.section-animate');
 
-  const peopleAnimObserver = new IntersectionObserver(entries => {
+  // ── Unified section animation observer ─────────────────────
+  const animObserver = new IntersectionObserver(entries => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
         entry.target.classList.add('in-view');
       } else {
-        entry.target.classList.remove('in-view'); // replay on re-entry
+        entry.target.classList.remove('in-view');
       }
     });
-  }, { threshold: 0.05 }); // lowered so elements animate sooner
+  }, { threshold: 0.05 });
+
+  document.querySelectorAll('.section-animate').forEach(el => animObserver.observe(el));
 
   peopleAnimEls.forEach(el => peopleAnimObserver.observe(el));
 
@@ -2036,109 +2190,49 @@
   }
 
 
-
-  // ── News section ───────────────────────────────────────────
-  const NEWS = [
-    {
-      category: 'Publication',
-      title: 'PROMOTE framework published in Frontiers in Forests and Global Change',
-      text: 'Our climate-informed decision support model operationalizing the Resist-Accept-Direct framework for western US forest management is now available.',
-      url: '#'
-    },
-    {
-      category: 'Conference',
-      title: 'ERC team presents at Society of American Foresters national conference',
-      text: 'Research on climate analog modeling and RAD framework implementation presented to forestry practitioners across the country.',
-      url: '#'
-    },
-    {
-      category: 'Grant',
-      title: 'NSF award supports next phase of PROMOTE development',
-      text: 'New funding enables expanded geographic coverage, new decision support features, and integration with the Planscape platform.',
-      url: '#'
-    },
-    {
-      category: 'News',
-      title: 'Collaborative work featured in High Country News',
-      text: 'Our research on climate refugia and forest adaptation strategies was highlighted in a feature on western US wildfire management.',
-      url: '#'
-    },
-    {
-      category: 'Presentation',
-      title: 'Invited talk: Ecological Society of America annual meeting',
-      text: 'Presented phylogenetic distance methods for quantifying forest compositional change under mid-century climate scenarios.',
-      url: '#'
-    },
-    {
-      category: 'Tool launch',
-      title: 'Hamakua watershed DST now publicly available',
-      text: 'Interactive decision support tool for prioritizing strawberry guava removal across Hamakua Coast watershed catchments is now live.',
-      url: 'geographies/hamakua/index.html'
-    },
-  ];
-
-  (function buildNews() {
-    const grid = document.getElementById('news-grid');
-    if (!grid) return;
-
-    NEWS.forEach((item, i) => {
-      const div = document.createElement('div');
-      div.className = 'news-item news-animate';
-      div.style.transitionDelay = `${(i % 3) * 0.1}s`; // stagger by column
-      div.innerHTML = `
-      <p class="news-item-category">${item.category}</p>
-      <h3 class="news-item-title">${item.title}</h3>
-      <p class="news-item-text">${item.text}</p>
-      <a class="news-item-link" href="${item.url}">Read more.</a>
-    `;
-      grid.appendChild(div);
-    });
-
-    // Animate on scroll — replays every time
-    const newsObserver = new IntersectionObserver(entries => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) entry.target.classList.add('in-view');
-        else entry.target.classList.remove('in-view');
-      });
-    }, { threshold: 0.05 });
-
-    document.querySelectorAll('.news-animate').forEach(el => newsObserver.observe(el));
-  })();  
+  // Call after animObserver is defined
+    loadData();
 
   // ── Heat shimmer ───────────────────────────────────────────
-  window.addEventListener('load', () => {
-    const disp = document.getElementById('heat-disp');
-    const heroImg = document.querySelector('.hero-bg-img img');
-    if (!disp || !heroImg) return;
+    // ── Heat shimmer ───────────────────────────────────────────
+    window.addEventListener('load', () => {
+      if (window.scrollY > 20) return; // user already scrolled — skip
 
-    let elapsed = 0;
-    let lastTime = null;
-    const duration = 5000;
+      const disp = document.getElementById('heat-disp');
+      const heroImg = document.querySelector('.hero-bg-img img');
+      if (!disp || !heroImg) return;
 
-    heroImg.style.filter = 'url(#heat) brightness(0.6)';
+      let cancelled = false;
+      let elapsed = 0;
+      let lastTime = null;
+      const duration = 3500;
 
-    function animate(ts) {
-      if (!lastTime) lastTime = ts;
-      const dt = ts - lastTime;
-      lastTime = ts;
-      elapsed += dt;
+      // Cancel immediately if user scrolls
+      window.addEventListener('scroll', () => { cancelled = true; }, { once: true, passive: true });
 
-      const t = elapsed / duration;
-      const envelope = t < 0.15 ? t / 0.15
-        : t < 0.4 ? 1
-          : (1 - t) / 0.35;
+      heroImg.style.filter = 'url(#heat) brightness(0.6)';
 
-      disp.setAttribute('scale', Math.max(0, envelope * 10));
+      function animate(ts) {
+        if (cancelled) { heroImg.style.filter = ''; return; }
+        if (!lastTime) lastTime = ts;
+        const dt = ts - lastTime;
+        lastTime = ts;
+        elapsed += dt;
 
-      if (elapsed < duration) {
-        requestAnimationFrame(animate);
-      } else {
-        heroImg.style.filter = '';
+        const t = elapsed / duration;
+        const envelope = t < 0.2 ? t / 0.2 : t < 0.5 ? 1 : (1 - t) / 0.5;
+
+        disp.setAttribute('scale', Math.max(0, envelope * 6)); // ← reduced from 10 to 6
+
+        if (elapsed < duration && !cancelled) {
+          requestAnimationFrame(animate);
+        } else {
+          heroImg.style.filter = '';
+        }
       }
-    }
 
-    setTimeout(() => requestAnimationFrame(animate), 200);
-  });
+      setTimeout(() => requestAnimationFrame(animate), 1500); // delayed start
+    });
 
   // ── Responsive carousel layout ─────────────────────────────
   function updateCarouselLayout() {
