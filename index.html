@@ -53,10 +53,7 @@
       min-height: 100vh;
     }
 
-    #tools {
-      margin-top: 100vh;
-      /* ← pushes first section below the fixed hero */
-    }
+    #about { margin-top: 100vh; }  /* About is now first section */
 
 
 
@@ -927,228 +924,336 @@
 
 
 
-/* ══════════════════════════════════════════════════════════
-   SECOND HERO BACKGROUND
-══════════════════════════════════════════════════════════ */
-.hero-bg-secondary {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  opacity: 0;
-  transition: opacity 2.5s ease;
-  pointer-events: none;
-}
-
-.hero-bg-secondary img {
-  width: 100%; height: 100%;
-  object-fit: cover;
-  filter: brightness(0.55) blur(1px);
-  opacity: 0.65;
-}
-
-.hero-bg-secondary.visible { opacity: 1; }
-
-/* ══════════════════════════════════════════════════════════
-   PEOPLE SECTION
-══════════════════════════════════════════════════════════ */
-.people-section {
-  position: relative;
-  z-index: 2;
-  background: var(--cream);
-  padding: 4rem 0 0;
-  /* no border-radius, no margin — full bleed */
-}
-
-.people-header {
-  padding: 0 4rem 2rem;
-  border-bottom: 1px solid rgba(27,58,47,0.1);
-  margin-bottom: 2rem;
-}
-
-.people-eyebrow {
-  font-size: 0.68rem;
-  font-weight: 500;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--green-light);
-  margin-bottom: 0.5rem;
-}
-
-.people-title {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: clamp(2rem, 4vw, 3rem);
-  font-weight: 700;
-  color: var(--green-deep);
-  line-height: 1.15;
-}
-
-/* ── Headshot strip ─────────────────────────────────────── */
-.people-strip-outer {
-  padding: 0 4rem 0;
-}
-
-.people-strip {
-  display: flex;
-  gap: 1.25rem;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  padding-bottom: 1.25rem;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(27,58,47,0.2) rgba(0,0,0,0.04);
-}
-
-.people-strip::-webkit-scrollbar        { height: 3px; }
-.people-strip::-webkit-scrollbar-track  { background: rgba(0,0,0,0.05); border-radius: 2px; }
-.people-strip::-webkit-scrollbar-thumb  { background: rgba(27,58,47,0.25); border-radius: 2px; }
-
-.people-avatar-btn {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.45rem;
-  background: none;
-  border: none;
-  cursor: pointer;
-  scroll-snap-align: start;
-  flex-shrink: 0;
-  padding: 0.6rem 0.5rem;
-  border-radius: 8px;
-  transition: background 0.2s;
-}
-
-.people-avatar-btn:hover { background: rgba(27,58,47,0.05); }
-
-.people-avatar-wrap {
-  width: 72px; height: 72px;
-  border-radius: 50%;
-  overflow: hidden;
-  border: 2.5px solid transparent;
-  transition: border-color 0.25s, transform 0.25s;
-}
-
-.people-avatar-btn.active .people-avatar-wrap {
-  border-color: var(--gold);
-  transform: scale(1.1);
-}
-
-.people-avatar-wrap img {
-  width: 100%; height: 100%;
-  object-fit: cover;
-  object-position: center top;
-}
-
-.people-avatar-name {
-  font-size: 0.7rem;
-  font-weight: 400;
-  color: var(--text-mid);
-  text-align: center;
-  max-width: 80px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.people-avatar-btn.active .people-avatar-name {
-  color: var(--green-deep);
-  font-weight: 600;
-}
-
-/* ── Detail panel ───────────────────────────────────────── */
-.people-detail {
-  display: flex;
-  gap: 3rem;
-  padding: 2.5rem 4rem 4rem;
-  align-items: flex-start;
-  min-height: 300px;
-  transition: opacity 0.3s ease;
-}
-
-.people-detail.fading { opacity: 0; }
-
-.people-detail-photo { flex-shrink: 0; }
-
-.people-detail-photo img {
-  width: 200px; height: 200px;
-  border-radius: 50%;
-  object-fit: cover;
-  object-position: center top;
-  box-shadow: 0 6px 30px rgba(0,0,0,0.12);
-  border: 4px solid #fff;
-}
-
-.people-detail-info { flex: 1; min-width: 0; }
-
-.pd-name {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 2.2rem;
-  font-weight: 700;
-  color: var(--green-deep);
-  line-height: 1.1;
-  margin-bottom: 0.3rem;
-}
-
-.pd-title {
-  font-size: 0.85rem;
-  font-weight: 500;
-  color: var(--green-light);
-  letter-spacing: 0.04em;
-  margin-bottom: 0.15rem;
-}
-
-.pd-affil {
-  font-size: 0.8rem;
-  color: var(--text-mid);
-  margin-bottom: 1.25rem;
-}
-
-.pd-bio {
-  font-size: 0.92rem;
-  font-weight: 300;
-  line-height: 1.8;
-  color: var(--text-mid);
-  max-width: 580px;
-  margin-bottom: 1.5rem;
-}
-
-.pd-links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.pd-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  padding: 0.4rem 0.9rem;
-  border: 1px solid rgba(27,58,47,0.22);
-  border-radius: 3px;
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: var(--green-deep);
-  text-decoration: none;
-  transition: background 0.15s, border-color 0.15s;
-}
-
-.pd-link:hover {
-  background: rgba(27,58,47,0.06);
-  border-color: var(--green-light);
-}
-
-/* ── Responsive ─────────────────────────────────────────── */
-@media (max-width: 900px) {
-  .people-header,
-  .people-strip-outer { padding-left: 1.5rem; padding-right: 1.5rem; }
-
-  .people-detail {
-    flex-direction: column;
-    padding: 2rem 1.5rem 3rem;
-    gap: 1.5rem;
+  /* ══════════════════════════════════════════════════════════
+    SECOND HERO BACKGROUND
+  ══════════════════════════════════════════════════════════ */
+  .hero-bg-secondary {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    opacity: 0;
+    transition: opacity 2.5s ease;
+    pointer-events: none;
   }
 
-  .people-detail-photo img { width: 140px; height: 140px; }
-  .pd-name { font-size: 1.7rem; }
-}    
+  .hero-bg-secondary img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    filter: brightness(0.55) blur(1px);
+    opacity: 0.65;
+  }
+
+  .hero-bg-secondary.visible { opacity: 1; }
+
+  /* ══════════════════════════════════════════════════════════
+    PEOPLE SECTION
+  ══════════════════════════════════════════════════════════ */
+  .people-section {
+    position: relative;
+    z-index: 2;
+    background: var(--cream);
+    padding: 4rem 0 0;
+    /* no border-radius, no margin — full bleed */
+  }
+
+  .people-header {
+    padding: 0 4rem 2rem;
+    border-bottom: 1px solid rgba(27,58,47,0.1);
+    margin-bottom: 2rem;
+  }
+
+  .people-eyebrow {
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--green-light);
+    margin-bottom: 0.5rem;
+  }
+
+  .people-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 700;
+    color: var(--green-deep);
+    line-height: 1.15;
+  }
+
+  /* ── Headshot strip ─────────────────────────────────────── */
+  .people-strip-outer {
+    padding: 0 4rem 0;
+  }
+
+  .people-strip {
+    display: flex;
+    gap: 1.25rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding-bottom: 1.25rem;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(27,58,47,0.2) rgba(0,0,0,0.04);
+  }
+
+  .people-strip::-webkit-scrollbar        { height: 3px; }
+  .people-strip::-webkit-scrollbar-track  { background: rgba(0,0,0,0.05); border-radius: 2px; }
+  .people-strip::-webkit-scrollbar-thumb  { background: rgba(27,58,47,0.25); border-radius: 2px; }
+
+  .people-avatar-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.45rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    scroll-snap-align: start;
+    flex-shrink: 0;
+    padding: 0.6rem 0.5rem;
+    border-radius: 8px;
+    transition: background 0.2s;
+  }
+
+  .people-avatar-btn:hover { background: rgba(27,58,47,0.05); }
+
+  .people-avatar-wrap {
+    width: 72px; height: 72px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2.5px solid transparent;
+    transition: border-color 0.25s, transform 0.25s;
+  }
+
+  .people-avatar-btn.active .people-avatar-wrap {
+    border-color: var(--gold);
+    transform: scale(1.1);
+  }
+
+  .people-avatar-wrap img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    object-position: center top;
+  }
+
+  .people-avatar-name {
+    font-size: 0.7rem;
+    font-weight: 400;
+    color: var(--text-mid);
+    text-align: center;
+    max-width: 80px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .people-avatar-btn.active .people-avatar-name {
+    color: var(--green-deep);
+    font-weight: 600;
+  }
+
+  /* ── Detail panel ───────────────────────────────────────── */
+  .people-detail {
+    display: flex;
+    gap: 3rem;
+    padding: 2.5rem 4rem 4rem;
+    align-items: flex-start;
+    min-height: 300px;
+    transition: opacity 0.3s ease;
+  }
+
+  .people-detail.fading { opacity: 0; }
+
+  .people-detail-photo { flex-shrink: 0; }
+
+  .people-detail-photo img {
+    width: 200px; height: 200px;
+    border-radius: 50%;
+    object-fit: cover;
+    object-position: center top;
+    box-shadow: 0 6px 30px rgba(0,0,0,0.12);
+    border: 4px solid #fff;
+  }
+
+  .people-detail-info { flex: 1; min-width: 0; }
+
+  .pd-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--green-deep);
+    line-height: 1.1;
+    margin-bottom: 0.3rem;
+  }
+
+  .pd-title {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--green-light);
+    letter-spacing: 0.04em;
+    margin-bottom: 0.15rem;
+  }
+
+  .pd-affil {
+    font-size: 0.8rem;
+    color: var(--text-mid);
+    margin-bottom: 1.25rem;
+  }
+
+  .pd-bio {
+    font-size: 0.92rem;
+    font-weight: 300;
+    line-height: 1.8;
+    color: var(--text-mid);
+    max-width: 580px;
+    margin-bottom: 1.5rem;
+  }
+
+  .pd-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .pd-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.4rem 0.9rem;
+    border: 1px solid rgba(27,58,47,0.22);
+    border-radius: 3px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--green-deep);
+    text-decoration: none;
+    transition: background 0.15s, border-color 0.15s;
+  }
+
+  .pd-link:hover {
+    background: rgba(27,58,47,0.06);
+    border-color: var(--green-light);
+  }
+
+  /* ══════════════════════════════════════════════════════════
+    NEWS SECTION
+  ══════════════════════════════════════════════════════════ */
+  .news-section {
+    position: relative;
+    z-index: 2;
+    background: #1a1a14;
+    padding: 5rem 4rem;
+  }
+
+  .news-inner { max-width: 1200px; margin: 0 auto; }
+
+  .news-eyebrow {
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1rem;
+  }
+
+  .news-heading {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2.2rem, 4.5vw, 3.5rem);
+    font-weight: 700;
+    color: #f0e8d0;
+    line-height: 1.1;
+    max-width: 820px;
+    margin-bottom: 2rem;
+  }
+
+  .news-rule {
+    width: 100%;
+    height: 1px;
+    background: rgba(240, 232, 208, 0.18);
+    margin-bottom: 3rem;
+  }
+
+  .news-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2.5rem 3rem;
+  }
+
+  .news-item-category {
+    font-size: 0.62rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 0.65rem;
+  }
+
+  .news-item-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #f0e8d0;
+    line-height: 1.35;
+    margin-bottom: 0.65rem;
+    cursor: pointer;
+    transition: color 0.2s;
+  }
+
+  .news-item-title:hover { color: var(--gold-light); }
+
+  .news-item-text {
+    font-size: 0.85rem;
+    font-weight: 300;
+    line-height: 1.72;
+    color: #a8a090;
+    margin-bottom: 1rem;
+  }
+
+  .news-item-link {
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: #c8b888;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-color: rgba(200, 184, 136, 0.35);
+    transition: color 0.2s, text-decoration-color 0.2s;
+  }
+
+  .news-item-link:hover {
+    color: var(--gold-light);
+    text-decoration-color: var(--gold-light);
+  }
+
+  /* Scroll animation */
+  .news-animate {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.65s ease, transform 0.65s ease;
+  }
+
+  .news-animate.in-view {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @media (max-width: 900px) {
+    .news-section  { padding: 3rem 1.5rem; }
+    .news-grid     { grid-template-columns: 1fr; gap: 2rem; }
+  }  
+
+  /* ── Responsive ─────────────────────────────────────────── */
+  @media (max-width: 900px) {
+    .people-header,
+    .people-strip-outer { padding-left: 1.5rem; padding-right: 1.5rem; }
+
+    .people-detail {
+      flex-direction: column;
+      padding: 2rem 1.5rem 3rem;
+      gap: 1.5rem;
+    }
+
+    .people-detail-photo img { width: 140px; height: 140px; }
+    .pd-name { font-size: 1.7rem; }
+  }    
+
+
+
 
 
     /* ══════════════════════════════════════════════════════════
@@ -1226,20 +1331,18 @@
 
   <!-- Mobile dropdown menu -->
   <nav id="mobile-menu">
-    <a href="#tools" class="mobile-menu-item" onclick="closeMobileMenu()">Tools</a>
-    <a href="#blog" class="mobile-menu-item" onclick="closeMobileMenu()">Blog</a>
-    <a href="#publications" class="mobile-menu-item" onclick="closeMobileMenu()">Publications</a>
-    <a href="#cv" class="mobile-menu-item" onclick="closeMobileMenu()">CV</a>
     <a href="#about" class="mobile-menu-item" onclick="closeMobileMenu()">About</a>
-  </nav>
+    <a href="#people" class="mobile-menu-item" onclick="closeMobileMenu()">People</a>
+    <a href="#news" class="mobile-menu-item" onclick="closeMobileMenu()">News</a>
+    <a href="#blog" class="mobile-menu-item" onclick="closeMobileMenu()">Blog</a>
+    <a href="#tools" class="mobile-menu-item" onclick="closeMobileMenu()">Tools</a>
+    </nav>
 
 
   <!-- ══════════════════════════════════════════════════════════
        FLOATING SECTION NAV
   ══════════════════════════════════════════════════════════ -->
   <nav id="section-nav" aria-label="Page sections">
-
-    <!-- ← Add this home item first -->
     <a class="nav-item" href="#" id="nav-home" onclick="window.scrollTo({top:0,behavior:'smooth'});return false;">
       <span class="nav-label">Home</span>
       <div class="nav-dot-wrap">
@@ -1249,10 +1352,21 @@
           <polyline points="9,22 9,12 15,12 15,22" />
         </svg>
       </div>
-      </a>
-
-      <a class="nav-item" href="#tools" data-section="tools">
-      <span class="nav-label">Tools</span>
+    </a>
+    <a class="nav-item" href="#about" data-section="about">
+      <span class="nav-label">About</span>
+      <div class="nav-dot-wrap">
+        <div class="nav-dot"></div>
+      </div>
+    </a>
+    <a class="nav-item" href="#people" data-section="people">
+      <span class="nav-label">People</span>
+      <div class="nav-dot-wrap">
+        <div class="nav-dot"></div>
+      </div>
+    </a>
+    <a class="nav-item" href="#news" data-section="news">
+      <span class="nav-label">News</span>
       <div class="nav-dot-wrap">
         <div class="nav-dot"></div>
       </div>
@@ -1263,25 +1377,8 @@
         <div class="nav-dot"></div>
       </div>
     </a>
-    <a class="nav-item" href="#people" data-section="people">
-      <span class="nav-label">People</span>
-      <div class="nav-dot-wrap">
-        <div class="nav-dot"></div>
-      </div></a>    
-    <a class="nav-item" href="#publications" data-section="publications">
-      <span class="nav-label">Publications</span>
-      <div class="nav-dot-wrap">
-        <div class="nav-dot"></div>
-      </div>
-    </a>
-    <a class="nav-item" href="#cv" data-section="cv">
-      <span class="nav-label">CV</span>
-      <div class="nav-dot-wrap">
-        <div class="nav-dot"></div>
-      </div>
-    </a>
-    <a class="nav-item" href="#about" data-section="about">
-      <span class="nav-label">About</span>
+    <a class="nav-item" href="#tools" data-section="tools">
+      <span class="nav-label">Tools</span>
       <div class="nav-dot-wrap">
         <div class="nav-dot"></div>
       </div>
@@ -1328,8 +1425,173 @@
     <img src="assets/washington.jpeg" alt=""> <!-- ← change this path -->
   </div>
 
+
   <!-- ══════════════════════════════════════════════════════════
-       TOOLS
+     1. About — first floating section
+  ══════════════════════════════════════════════════════════ -->
+  <section class="page-section" id="about">
+    <div class="simple-section">
+      <p class="section-eyebrow">Background</p>
+      <h2 class="section-title">About</h2>
+      <div class="about-text">
+        <p>
+          The Ecosystem Resilience Collaborative represents a group of ecological
+          researchers whose research is joined by the common goal of evaluating social
+          and ecological resilience across large landscapes using quantitative methods
+          and how climate change may impact resilient properties over time.
+        </p>
+      </div>
+      <a class="btn-primary" href="mailto:napovak@gmail.com" style="margin-top:1.5rem;">
+        Get in touch →
+      </a>
+    </div>
+    </section>  
+
+
+
+    <!-- ══════════════════════════════════════════════════════════
+        2. People — full-bleed cream
+      ══════════════════════════════════════════════════════════ -->
+    <section id="people" class="people-section">
+    
+      <div class="people-header">
+        <p class="people-eyebrow people-animate">Ecosystem Resilience Collaborative</p>
+        <h2 class="people-title people-animate delay-1">People</h2>
+      </div>
+    
+      <div class="people-strip-outer people-animate delay-2">
+        <div class="people-strip" id="people-strip"></div>
+      </div>
+    
+      <!-- Detail panel -->
+      <div class="people-detail people-animate delay-3" id="people-detail">
+        <div class="people-detail-photo">
+          <img id="pd-photo" src="" alt="">
+        </div>
+        <div class="people-detail-info">
+          <h3 id="pd-name" class="pd-name"></h3>
+          <p id="pd-title" class="pd-title"></p>
+          <p id="pd-affil" class="pd-affil"></p>
+          <p id="pd-bio" class="pd-bio"></p>
+          <div id="pd-links" class="pd-links"></div>
+        </div>
+      </div>
+    
+    </section>
+
+
+    <!-- ══════════════════════════════════════════════════════════
+        3. News — full-bleed dark 
+      ══════════════════════════════════════════════════════════ -->
+
+    <section id="news" class="news-section">
+      <div class="news-inner">
+        <div class="news-header-block news-animate">
+          <p class="news-eyebrow">Lab updates &amp; announcements</p>
+          <h2 class="news-heading">
+            Advancing forest and watershed resilience science.
+          </h2>
+          <div class="news-rule"></div>
+        </div>
+        <div class="news-grid" id="news-grid">
+          <!-- populated by JS -->
+        </div>
+      </div>
+      </section>    
+
+
+
+      <!-- ══════════════════════════════════════════════════════════
+            4. BLOG — floating glass
+       ══════════════════════════════════════════════════════════ -->
+      <section class="page-section" id="blog">
+        <div class="split-layout">
+          <div class="split-left">
+            <div class="split-sticky">
+              <p class="section-eyebrow">Field notes &amp; research updates</p>
+              <h2 class="section-title">From the lab</h2>
+              <p class="section-sub">Notes on ongoing research, methods, and observations from the field and the data.</p>
+            </div>
+          </div>
+          <div class="split-right">
+            <div class="carousel-wrap">
+      
+              <div class="card-grid">
+      
+                <article class="project-card">
+                  <div class="card-img-wrap">
+                    <img src="assets/washington.jpeg" alt="Wildfire">
+                    <span class="card-badge badge-ready">New</span>
+                  </div>
+                  <div class="card-body">
+                    <p class="card-region">Research update</p>
+                    <h3 class="card-title">Climate analogs and the future of western conifers</h3>
+                    <p class="card-meta">May 2025</p>
+                    <p class="card-desc">How Mahalanobis distance modeling reveals where today's forests may be headed — and
+                      what that means for management.</p>
+                    <a class="card-link" href="blog/post-1.html">Read →</a>
+                  </div>
+                </article>
+      
+                <article class="project-card wip">
+                  <div class="card-img-wrap">
+                    <img src="assets/tahoe.jpg" alt="Sierra Nevada">
+                    <span class="card-badge badge-wip">Coming soon</span>
+                  </div>
+                  <div class="card-body">
+                    <p class="card-region">Methods</p>
+                    <h3 class="card-title">Phylogenetic distance as an ecological vulnerability metric</h3>
+                    <p class="card-meta">Coming soon</p>
+                    <p class="card-desc">Exploring Aitchison distance and UniFrac as measures of compositional shift in analog
+                      vegetation communities.</p>
+                    <a class="card-link disabled" href="#">Coming soon</a>
+                  </div>
+                </article>
+      
+                <article class="project-card wip">
+                  <div class="card-img-wrap">
+                    <img src="assets/hamakua.jpg" alt="Hamakua">
+                    <span class="card-badge badge-wip">Coming soon</span>
+                  </div>
+                  <div class="card-body">
+                    <p class="card-region">Field notes</p>
+                    <h3 class="card-title">Bottom-up refugia: where topography buffers climate</h3>
+                    <p class="card-meta">Coming soon</p>
+                    <p class="card-desc">Evidence from soil and terrain variables that local factors can partially offset
+                      regional climate pressure on conifer communities.</p>
+                    <a class="card-link disabled" href="#">Coming soon</a>
+                  </div>
+                </article>
+      
+                <article class="project-card wip">
+                  <div class="card-img-wrap">
+                    <img src="assets/Babeldaob-mosaic.jpg" alt="Tropical forest">
+                    <span class="card-badge badge-wip">Coming soon</span>
+                  </div>
+                  <div class="card-body">
+                    <p class="card-region">Tools &amp; code</p>
+                    <h3 class="card-title">Building the PROMOTE framework: from concept to pipeline</h3>
+                    <p class="card-meta">Coming soon</p>
+                    <p class="card-desc">A walkthrough of the Resist-Accept-Direct framework operationalized at landscape
+                      scale using R and ClimateNA.</p>
+                    <a class="card-link disabled" href="#">Coming soon</a>
+                  </div>
+                </article>
+      
+              </div>
+      
+            </div>
+            <div class="carousel-dots">
+              <!-- populated by JS -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+
+  <!-- ══════════════════════════════════════════════════════════
+      5. Tools — floating glass
   ══════════════════════════════════════════════════════════ -->
   <section class="page-section" id="tools">
     <div class="split-layout">
@@ -1412,189 +1674,7 @@
     </div>
   </section>
 
-  <!-- ══════════════════════════════════════════════════════════
-       BLOG
-  ══════════════════════════════════════════════════════════ -->
-  <section class="page-section" id="blog">
-    <div class="split-layout">
-      <div class="split-left">
-        <div class="split-sticky">
-          <p class="section-eyebrow">Field notes &amp; research updates</p>
-          <h2 class="section-title">From the lab</h2>
-          <p class="section-sub">Notes on ongoing research, methods, and observations from the field and the data.</p>
-        </div>
-      </div>
-      <div class="split-right">
-        <div class="carousel-wrap">
-            
-          <div class="card-grid">
-  
-            <article class="project-card">
-              <div class="card-img-wrap">
-                <img src="assets/washington.jpeg" alt="Wildfire">
-                <span class="card-badge badge-ready">New</span>
-              </div>
-              <div class="card-body">
-                <p class="card-region">Research update</p>
-                <h3 class="card-title">Climate analogs and the future of western conifers</h3>
-                <p class="card-meta">May 2025</p>
-                <p class="card-desc">How Mahalanobis distance modeling reveals where today's forests may be headed — and
-                  what that means for management.</p>
-                <a class="card-link" href="blog/post-1.html">Read →</a>
-              </div>
-            </article>
-  
-            <article class="project-card wip">
-              <div class="card-img-wrap">
-                <img src="assets/tahoe.jpg" alt="Sierra Nevada">
-                <span class="card-badge badge-wip">Coming soon</span>
-              </div>
-              <div class="card-body">
-                <p class="card-region">Methods</p>
-                <h3 class="card-title">Phylogenetic distance as an ecological vulnerability metric</h3>
-                <p class="card-meta">Coming soon</p>
-                <p class="card-desc">Exploring Aitchison distance and UniFrac as measures of compositional shift in analog
-                  vegetation communities.</p>
-                <a class="card-link disabled" href="#">Coming soon</a>
-              </div>
-            </article>
-  
-            <article class="project-card wip">
-              <div class="card-img-wrap">
-                <img src="assets/hamakua.jpg" alt="Hamakua">
-                <span class="card-badge badge-wip">Coming soon</span>
-              </div>
-              <div class="card-body">
-                <p class="card-region">Field notes</p>
-                <h3 class="card-title">Bottom-up refugia: where topography buffers climate</h3>
-                <p class="card-meta">Coming soon</p>
-                <p class="card-desc">Evidence from soil and terrain variables that local factors can partially offset
-                  regional climate pressure on conifer communities.</p>
-                <a class="card-link disabled" href="#">Coming soon</a>
-              </div>
-            </article>
-  
-            <article class="project-card wip">
-              <div class="card-img-wrap">
-                <img src="assets/Babeldaob-mosaic.jpg" alt="Tropical forest">
-                <span class="card-badge badge-wip">Coming soon</span>
-              </div>
-              <div class="card-body">
-                <p class="card-region">Tools &amp; code</p>
-                <h3 class="card-title">Building the PROMOTE framework: from concept to pipeline</h3>
-                <p class="card-meta">Coming soon</p>
-                <p class="card-desc">A walkthrough of the Resist-Accept-Direct framework operationalized at landscape
-                  scale using R and ClimateNA.</p>
-                <a class="card-link disabled" href="#">Coming soon</a>
-              </div>
-            </article>
-  
-          </div>
-          
-        </div>
-        <div class="carousel-dots">
-          <!-- populated by JS -->
-        </div>
-      </div>
-    </div>
-  </section>
 
-
-
-  <!-- ══════════════════════════════════════════════════════════
-    PEOPLE
-  ══════════════════════════════════════════════════════════ -->
-  <section id="people" class="people-section">
-
-    <div class="people-header">
-      <p class="people-eyebrow people-animate">Ecosystem Resilience Collaborative</p>
-      <h2 class="people-title people-animate delay-1">People</h2>
-    </div>
-    
-    <div class="people-strip-outer people-animate delay-2">
-      <div class="people-strip" id="people-strip"></div>
-      </div>
-  
-    <!-- Detail panel -->
-    <div class="people-detail people-animate delay-3" id="people-detail">
-      <div class="people-detail-photo">
-        <img id="pd-photo" src="" alt="">
-      </div>
-      <div class="people-detail-info">
-        <h3 id="pd-name" class="pd-name"></h3>
-        <p id="pd-title" class="pd-title"></p>
-        <p id="pd-affil" class="pd-affil"></p>
-        <p id="pd-bio" class="pd-bio"></p>
-        <div id="pd-links" class="pd-links"></div>
-      </div>
-    </div>
-  
-  </section>
-
-  <!-- ══════════════════════════════════════════════════════════
-       PUBLICATIONS
-  ══════════════════════════════════════════════════════════ -->
-  <section class="page-section" id="publications">
-    <div class="simple-section">
-      <p class="section-eyebrow">Research output</p>
-      <h2 class="section-title">Publications</h2>
-      <p class="about-text">
-        Peer-reviewed research spanning wildfire ecology, spatial decision support,
-        climate change adaptation, and landscape simulation modeling across western
-        US forests and beyond.
-      </p>
-      <a class="scholar-btn" href="https://scholar.google.com/citations?user=YOUR_ID" target="_blank" rel="noopener">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-          <path
-            d="M12 24a7 7 0 1 1 0-14 7 7 0 0 1 0 14zm0-24L0 9.5l4.838 3.94A8 8 0 0 1 12 9a8 8 0 0 1 7.162 4.44L24 9.5z" />
-        </svg>
-        View on Google Scholar
-      </a>
-    </div>
-  </section>
-
-  <!-- ══════════════════════════════════════════════════════════
-       CV
-  ══════════════════════════════════════════════════════════ -->
-  <section class="page-section" id="cv">
-    <div class="simple-section">
-      <p class="section-eyebrow">Background</p>
-      <h2 class="section-title">Curriculum vitae</h2>
-      <p class="about-text">
-        Research ecologist at Spatial Informatics Group. PhD in Landscape Ecology,
-        University of Washington. Prior work at the US Forest Service Pacific Southwest
-        Research Station and The Nature Conservancy.
-      </p>
-      <!-- Replace # with the actual path to your CV PDF, e.g. assets/povak-cv.pdf -->
-      <a class="btn-primary" href="assets/povak-cv.pdf" target="_blank" rel="noopener">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" />
-        </svg>
-        Download CV (PDF)
-      </a>
-    </div>
-  </section>
-
-  <!-- ══════════════════════════════════════════════════════════
-       ABOUT
-  ══════════════════════════════════════════════════════════ -->
-  <section class="page-section" id="about">
-    <div class="simple-section">
-      <p class="section-eyebrow">Background</p>
-      <h2 class="section-title">About</h2>
-      <div class="about-text">
-        <p>
-        <p>
-          The Ecosystem Resilience Collaborative represents a group of ecological researchers whose research is joined by the common 
-          goal of evaluating social and ecological resilience across large landscapes using quantitative methods and how climate change
-          may impact resilient properties over time.
-        </p>
-      </div>
-      <a class="btn-primary" href="mailto:napovak@gmail.com" style="margin-top:1.5rem;">
-        Get in touch →
-      </a>
-    </div>
-  </section>
 
   <!-- ══════════════════════════════════════════════════════════
        FOOTER
@@ -1624,7 +1704,7 @@
   const navEl = document.getElementById('section-nav');
   const navHome = document.getElementById('nav-home');
   const navItems = document.querySelectorAll('.nav-item[data-section]');
-  const sections = document.querySelectorAll('.page-section[id], .people-section[id]');
+  const sections = document.querySelectorAll('.page-section[id], .people-section[id], .news-section[id]');
   const peopleSect = document.getElementById('people');   // ← must be before updateNavState
   const heroBg2 = document.getElementById('hero-bg-2');
 
@@ -1911,6 +1991,76 @@
 
     bgObserver.observe(peopleSect);
   }
+
+
+
+  // ── News section ───────────────────────────────────────────
+  const NEWS = [
+    {
+      category: 'Publication',
+      title: 'PROMOTE framework published in Frontiers in Forests and Global Change',
+      text: 'Our climate-informed decision support model operationalizing the Resist-Accept-Direct framework for western US forest management is now available.',
+      url: '#'
+    },
+    {
+      category: 'Conference',
+      title: 'ERC team presents at Society of American Foresters national conference',
+      text: 'Research on climate analog modeling and RAD framework implementation presented to forestry practitioners across the country.',
+      url: '#'
+    },
+    {
+      category: 'Grant',
+      title: 'NSF award supports next phase of PROMOTE development',
+      text: 'New funding enables expanded geographic coverage, new decision support features, and integration with the Planscape platform.',
+      url: '#'
+    },
+    {
+      category: 'News',
+      title: 'Collaborative work featured in High Country News',
+      text: 'Our research on climate refugia and forest adaptation strategies was highlighted in a feature on western US wildfire management.',
+      url: '#'
+    },
+    {
+      category: 'Presentation',
+      title: 'Invited talk: Ecological Society of America annual meeting',
+      text: 'Presented phylogenetic distance methods for quantifying forest compositional change under mid-century climate scenarios.',
+      url: '#'
+    },
+    {
+      category: 'Tool launch',
+      title: 'Hamakua watershed DST now publicly available',
+      text: 'Interactive decision support tool for prioritizing strawberry guava removal across Hamakua Coast watershed catchments is now live.',
+      url: 'geographies/hamakua/index.html'
+    },
+  ];
+
+  (function buildNews() {
+    const grid = document.getElementById('news-grid');
+    if (!grid) return;
+
+    NEWS.forEach((item, i) => {
+      const div = document.createElement('div');
+      div.className = 'news-item news-animate';
+      div.style.transitionDelay = `${(i % 3) * 0.1}s`; // stagger by column
+      div.innerHTML = `
+      <p class="news-item-category">${item.category}</p>
+      <h3 class="news-item-title">${item.title}</h3>
+      <p class="news-item-text">${item.text}</p>
+      <a class="news-item-link" href="${item.url}">Read more.</a>
+    `;
+      grid.appendChild(div);
+    });
+
+    // Animate on scroll — replays every time
+    const newsObserver = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) entry.target.classList.add('in-view');
+        else entry.target.classList.remove('in-view');
+      });
+    }, { threshold: 0.05 });
+
+    document.querySelectorAll('.news-animate').forEach(el => newsObserver.observe(el));
+  })();  
 
   // ── Heat shimmer ───────────────────────────────────────────
   window.addEventListener('load', () => {
