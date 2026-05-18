@@ -862,6 +862,232 @@
       transform: scale(1.3);
     }    
 
+
+
+/* ══════════════════════════════════════════════════════════
+   SECOND HERO BACKGROUND
+══════════════════════════════════════════════════════════ */
+.hero-bg-secondary {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  opacity: 0;
+  transition: opacity 2.5s ease;
+  pointer-events: none;
+}
+
+.hero-bg-secondary img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  filter: brightness(0.55) blur(1px);
+  opacity: 0.65;
+}
+
+.hero-bg-secondary.visible { opacity: 1; }
+
+/* ══════════════════════════════════════════════════════════
+   PEOPLE SECTION
+══════════════════════════════════════════════════════════ */
+.people-section {
+  position: relative;
+  z-index: 1;
+  background: var(--cream);
+  padding: 4rem 0 0;
+  /* no border-radius, no margin — full bleed */
+}
+
+.people-header {
+  padding: 0 4rem 2rem;
+  border-bottom: 1px solid rgba(27,58,47,0.1);
+  margin-bottom: 2rem;
+}
+
+.people-eyebrow {
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--green-light);
+  margin-bottom: 0.5rem;
+}
+
+.people-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 700;
+  color: var(--green-deep);
+  line-height: 1.15;
+}
+
+/* ── Headshot strip ─────────────────────────────────────── */
+.people-strip-outer {
+  padding: 0 4rem 0;
+}
+
+.people-strip {
+  display: flex;
+  gap: 1.25rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding-bottom: 1.25rem;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(27,58,47,0.2) rgba(0,0,0,0.04);
+}
+
+.people-strip::-webkit-scrollbar        { height: 3px; }
+.people-strip::-webkit-scrollbar-track  { background: rgba(0,0,0,0.05); border-radius: 2px; }
+.people-strip::-webkit-scrollbar-thumb  { background: rgba(27,58,47,0.25); border-radius: 2px; }
+
+.people-avatar-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.45rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  scroll-snap-align: start;
+  flex-shrink: 0;
+  padding: 0.6rem 0.5rem;
+  border-radius: 8px;
+  transition: background 0.2s;
+}
+
+.people-avatar-btn:hover { background: rgba(27,58,47,0.05); }
+
+.people-avatar-wrap {
+  width: 72px; height: 72px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2.5px solid transparent;
+  transition: border-color 0.25s, transform 0.25s;
+}
+
+.people-avatar-btn.active .people-avatar-wrap {
+  border-color: var(--gold);
+  transform: scale(1.1);
+}
+
+.people-avatar-wrap img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  object-position: center top;
+}
+
+.people-avatar-name {
+  font-size: 0.7rem;
+  font-weight: 400;
+  color: var(--text-mid);
+  text-align: center;
+  max-width: 80px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.people-avatar-btn.active .people-avatar-name {
+  color: var(--green-deep);
+  font-weight: 600;
+}
+
+/* ── Detail panel ───────────────────────────────────────── */
+.people-detail {
+  display: flex;
+  gap: 3rem;
+  padding: 2.5rem 4rem 4rem;
+  align-items: flex-start;
+  min-height: 300px;
+  transition: opacity 0.3s ease;
+}
+
+.people-detail.fading { opacity: 0; }
+
+.people-detail-photo { flex-shrink: 0; }
+
+.people-detail-photo img {
+  width: 200px; height: 200px;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center top;
+  box-shadow: 0 6px 30px rgba(0,0,0,0.12);
+  border: 4px solid #fff;
+}
+
+.people-detail-info { flex: 1; min-width: 0; }
+
+.pd-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--green-deep);
+  line-height: 1.1;
+  margin-bottom: 0.3rem;
+}
+
+.pd-title {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--green-light);
+  letter-spacing: 0.04em;
+  margin-bottom: 0.15rem;
+}
+
+.pd-affil {
+  font-size: 0.8rem;
+  color: var(--text-mid);
+  margin-bottom: 1.25rem;
+}
+
+.pd-bio {
+  font-size: 0.92rem;
+  font-weight: 300;
+  line-height: 1.8;
+  color: var(--text-mid);
+  max-width: 580px;
+  margin-bottom: 1.5rem;
+}
+
+.pd-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.pd-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0.9rem;
+  border: 1px solid rgba(27,58,47,0.22);
+  border-radius: 3px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--green-deep);
+  text-decoration: none;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.pd-link:hover {
+  background: rgba(27,58,47,0.06);
+  border-color: var(--green-light);
+}
+
+/* ── Responsive ─────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .people-header,
+  .people-strip-outer { padding-left: 1.5rem; padding-right: 1.5rem; }
+
+  .people-detail {
+    flex-direction: column;
+    padding: 2rem 1.5rem 3rem;
+    gap: 1.5rem;
+  }
+
+  .people-detail-photo img { width: 140px; height: 140px; }
+  .pd-name { font-size: 1.7rem; }
+}    
+
+
     /* ══════════════════════════════════════════════════════════
     RESPONSIVE — single consolidated block
     ══════════════════════════════════════════════════════════ */
@@ -974,6 +1200,11 @@
         <div class="nav-dot"></div>
       </div>
     </a>
+    <a class="nav-item" href="#people" data-section="people">
+      <span class="nav-label">People</span>
+      <div class="nav-dot-wrap">
+        <div class="nav-dot"></div>
+      </div></a>    
     <a class="nav-item" href="#publications" data-section="publications">
       <span class="nav-label">Publications</span>
       <div class="nav-dot-wrap">
@@ -993,6 +1224,10 @@
       </div>
     </a>
   </nav>
+
+  <div id="hero-bg-2" class="hero-bg-secondary">
+    <img src="assets/tahoe.jpg" alt="">
+  </div>
 
   <!-- ══════════════════════════════════════════════════════════
        HERO
@@ -1197,6 +1432,41 @@
         </div>
       </div>
     </div>
+  </section>
+
+
+
+  <!-- ══════════════════════════════════════════════════════════
+    PEOPLE
+  ══════════════════════════════════════════════════════════ -->
+  <section id="people" class="people-section">
+  
+    <div class="people-header">
+      <p class="people-eyebrow">Ecosystem Resilience Collaborative</p>
+      <h2 class="people-title">People</h2>
+    </div>
+  
+    <!-- Headshot strip -->
+    <div class="people-strip-outer">
+      <div class="people-strip" id="people-strip">
+        <!-- populated by JS -->
+      </div>
+    </div>
+  
+    <!-- Detail panel -->
+    <div class="people-detail" id="people-detail">
+      <div class="people-detail-photo">
+        <img id="pd-photo" src="" alt="">
+      </div>
+      <div class="people-detail-info">
+        <h3 id="pd-name" class="pd-name"></h3>
+        <p id="pd-title" class="pd-title"></p>
+        <p id="pd-affil" class="pd-affil"></p>
+        <p id="pd-bio" class="pd-bio"></p>
+        <div id="pd-links" class="pd-links"></div>
+      </div>
+    </div>
+  
   </section>
 
   <!-- ══════════════════════════════════════════════════════════
@@ -1472,6 +1742,106 @@
     grid.addEventListener('touchstart', stopTimer, { passive: true });
     grid.addEventListener('touchend', startTimer, { passive: true });
   });
+
+
+
+
+  // ── People section ─────────────────────────────────────────
+  const PEOPLE = [
+    {
+      name: 'Nicholas Povak',
+      title: 'Research Ecologist',
+      affiliation: 'Spatial Informatics Group',
+      bio: 'Working at the intersection of climate change adaptation, wildfire ecology, and forest management decision support. Current work centers on the PROMOTE framework for operationalizing Resist-Accept-Direct management strategies using climate analog modeling and ecological vulnerability assessment across western US forests.',
+      photo: 'assets/hamakua.jpg',   // ← replace with headshot
+      links: [
+        { label: 'Google Scholar', url: 'https://scholar.google.com/' },
+        { label: 'LinkedIn', url: 'https://linkedin.com/' },
+        { label: 'northcoastxy.com', url: 'https://northcoastxy.com' },
+      ]
+    },
+    {
+      name: 'Team Member',
+      title: 'Title',
+      affiliation: 'Organization',
+      bio: 'Bio coming soon.',
+      photo: 'assets/tahoe.jpg',    // ← replace with headshot
+      links: []
+    },
+    {
+      name: 'Team Member',
+      title: 'Title',
+      affiliation: 'Organization',
+      bio: 'Bio coming soon.',
+      photo: 'assets/washington.jpeg',
+      links: []
+    },
+  ];
+
+  (function buildPeople() {
+    const strip = document.getElementById('people-strip');
+    const detail = document.getElementById('people-detail');
+    if (!strip || !detail) return;
+
+    // Build avatar strip
+    PEOPLE.forEach((person, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'people-avatar-btn' + (i === 0 ? ' active' : '');
+      btn.innerHTML = `
+      <div class="people-avatar-wrap">
+        <img src="${person.photo}" alt="${person.name}">
+      </div>
+      <span class="people-avatar-name">${person.name.split(' ')[0]}</span>
+    `;
+      btn.addEventListener('click', () => selectPerson(i));
+      strip.appendChild(btn);
+    });
+
+    showPerson(0);
+
+    function selectPerson(idx) {
+      strip.querySelectorAll('.people-avatar-btn')
+        .forEach((b, i) => b.classList.toggle('active', i === idx));
+      detail.classList.add('fading');
+      setTimeout(() => {
+        showPerson(idx);
+        detail.classList.remove('fading');
+      }, 280);
+    }
+
+    function showPerson(idx) {
+      const p = PEOPLE[idx];
+      document.getElementById('pd-photo').src = p.photo;
+      document.getElementById('pd-photo').alt = p.name;
+      document.getElementById('pd-name').textContent = p.name;
+      document.getElementById('pd-title').textContent = p.title;
+      document.getElementById('pd-affil').textContent = p.affiliation;
+      document.getElementById('pd-bio').textContent = p.bio;
+
+      document.getElementById('pd-links').innerHTML = p.links.map(l =>
+        `<a class="pd-link" href="${l.url}" target="_blank" rel="noopener">${l.label}</a>`
+      ).join('');
+    }
+  })();
+
+  // ── Background crossfade ───────────────────────────────────
+  const heroBg2 = document.getElementById('hero-bg-2');
+  const peopleSect = document.getElementById('people');
+
+  if (heroBg2 && peopleSect) {
+    const bgObserver = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        // Swap to second image once people section has scrolled past
+        if (!entry.isIntersecting && entry.boundingClientRect.top < 0) {
+          heroBg2.classList.add('visible');
+        } else {
+          heroBg2.classList.remove('visible');
+        }
+      });
+    }, { threshold: 0 });
+
+    bgObserver.observe(peopleSect);
+  }  
 
 
 
