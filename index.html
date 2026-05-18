@@ -2159,9 +2159,6 @@
 
   
 
-  // ── People entrance animation ──────────────────────────────
-  const peopleAnimEls = document.querySelectorAll('.section-animate');
-
   // ── Unified section animation observer ─────────────────────
   const animObserver = new IntersectionObserver(entries => {
     entries.forEach(entry => {
@@ -2174,8 +2171,6 @@
   }, { threshold: 0.05 });
 
   document.querySelectorAll('.section-animate').forEach(el => animObserver.observe(el));
-
-  peopleAnimEls.forEach(el => peopleAnimObserver.observe(el));
 
   // ── Background crossfade ───────────────────────────────────
   if (heroBg2 && peopleSect) {
