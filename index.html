@@ -1251,7 +1251,7 @@
       </div>
       </a>
 
-    <a class="nav-item active" href="#tools" data-section="tools">
+      <a class="nav-item" href="#tools" data-section="tools">
       <span class="nav-label">Tools</span>
       <div class="nav-dot-wrap">
         <div class="nav-dot"></div>
@@ -1611,19 +1611,24 @@
   ══════════════════════════════════════════════════════════ -->
 <script>
   // ── Prevent scroll restoration and URL fragment jumps ──────
+  // ── Prevent scroll restoration ─────────────────────────────
   if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
-  if (window.location.hash) {
-    history.replaceState(null, null, window.location.pathname);
-  }
+  if (window.location.hash) history.replaceState(null, null, window.location.pathname);
   document.addEventListener('DOMContentLoaded', () => window.scrollTo(0, 0));
   window.addEventListener('load', () => window.scrollTo(0, 0));
 
-  // ── Parallax hero ──────────────────────────────────────────
+  // ── DOM references — ALL declared first ────────────────────
   const hero = document.querySelector('.hero');
   const heroContent = document.querySelector('.hero-content');
-
   const heroNav = document.querySelector('.hero-nav');
+  const navEl = document.getElementById('section-nav');
+  const navHome = document.getElementById('nav-home');
+  const navItems = document.querySelectorAll('.nav-item[data-section]');
+  const sections = document.querySelectorAll('.page-section[id], .people-section[id]');
+  const peopleSect = document.getElementById('people');   // ← must be before updateNavState
+  const heroBg2 = document.getElementById('hero-bg-2');
 
+  // ── Parallax + nav background ──────────────────────────────
   window.addEventListener('scroll', () => {
     const scrollY = window.scrollY;
     const heroH = hero.offsetHeight;
@@ -1632,7 +1637,6 @@
     heroContent.style.opacity = Math.max(1 - progress * 2, 0);
     heroContent.style.transform = `translateY(${scrollY * 0.2}px)`;
 
-    // Nav gets dark background once sections appear
     if (scrollY > heroH * 0.75) {
       heroNav.style.background = 'rgba(12, 10, 8, 0.88)';
       heroNav.style.backdropFilter = 'blur(12px)';
@@ -1649,57 +1653,46 @@
     setTimeout(() => card.classList.add('visible'), 200 + i * 100);
   });
 
-  // ── Section nav highlighting ───────────────────────────────
-    // ── Nav state — single unified handler ─────────────────────
-    const sections = document.querySelectorAll('.page-section[id], .people-section[id]');
-    const navItems = document.querySelectorAll('.nav-item[data-section]');
-    const navHome = document.getElementById('nav-home');
+  // ── Nav state ──────────────────────────────────────────────
+  function updateNavState() {
+    const scrollY = window.scrollY;
+    const viewportH = window.innerHeight;
 
-    function updateNavState() {
-      const scrollY = window.scrollY;
-      const viewportH = window.innerHeight;
-      const peopleRect = peopleSect?.getBoundingClientRect();
+    // On-light mode when People section is in view
+    const peopleRect = peopleSect ? peopleSect.getBoundingClientRect() : null;
+    const overPeople = peopleRect &&
+      peopleRect.top < viewportH * 0.5 &&
+      peopleRect.bottom > viewportH * 0.5;
 
-      // Check if people section is currently covering the viewport
-      const overPeople = peopleRect &&
-        peopleRect.top < viewportH * 0.5 &&
-        peopleRect.bottom > viewportH * 0.5;
+    if (overPeople) navEl?.classList.add('on-light');
+    else navEl?.classList.remove('on-light');
 
-      // Switch nav dot colors for light background
-      const nav = document.getElementById('section-nav');
-      if (overPeople) {
-        nav?.classList.add('on-light');
-      } else {
-        nav?.classList.remove('on-light');
-      }
-
-      // At top — activate home only
-      if (scrollY < viewportH * 0.5) {
-        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-        navHome?.classList.add('active');
-        return;
-      }
-
-      // Find which section is currently most visible
-      let activeSection = null;
-      sections.forEach(section => {
-        const rect = section.getBoundingClientRect();
-        if (rect.top < viewportH * 0.6 && rect.bottom > 0) {
-          activeSection = section;
-        }
-      });
-
-      // Update nav
+    // Home active when near top
+    if (scrollY < viewportH * 0.5) {
       document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-      if (activeSection) {
-        document.querySelector(
-          `.nav-item[data-section="${activeSection.id}"]`
-        )?.classList.add('active');
-      }
+      navHome?.classList.add('active');
+      return;
     }
 
-    window.addEventListener('scroll', updateNavState, { passive: true });
-    updateNavState(); // Set correct state on load
+    // Find which section is most in view
+    let activeSection = null;
+    sections.forEach(section => {
+      const rect = section.getBoundingClientRect();
+      if (rect.top < viewportH * 0.6 && rect.bottom > 0) {
+        activeSection = section;
+      }
+    });
+
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    if (activeSection) {
+      document.querySelector(
+        `.nav-item[data-section="${activeSection.id}"]`
+      )?.classList.add('active');
+    }
+  }
+
+  window.addEventListener('scroll', updateNavState, { passive: true });
+  updateNavState(); // initial call — peopleSect is now defined above
 
   // ── Mobile menu ────────────────────────────────────────────
   const mobileMenuBtn = document.getElementById('mobile-menu-btn');
@@ -1721,20 +1714,20 @@
     }
   });
 
-
-  // Smooth scroll for all internal anchor links
-    document.querySelectorAll('a[href^="#"]').forEach(a => {
-      a.addEventListener('click', e => {
-        const target = document.querySelector(a.getAttribute('href'));
-        if (target) {
-          e.preventDefault();
-          target.scrollIntoView({ behavior: 'smooth' });
-        }
-      });
+  // ── Smooth scroll ──────────────────────────────────────────
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const href = a.getAttribute('href');
+      if (href === '#') return;
+      const target = document.querySelector(href);
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth' });
+      }
     });
+  });
 
-
-  // ── Carousel: dots, auto-advance, click-drag, fade ────────
+  // ── Carousel ───────────────────────────────────────────────
   document.querySelectorAll('.split-right').forEach(wrap => {
     const grid = wrap.querySelector('.card-grid');
     const dotsContainer = wrap.querySelector('.carousel-dots');
@@ -1745,7 +1738,6 @@
 
     const getCardWidth = () => cards[0].getBoundingClientRect().width + 16;
 
-    // Build dots
     cards.forEach((_, i) => {
       const dot = document.createElement('button');
       dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
@@ -1758,18 +1750,16 @@
 
     const dots = dotsContainer.querySelectorAll('.carousel-dot');
 
-    // Update dot + fade on scroll
     grid.addEventListener('scroll', () => {
       const idx = Math.round(grid.scrollLeft / getCardWidth());
       const gridRect = grid.getBoundingClientRect();
       dots.forEach((d, i) => d.classList.toggle('active', i === idx));
       cards.forEach(card => {
-        card.style.opacity = card.getBoundingClientRect().left >= gridRect.left - 10
-          ? '1' : '0.35';
+        card.style.opacity =
+          card.getBoundingClientRect().left >= gridRect.left - 10 ? '1' : '0.35';
       });
     }, { passive: true });
 
-    // Auto-advance
     let current = 0, timer;
     const startTimer = () => {
       timer = setInterval(() => {
@@ -1780,7 +1770,6 @@
     const stopTimer = () => clearInterval(timer);
     startTimer();
 
-    // Click-drag on desktop
     let isDown = false, startX, scrollLeft;
     grid.style.cursor = 'grab';
 
@@ -1804,39 +1793,30 @@
     grid.addEventListener('touchend', startTimer, { passive: true });
   });
 
-
-
-
   // ── People section ─────────────────────────────────────────
   const PEOPLE = [
     {
       name: 'Nicholas Povak',
       title: 'Research Ecologist',
       affiliation: 'Spatial Informatics Group',
-      bio:  `
-      <p>
-          Nick is a Senior Research Scientist at the Spatial Informatics Group with expertise in landscape ecology, climate change
-          adaptation, and machine learning in landscape management. Broadly, Nick is interested in using landscape modeling to
-          understand how landscapes change over time under management and climate change and applying this knowledge into
-          actionable science through the development of interactive decision support models. Prior to working with SIG, Nick spent
-          the first 18 years of his career with the US Forest Service Pacific Northwest and Southwest Research stations studying
-          landscapes across the western US, Hawaii, and Palau.
-        </p>
-        <p>
-          Nick’s research falls into three broad categories: decision support modeling, landscape simulation, and machine
-          learning. He co-developed PROMOTE, a climate-informed decision support model that incorporates future resource
-          vulnerability under climate change into landscape planning, which will soon be available through Planscape. Through this
-          work, Nick has leveraged dynamic landscape models, such as LANDIS-II, and climate analog modeling to help characterize
-          potential vulnerability of ecosystem resources under mid-century climate. He is also a co-developer of the REBURN model
-          (link), which pairs state-and-transition models and spatial wildfire simulations to improve our understanding of
-          long-term wildfire-vegetation feedbacks. He also used machine learning to quantify local effects of topography, fuels,
-          and management on mitigating wildfire severity across extreme wildfire events.
-        </p>
-        <p>
-          Nick holds Forestry degrees from Virginia Tech (BS), University of Wisconsin – Madison (MS), and University of Washington (PhD).
-        </p>
-  `,
-      photo: 'assets/hamakua.jpg',   // ← replace with headshot
+      bio: `
+      <p>Nick is a Senior Research Scientist at the Spatial Informatics Group with expertise in landscape ecology, climate change
+      adaptation, and machine learning in landscape management. Broadly, Nick is interested in using landscape modeling to
+      understand how landscapes change over time under management and climate change and applying this knowledge into
+      actionable science through the development of interactive decision support models. Prior to working with SIG, Nick spent
+      the first 18 years of his career with the US Forest Service Pacific Northwest and Southwest Research stations studying
+      landscapes across the western US, Hawaii, and Palau.</p>
+
+      <p>Nick's research falls into three broad categories: decision support modeling, landscape simulation, and machine
+      learning. He co-developed PROMOTE, a climate-informed decision support model that incorporates future resource
+      vulnerability under climate change into landscape planning. Through this work, Nick has leveraged dynamic landscape
+      models, such as LANDIS-II, and climate analog modeling to help characterize potential vulnerability of ecosystem
+      resources under mid-century climate. He is also a co-developer of the REBURN model, which pairs state-and-transition
+      models and spatial wildfire simulations to improve our understanding of long-term wildfire-vegetation feedbacks.</p>
+
+      <p>Nick holds Forestry degrees from Virginia Tech (BS), University of Wisconsin – Madison (MS), and University of Washington (PhD).</p>
+    `,
+      photo: 'assets/hamakua.jpg',
       links: [
         { label: 'Google Scholar', url: 'https://scholar.google.com/' },
         { label: 'LinkedIn', url: 'https://linkedin.com/' },
@@ -1847,15 +1827,15 @@
       name: 'Team Member',
       title: 'Title',
       affiliation: 'Organization',
-      bio: 'Bio coming soon.',
-      photo: 'assets/tahoe.jpg',    // ← replace with headshot
+      bio: '<p>Bio coming soon.</p>',
+      photo: 'assets/tahoe.jpg',
       links: []
     },
     {
       name: 'Team Member',
       title: 'Title',
       affiliation: 'Organization',
-      bio: 'Bio coming soon.',
+      bio: '<p>Bio coming soon.</p>',
       photo: 'assets/washington.jpeg',
       links: []
     },
@@ -1866,7 +1846,6 @@
     const detail = document.getElementById('people-detail');
     if (!strip || !detail) return;
 
-    // Build avatar strip
     PEOPLE.forEach((person, i) => {
       const btn = document.createElement('button');
       btn.className = 'people-avatar-btn' + (i === 0 ? ' active' : '');
@@ -1886,10 +1865,7 @@
       strip.querySelectorAll('.people-avatar-btn')
         .forEach((b, i) => b.classList.toggle('active', i === idx));
       detail.classList.add('fading');
-      setTimeout(() => {
-        showPerson(idx);
-        detail.classList.remove('fading');
-      }, 280);
+      setTimeout(() => { showPerson(idx); detail.classList.remove('fading'); }, 280);
     }
 
     function showPerson(idx) {
@@ -1900,36 +1876,31 @@
       document.getElementById('pd-title').textContent = p.title;
       document.getElementById('pd-affil').textContent = p.affiliation;
       document.getElementById('pd-bio').innerHTML = p.bio;
-
       document.getElementById('pd-links').innerHTML = p.links.map(l =>
         `<a class="pd-link" href="${l.url}" target="_blank" rel="noopener">${l.label}</a>`
       ).join('');
     }
   })();
 
-
-  // ── People section entrance animation ─────────────────────
+  // ── People entrance animation ──────────────────────────────
   const peopleAnimEls = document.querySelectorAll('.people-animate');
 
   const peopleAnimObserver = new IntersectionObserver(entries => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
         entry.target.classList.add('in-view');
-        //peopleAnimObserver.unobserve(entry.target); // only animate once
+      } else {
+        entry.target.classList.remove('in-view'); // replay on re-entry
       }
     });
-  }, { threshold: 0.15 });
+  }, { threshold: 0.05 }); // lowered so elements animate sooner
 
-  peopleAnimEls.forEach(el => peopleAnimObserver.observe(el));  
+  peopleAnimEls.forEach(el => peopleAnimObserver.observe(el));
 
   // ── Background crossfade ───────────────────────────────────
-  const heroBg2 = document.getElementById('hero-bg-2');
-  const peopleSect = document.getElementById('people');
-
   if (heroBg2 && peopleSect) {
     const bgObserver = new IntersectionObserver(entries => {
       entries.forEach(entry => {
-        // Swap to second image once people section has scrolled past
         if (!entry.isIntersecting && entry.boundingClientRect.top < 0) {
           heroBg2.classList.add('visible');
         } else {
@@ -1939,49 +1910,44 @@
     }, { threshold: 0 });
 
     bgObserver.observe(peopleSect);
-  }  
+  }
 
+  // ── Heat shimmer ───────────────────────────────────────────
+  window.addEventListener('load', () => {
+    const disp = document.getElementById('heat-disp');
+    const heroImg = document.querySelector('.hero-bg-img img');
+    if (!disp || !heroImg) return;
 
+    let elapsed = 0;
+    let lastTime = null;
+    const duration = 5000;
 
-    // ── Heat shimmer ───────────────────────────────────────────
-    window.addEventListener('load', () => {
-      const disp = document.getElementById('heat-disp');
-      const heroImg = document.querySelector('.hero-bg-img img');
-      if (!disp || !heroImg) return;
+    heroImg.style.filter = 'url(#heat) brightness(0.6)';
 
-      let elapsed = 0;
-      let lastTime = null;
-      const duration = 5000; // 7 seconds total
+    function animate(ts) {
+      if (!lastTime) lastTime = ts;
+      const dt = ts - lastTime;
+      lastTime = ts;
+      elapsed += dt;
 
-      // Override the CSS filter to include our distortion
-      heroImg.style.filter = 'url(#heat) brightness(0.6)';
+      const t = elapsed / duration;
+      const envelope = t < 0.15 ? t / 0.15
+        : t < 0.4 ? 1
+          : (1 - t) / 0.35;
 
-      function animate(ts) {
-        if (!lastTime) lastTime = ts;
-        const dt = ts - lastTime;
-        lastTime = ts;
-        elapsed += dt;
+      disp.setAttribute('scale', Math.max(0, envelope * 10));
 
-        const t = elapsed / duration;
-        const envelope = t < 0.15 ? t / 0.15        // ramp up
-          : t < 0.4 ? 1               // hold, instead of 0.4 it was 0.65
-            : (1 - t) / 0.35;            // fade out
-
-        disp.setAttribute('scale', Math.max(0, envelope * 10)); // intensity, was 20
-
-        if (elapsed < duration) {
-          requestAnimationFrame(animate);
-        } else {
-          heroImg.style.filter = ''; // restore CSS filter
-        }
+      if (elapsed < duration) {
+        requestAnimationFrame(animate);
+      } else {
+        heroImg.style.filter = '';
       }
+    }
 
-      setTimeout(() => requestAnimationFrame(animate), 200); // <- ms before it starts, was 1200
-    });
+    setTimeout(() => requestAnimationFrame(animate), 200);
+  });
 
-
-
-      // ── Responsive card layout strategy ───────────────────────
+  // ── Responsive carousel layout ─────────────────────────────
   function updateCarouselLayout() {
     const width = window.innerWidth;
 
@@ -2004,8 +1970,8 @@
     });
   }
 
-      updateCarouselLayout();
-      window.addEventListener('resize', updateCarouselLayout, { passive: true });
+  updateCarouselLayout();
+  window.addEventListener('resize', updateCarouselLayout, { passive: true });
 
 </script>
 
