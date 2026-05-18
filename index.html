@@ -438,8 +438,8 @@
     .split-layout {
       display: flex;
       align-items: flex-start;
-      padding: 3.5rem;
-      gap: 3rem;
+      padding: 4rem 4rem 4rem 4rem;  /* was 3.5rem */
+      gap: 4rem;                      /* was 3rem */
       min-height: 400px;
     }
 
@@ -488,6 +488,7 @@
     .split-right {
       flex: 1;
       min-width: 0;
+      padding: 0.5rem;   
     }
 
 
@@ -591,8 +592,8 @@
     /* ── JS-driven layout classes (applied by updateCarouselLayout()) ── */
     .card-grid.layout-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));  /* ← was 240px */
-      gap: 1.25rem;
+      grid-template-columns: repeat(2, 1fr);  /* ← fixed 2 cols, was auto-fill */
+      gap: 1.5rem;
       overflow: hidden;
       cursor: default;
     }
@@ -826,6 +827,14 @@
       flex-direction: column;
       justify-content: center;
     }
+
+    .tools-section .split-layout {
+      padding-right: calc(var(--section-right-margin) + 2rem);  /* clears nav */
+    }
+
+    .page-section .split-layout {
+      padding-right: calc(var(--section-right-margin) + 1rem);  /* blog/about also clear */
+    }    
 
     /* Fix text colors on cream background */
     .tools-section .section-title   { color: var(--green-deep); }
