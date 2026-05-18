@@ -1,4 +1,4 @@
-const PEOPLE = [
+[
   {
     name:        'Nicholas Povak',
     title:       'Research Ecologist',
