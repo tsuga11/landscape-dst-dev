@@ -760,32 +760,66 @@
 
 
     .tools-section {
-      background: var(--cream);
+      /* Reset floating panel inherited from .page-section */
+      margin: 0;
+      border-radius: 0;
       backdrop-filter: none;
       -webkit-backdrop-filter: none;
+      border: none;
+      box-shadow: none;
+      isolation: auto;
+
+      /* Flat cream style */
+      background: var(--cream);
+      position: relative;
+      z-index: 2;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
     }
 
-    /* Fix text colors inside tools since background is now light */
-    .tools-section .section-title { color: var(--green-deep); }
+    /* Fix text colors on cream background */
+    .tools-section .section-title   { color: var(--green-deep); }
     .tools-section .section-eyebrow { color: var(--green-light); }
-    .tools-section .section-sub { color: var(--text-mid); }
+    .tools-section .section-sub     { color: var(--text-mid); }
 
     /* ══════════════════════════════════════════════════════════
     FOOTER
     ══════════════════════════════════════════════════════════ */
     .footer-section {
-      min-height: unset;           /* overrides the 100vh */
-      background: #1a1a14;         /* matches news section */
+      /* Reset floating panel */
+      margin: 0;
+      border-radius: 0;
       backdrop-filter: none;
       -webkit-backdrop-filter: none;
-      border-radius: 0;            /* full bleed feel */
-      margin: 0;                   /* no floating margin */
+      border: none;
+      box-shadow: none;
+
+      /* Dark flat style */
+      background: #1a1a14;
+      position: relative;
+      z-index: 2;
+
+      /* Override min-height and flex from .page-section */
+      min-height: unset;
+      display: block;        /* ← fixes the jumbled text */
+      padding: 3rem 0;       /* gives it comfortable height */
     }
 
-    .footer-section .footer-inner p { color: rgba(240, 232, 208, 0.4); }
-    .footer-section .footer-inner a { color: rgba(240, 232, 208, 0.5); }
-    .footer-section .footer-inner a:hover { color: var(--gold-light); }
+    .footer-section .footer-inner {
+      display: flex;
+      flex-direction: row;   /* restores horizontal side-by-side layout */
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      padding: 0 3.5rem;
+    }
 
+    .footer-section .footer-inner p     { color: rgba(240, 232, 208, 0.35); }
+    .footer-section .footer-inner a     { color: rgba(240, 232, 208, 0.5); }
+    .footer-section .footer-inner a:hover { color: var(--gold-light); }
     /* ══════════════════════════════════════════════════════════
     SECTION NAV
     ══════════════════════════════════════════════════════════ */
