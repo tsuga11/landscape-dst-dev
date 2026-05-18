@@ -1,4 +1,3 @@
-// ── Inline data (switch to fetch when JSON files are ready) ──
 const PEOPLE = [
   {
     name:        'Nicholas Povak',
