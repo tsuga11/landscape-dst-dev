@@ -1,26 +1,30 @@
 [
   {
-    name:        'Nicholas Povak',
-    title:       'Research Ecologist',
-    affiliation: 'Spatial Informatics Group',
-    bio: `<p>Nick is a Senior Research Scientist at the Spatial Informatics Group with expertise
-      in landscape ecology, climate change adaptation, and machine learning in landscape management.</p>
-      <p>He co-developed PROMOTE, a climate-informed decision support model, and the REBURN landscape
-      simulation model. Nick holds degrees from Virginia Tech (BS), University of Wisconsin–Madison (MS),
-      and University of Washington (PhD).</p>`,
-    photo: 'assets/hamakua.jpg',
-    links: [
-      { label: 'Google Scholar',   url: 'https://scholar.google.com/' },
-      { label: 'LinkedIn',         url: 'https://linkedin.com/' },
-      { label: 'northcoastxy.com', url: 'https://northcoastxy.com' }
+    "name": "Nicholas Povak",
+    "title": "Research Ecologist",
+    "affiliation": "Spatial Informatics Group",
+    "bio": "<p>Nick is a Senior Research Scientist at the Spatial Informatics Group with expertise in landscape ecology, climate change adaptation, and machine learning in landscape management.</p><p>He co-developed PROMOTE, a climate-informed decision support model, and the REBURN landscape simulation model. Nick holds degrees from Virginia Tech (BS), University of Wisconsin–Madison (MS), and University of Washington (PhD).</p>",
+    "photo": "assets/hamakua.jpg",
+    "links": [
+      { "label": "Google Scholar", "url": "https://google.com" },
+      { "label": "LinkedIn", "url": "https://linkedin.com" },
+      { "label": "northcoastxy.com", "url": "https://northcoastxy.com" }
     ]
   },
   {
-    name: 'Team Member', title: 'Title', affiliation: 'Organization',
-    bio: '<p>Bio coming soon.</p>', photo: 'assets/tahoe.jpg', links: []
+    "name": "Team Member",
+    "title": "Title",
+    "affiliation": "Organization",
+    "bio": "<p>Bio coming soon.</p>",
+    "photo": "assets/tahoe.jpg",
+    "links": []
   },
   {
-    name: 'Team Member', title: 'Title', affiliation: 'Organization',
-    bio: '<p>Bio coming soon.</p>', photo: 'assets/washington.jpeg', links: []
+    "name": "Team Member",
+    "title": "Title",
+    "affiliation": "Organization",
+    "bio": "<p>Bio coming soon.</p>",
+    "photo": "assets/washington.jpeg",
+    "links": []
   }
-];
+]
