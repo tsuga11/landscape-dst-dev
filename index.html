@@ -126,6 +126,7 @@
     .hero-bg-secondary::after {
       content: '';
       position: absolute;
+      z-index: 1;   /* ← was 0, now above .hero at z-index 0 */
       inset: 0;
       background: linear-gradient(
         135deg,
@@ -341,7 +342,7 @@
     ══════════════════════════════════════════════════════════ */
     .page-section {
       max-width: 100%;
-      z-index: 1;
+      z-index: 2;
       position: relative;
       margin: var(--section-margin) var(--section-right-margin) var(--section-margin) calc(var(--section-margin) * 1.5);
       border-radius: var(--section-radius);
@@ -920,7 +921,7 @@
 ══════════════════════════════════════════════════════════ */
 .people-section {
   position: relative;
-  z-index: 1;
+  z-index: 2;
   background: var(--cream);
   padding: 4rem 0 0;
   /* no border-radius, no margin — full bleed */
@@ -1255,9 +1256,7 @@
     </a>
   </nav>
 
-  <div id="hero-bg-2" class="hero-bg-secondary">
-    <img src="assets/washington.jpeg" alt=""> <!-- ← change this path -->
-  </div>
+
 
   <!-- ══════════════════════════════════════════════════════════
        HERO
@@ -1292,6 +1291,10 @@
       </a>
     </div>
   </section>
+
+  <div id="hero-bg-2" class="hero-bg-secondary">
+    <img src="assets/washington.jpeg" alt=""> <!-- ← change this path -->
+  </div>
 
   <!-- ══════════════════════════════════════════════════════════
        TOOLS
