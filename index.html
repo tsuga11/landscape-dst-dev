@@ -1473,34 +1473,22 @@
     /* ══════════════════════════════════════════════════════════
     RESPONSIVE — single consolidated block
     ══════════════════════════════════════════════════════════ */
-
     @media (max-width: 1100px) {
-      #section-nav {
-        right: 0.5rem;
-      }
-
-      .nav-label   { 
-        font-size: 0.6rem; padding: 0.15rem 0.4rem; 
-      }
+      #section-nav { right: 0.5rem; }
+      .nav-label   { font-size: 0.6rem; padding: 0.15rem 0.4rem; }
     }
 
     @media (min-width: 901px) {
-
+      /* intentionally empty */
     }
 
     @media (max-width: 900px) {
       #mobile-header { display: flex; }
+      #tools         { margin-top: calc(100vh + 52px); }
 
-      #tools { margin-top: calc(100vh + 52px); }
-
-      .split-layout {
-        flex-direction: column;
-        padding: 1.5rem;
-        gap: 1.5rem;
-      }
-
-      .split-left  { width: 100%; }
-      .split-sticky { position: static; }
+      .split-layout  { flex-direction: column; padding: 1.5rem; gap: 1.5rem; }
+      .split-left    { width: 100%; }
+      .split-sticky  { position: static; }
 
       .split-right {
         position: relative;
@@ -1508,15 +1496,42 @@
         width: 100%;
       }
 
+      /* ← add these carousel fixes */
+      .carousel-wrap { padding: 0; }
 
+      .card-grid.layout-carousel .project-card {
+        flex: 0 0 78%;
+        max-width: 78%;
+      }
 
-      #section-nav   { display: none; }
-      .hero-nav      { display: none; }
-      .hero-content  { padding: 1.5rem 1.5rem 4rem; }
-      .hero-title    { font-size: 2.5rem; }
-      .page-section  { margin: 0.75rem; }
+      #section-nav    { display: none; }
+      .hero-nav       { display: none; }
+      .hero-content   { padding: 1.5rem 1.5rem 4rem; }
+      .hero-title     { font-size: 2.5rem; }
+      .page-section   { margin: 0.75rem; }
       .simple-section { padding: 1.5rem; }
     }
+
+    /* ── NEW: mobile-specific fixes ─────────────────────────── */
+    @media (max-width: 600px) {
+      html { scroll-snap-type: none; }  /* prevents gap/jump between sections */
+
+      .page-section {
+        min-height: auto;
+        justify-content: flex-start;
+        padding-top: 2rem;
+        padding-bottom: 2rem;
+      }
+
+      .people-section,
+      .news-section,
+      .tools-section {
+        min-height: auto;
+      }
+    }
+
+
+
   </style>
 </head>
 
