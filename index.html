@@ -51,7 +51,7 @@
 
     html {
       /*scroll-behavior: smooth;*/
-      scroll-snap-type: y proximity; /* proximity = gentle, not jarring */
+      /*scroll-snap-type: y proximity;  proximity = gentle, not jarring */
     }
 
     body {
@@ -396,15 +396,6 @@
     }
 
  
-
-    .page-section,
-    .people-section,
-    .news-section,
-    .tools-section {
-      scroll-snap-align: start;
-      /* min-height: 100vh already set */
-    }
-
 
     /* ══════════════════════════════════════════════════════════
     SPLIT LAYOUT
@@ -1403,7 +1394,7 @@
       #mobile-header { display: flex; }
       #about         { margin-top: calc(100vh + 52px); }
       #tools         { margin-top: 0; }
-      html           { scroll-snap-type: none; }
+      /*html           { scroll-snap-type: none; } */
 
       /* ── Section heights ───────────────────────────────────── */
       .page-section,
