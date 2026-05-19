@@ -643,7 +643,7 @@ function toggleLayer(link, layerCfg) {
 // 2. RUN ON PAGE LOAD: Automatically load a specific layer
 document.addEventListener('DOMContentLoaded', () => {
   // Replace 'your-default-layer-id' with the actual ID string in your data-layer attribute
-  const defaultLink = document.querySelector('.toc-link[data-layer="strategyEcosystem"]');
+  const defaultLink = document.querySelector('.toc-link[data-layer="currentEcosystem"]');
   if (!defaultLink) return;
 
   const layerId = defaultLink.dataset.layer;
@@ -653,6 +653,10 @@ document.addEventListener('DOMContentLoaded', () => {
   // Run the same map-load check used in your click listener
   if (state.map.loaded()) {
     toggleLayer(defaultLink, layerCfg);
+    addHillshadeOverlay();
+    const btn = e.target.closest('#hillshade-toggle');
+    btn.dataset.active = 'true';
+    btn.classList.add('active');
   } else {
     state.map.once('load', () => toggleLayer(defaultLink, layerCfg));
   }
