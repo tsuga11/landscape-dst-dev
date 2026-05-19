@@ -864,21 +864,28 @@
       align-items: center;
       gap: 0.5rem;
       margin-top: 1.5rem;
-      padding: 0.7rem 1.4rem;
+      padding: 0.75rem 1.6rem;
+      border-radius: 10px;
       background: var(--green-deep);
       color: #fff;
       font-size: 0.82rem;
       font-weight: 500;
       letter-spacing: 0.06em;
       text-decoration: none;
-      border-radius: 3px;
-      transition: background 0.2s;
+      border: none;
+      /* Dark neumorphism on glass background */
+      box-shadow:
+        5px 5px 14px rgba(0, 0, 0, 0.38),
+        -3px -3px 8px rgba(255, 255, 255, 0.06);
+      transition: box-shadow 0.25s ease, background 0.2s;
     }
 
     .btn-primary:hover {
       background: var(--green-light);
+      box-shadow:
+        inset 4px 4px 9px rgba(0, 0, 0, 0.3),
+        inset -2px -2px 6px rgba(255, 255, 255, 0.05);
     }
-
     .scholar-btn {
       display: inline-flex;
       align-items: center;
@@ -1332,10 +1339,8 @@
     /* ── Detail panel ───────────────────────────────────────── */
     .people-detail {
       display: flex;
-      gap: 3rem;
-      padding: 2.5rem 4rem 4rem;
-      align-items: flex-start;
-      min-height: 300px;
+      justify-content: flex-start;
+      padding: 1rem 4rem 4rem;
       transition: opacity 0.3s ease;
     }
 
@@ -1362,46 +1367,42 @@
       box-shadow:
         10px 10px 28px rgba(163, 143, 110, 0.42),
         -10px -10px 28px rgba(255, 255, 255, 0.95);
-      max-width: 560px;
       width: 100%;
-      margin-top: 65px;        /* space for avatar to float above */
-      padding: 75px 2.5rem 2.5rem;  /* top padding clears avatar */
+      margin-left: 60px;              /* room for avatar overlap */
+      padding: 2rem 2.5rem 2rem 110px; /* left padding clears avatar */
       display: flex;
       flex-direction: column;
-      align-items: center;
-    }  
+      align-items: flex-start;
+    }
 
-    /* Card body — centered header, left-aligned bio */
-    .pd-card-body {
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }    
-
-    /* Circle headshot — floats above card */
+    /* Photo — overlaps left edge, vertically centered in upper card */
     .pd-avatar-wrap {
       position: absolute;
-      top: -65px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 130px;
-      height: 130px;
+      top: 2.5rem;
+      left: -60px;
+      width: 120px;
+      height: 120px;
       border-radius: 50%;
       overflow: hidden;
-      border: 3px solid var(--cream);   /* thin border matches background */
+      border: 3px solid var(--cream);
       box-shadow:
         6px 6px 14px rgba(163, 143, 110, 0.38),
         -6px -6px 14px rgba(255, 255, 255, 0.92);
       flex-shrink: 0;
-    }    
+    }
 
     .pd-avatar-wrap img {
-      width: 100%;
-      height: 100%;
+      width: 100%; height: 100%;
       object-fit: cover;
       object-position: center top;
-    }    
+    }
+
+    .pd-card-body {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
 
     .pd-name {
       font-family: 'Cormorant Garamond', serif;
@@ -1409,47 +1410,41 @@
       font-weight: 700;
       color: var(--green-deep);
       line-height: 1.1;
-      margin-bottom: 0.3rem;
-      text-align: center;
+      margin-bottom: 0.25rem;
     }
 
     .pd-title {
       font-size: 0.82rem;
       font-weight: 500;
       color: var(--green-light);
-      letter-spacing: 0.06em;
-      text-align: center;
-      margin-bottom: 0.15rem;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.1rem;
     }
 
     .pd-affil {
       font-size: 0.76rem;
       color: var(--text-mid);
-      text-align: center;
       margin-bottom: 0;
     }
 
-    /* Gold accent divider */
     .pd-divider {
       width: 36px;
       height: 2px;
       background: var(--gold);
       border-radius: 1px;
-      margin: 1.25rem 0;
+      margin: 1.1rem 0;
       flex-shrink: 0;
-    }    
+    }
 
-    
-    /* Bio — left aligned for readability */
+    /* Bio spans full card width */
     .pd-bio {
       font-size: 0.88rem;
       font-weight: 300;
       line-height: 1.78;
       color: var(--text-mid);
-      text-align: left;
       width: 100%;
-      margin-bottom: 1.75rem;
-      max-height: 240px;
+      margin-bottom: 1.5rem;
+      max-height: 220px;
       overflow-y: auto;
       scrollbar-width: thin;
       scrollbar-color: rgba(163,143,110,0.3) transparent;
@@ -1457,6 +1452,14 @@
 
     .pd-bio p + p { margin-top: 0.75rem; }
 
+    /* Neumorphic link buttons — left aligned */
+    .pd-links {
+      display: flex;
+      justify-content: flex-start;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      width: 100%;
+    }
 
     .pd-link {
       display: inline-flex;
@@ -1473,7 +1476,6 @@
         4px 4px 9px rgba(163, 143, 110, 0.32),
         -4px -4px 9px rgba(255, 255, 255, 0.9);
       transition: box-shadow 0.22s ease, color 0.2s;
-      letter-spacing: 0.03em;
     }
 
     .pd-link:hover {
@@ -1481,8 +1483,25 @@
       box-shadow:
         inset 3px 3px 7px rgba(163, 143, 110, 0.28),
         inset -3px -3px 7px rgba(255, 255, 255, 0.88);
-    }    
+    }
 
+    /* Mobile */
+    @media (max-width: 900px) {
+      .people-detail { padding: 1rem 1.25rem 3rem; }
+      .pd-card       { margin-left: 0; padding: 75px 1.5rem 2rem; }
+      .pd-avatar-wrap {
+        top: -55px; left: 50%;
+        transform: translateX(-50%);
+        width: 110px; height: 110px;
+      }
+      .pd-name         { font-size: 1.6rem; }
+      .pd-bio          { max-height: none; }
+      .pd-links        { justify-content: center; }
+      .pd-card-body    { align-items: center; }
+      .pd-name, .pd-title, .pd-affil { text-align: center; }
+      .pd-divider      { margin: 1rem auto; }
+      .pd-bio          { text-align: left; }
+    }
 
   /* ══════════════════════════════════════════════════════════
     NEWS SECTION
@@ -1578,9 +1597,58 @@
     /* ══════════════════════════════════════════════════════════
     RESPONSIVE — single consolidated block
     ══════════════════════════════════════════════════════════ */
+    /* ── People: two-column on wide screens ─────────────────── */
+    @media (min-width: 1100px) {
+      .people-section {
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* Header stays full width */
+      .people-header { flex-shrink: 0; }
+
+      /* Strip + detail side by side */
+      .people-body {
+        display: flex;
+        flex-direction: row;
+        gap: 3rem;
+        padding: 0 4rem 4rem;
+        align-items: flex-start;
+        flex: 1;
+      }
+
+      /* Vertical strip on left */
+      .people-strip-outer {
+        flex: 0 0 160px;
+        padding: 0;
+      }
+
+      .people-strip {
+        flex-direction: column;
+        overflow-y: auto;
+        overflow-x: visible;
+        scroll-snap-type: y mandatory;
+        padding-bottom: 0;
+        padding-right: 0.5rem;
+        max-height: 60vh;
+        gap: 0.75rem;
+      }
+
+      /* Detail card fills remaining space */
+      .people-detail {
+        flex: 1;
+        padding: 0;
+      }
+
+      .pd-card { max-width: none; }
+    }
+
+
     @media (max-width: 1100px) {
       #section-nav { right: 0.5rem; }
       .nav-label   { font-size: 0.6rem; padding: 0.15rem 0.4rem; }
+
+
     }
 
     @media (min-width: 901px) {
@@ -1909,35 +1977,25 @@
     <!-- ══════════════════════════════════════════════════════════
         2. People — full-bleed cream
       ══════════════════════════════════════════════════════════ -->
-    <section id="people" class="people-section">
-    
-      <div class="people-header">
-        <p class="people-eyebrow section-animate">Ecosystem Resilience Collaborative</p>
-        <h2 class="people-title section-animate delay-1">People</h2>
-      </div>
-    
-      <div class="people-strip-outer section-animate delay-2">
-        <div class="people-strip" id="people-strip"></div>
-      </div>
-    
-      <!-- Detail panel -->
-      <div class="people-detail section-animate delay-3" id="people-detail">
-        <div class="pd-card">
-          <div class="pd-avatar-wrap">
-            <img id="pd-photo" src="" alt="">
+      <section id="people" class="people-section">
+        <div class="people-header">
+          <p class="people-eyebrow section-animate">Ecosystem Resilience Collaborative</p>
+          <h2 class="people-title section-animate delay-1">People</h2>
+        </div>
+      
+        <div class="people-body"> <!-- ← new wrapper -->
+          <div class="people-strip-outer section-animate delay-2">
+            <div class="people-strip" id="people-strip"></div>
           </div>
-          <div class="pd-card-body">
-            <h3 id="pd-name" class="pd-name"></h3>
-            <p id="pd-title" class="pd-title"></p>
-            <p id="pd-affil" class="pd-affil"></p>
-            <div class="pd-divider"></div>
-            <div id="pd-bio" class="pd-bio"></div>
-            <div id="pd-links" class="pd-links"></div>
+      
+          <div class="people-detail section-animate delay-3" id="people-detail">
+            <div class="pd-card">
+              <!-- unchanged -->
+            </div>
           </div>
         </div>
-      </div>
-    
-    </section>
+      
+      </section>
 
 
     <!-- ══════════════════════════════════════════════════════════
