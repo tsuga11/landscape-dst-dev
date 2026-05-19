@@ -163,7 +163,13 @@
       letter-spacing: 0.12em;
       text-transform: uppercase;
       color: rgba(255, 255, 255, 0.6);
+      transition: opacity 0.4s ease;
     }
+
+    .hero-nav.transparent .site-name {
+      opacity: 0;
+      pointer-events: none;
+    }    
 
     .hero-nav a {
       color: rgba(255, 255, 255, 0.5);
@@ -1588,7 +1594,7 @@
   ══════════════════════════════════════════════════════════ -->
   <nav class="hero-nav">
     <span class="site-name">Ecosystem Resilience Collaborative</span>
-    <a href="mailto:napovak@gmail.com">napovak@gmail.com</a>
+    <!--<a href="mailto:napovak@gmail.com">napovak@gmail.com</a>-->
   </nav>
   
   <section class="hero">
@@ -1601,8 +1607,8 @@
     <div class="hero-content">
       <p class="hero-eyebrow">Landscape ecology · Decision support · Wildfire</p>
       <h1 class="hero-title">
-        Forest &amp; watershed<br>
-        management <em>tools</em>
+        Ecosystem &amp; Resilience<br>
+        <em>Collaborative</em>
       </h1>
       <p class="hero-desc">
         Spatial decision support tools for prioritizing ecological restoration
@@ -2272,6 +2278,31 @@
   updateCarouselLayout();
   window.addEventListener('resize', updateCarouselLayout, { passive: true });
 
+
+
+    window.addEventListener('scroll', () => {
+      const scrollY = window.scrollY;
+      const heroH = hero.offsetHeight;
+      const progress = Math.min(scrollY / heroH, 1);
+
+      heroContent.style.opacity = Math.max(1 - progress * 2, 0);
+      heroContent.style.transform = `translateY(${scrollY * 0.2}px)`;
+
+      if (scrollY > heroH * 0.75) {
+        heroNav.style.background = 'rgba(12, 10, 8, 0.88)';
+        heroNav.style.backdropFilter = 'blur(12px)';
+        heroNav.style.borderBottom = '1px solid rgba(255,255,255,0.08)';
+        heroNav.classList.remove('transparent');   // ← show site name
+      } else {
+        heroNav.style.background = 'transparent';
+        heroNav.style.backdropFilter = 'none';
+        heroNav.style.borderBottom = 'none';
+        heroNav.classList.add('transparent');      // ← hide site name
+      }
+    }, { passive: true });
+
+    // Set initial state on load
+    heroNav.classList.add('transparent');
 </script>
 
 
