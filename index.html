@@ -562,50 +562,171 @@
       gap: 1.25rem;
     }
 
+
+
+
+
+    /* ══════════════════════════════════════════════════════════
+      NEUMORPHIC CARDS
+    ══════════════════════════════════════════════════════════ */
+
+    /* Base reset */
     .project-card {
-      background: rgba(255, 255, 255, 0.42);
-      backdrop-filter: blur(12px) saturate(160%) brightness(1.06);
-      -webkit-backdrop-filter: blur(12px) saturate(160%) brightness(1.06);
-      border-radius: 6px;
+      border-radius: 16px;
+      border: none;
       overflow: hidden;
       display: flex;
       flex-direction: column;
       position: relative;
-      border: 1px solid rgba(255, 255, 255, 0.4);
-      border-top: 1px solid rgba(255, 255, 255, 0.72);
-      box-shadow:
-        0 4px 24px rgba(0, 0, 0, 0.18),
-        0 1px 4px rgba(0, 0, 0, 0.1),
-        inset 0 1px 0 rgba(255, 255, 255, 0.9),
-        inset 0 -1px 0 rgba(0, 0, 0, 0.04);
       opacity: 0;
       transform: translateY(20px);
-      transition: opacity 0.6s ease, transform 0.6s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+      transition: opacity 0.6s ease, transform 0.6s ease, box-shadow 0.3s ease;
+      /* remove old backdrop-filter and background */
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
     }
 
-    .project-card.visible {
-      opacity: 1;
-      transform: translateY(0);
+    .project-card.visible       { opacity: 1; transform: translateY(0); }
+    .project-card.wip.visible   { opacity: 0.72; }
+    .project-card.wip           { cursor: default; }
+
+    /* ── Tools — LIGHT neumorphism (cream background) ─────── */
+    .tools-section .project-card {
+      background: var(--cream);
+      box-shadow:
+        8px 8px 20px rgba(163, 143, 110, 0.45),
+        -8px -8px 20px rgba(255, 255, 255, 0.95);
     }
 
-    .project-card.wip.visible {
-      opacity: 0.65;
-    }
-
-    .project-card.wip {
-      cursor: default;
-    }
-
-    .project-card.wip:hover {
+    .tools-section .project-card:not(.wip):hover {
+      box-shadow:
+        inset 5px 5px 12px rgba(163, 143, 110, 0.38),
+        inset -5px -5px 12px rgba(255, 255, 255, 0.9);
       transform: none;
     }
 
-    .project-card:not(.wip):hover {
-      transform: translateY(-3px);
-      border-top-color: rgba(255, 255, 255, 0.9);
-      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.95);
+    .tools-section .project-card.wip:hover { transform: none; }
+
+    /* ── Blog — DARK neumorphism (glass dark background) ─────── */
+    #blog .project-card {
+      background: rgba(32, 28, 24, 0.88);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      box-shadow:
+        8px 8px 20px rgba(0, 0, 0, 0.55),
+        -5px -5px 14px rgba(255, 255, 255, 0.05);
     }
 
+    #blog .project-card:not(.wip):hover {
+      box-shadow:
+        inset 5px 5px 12px rgba(0, 0, 0, 0.45),
+        inset -3px -3px 8px rgba(255, 255, 255, 0.04);
+      transform: none;
+    }
+
+    #blog .project-card.wip:hover { transform: none; }
+
+    /* Text adjustments for dark blog cards */
+    #blog .card-title  { color: rgba(255, 255, 255, 0.92); }
+    #blog .card-region { color: var(--gold-light); }
+    #blog .card-desc   { color: rgba(255, 255, 255, 0.58); }
+    #blog .card-meta   { color: var(--gold); font-weight: 500; }
+
+
+    /* ══════════════════════════════════════════════════════════
+    NEUMORPHIC BUTTONS
+    ══════════════════════════════════════════════════════════ */
+
+    /* Primary action button */
+    .card-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.55rem 1.1rem;
+      border-radius: 8px;
+      border: none;
+      background: var(--green-deep);
+      color: #fff;
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      text-decoration: none;
+      align-self: flex-start;
+      box-shadow:
+      4px 4px 10px rgba(0, 0, 0, 0.32),
+      -2px -2px 6px rgba(255, 255, 255, 0.1);
+      transition: box-shadow 0.25s ease, background 0.2s ease;
+      cursor: pointer;
+    }
+
+    .card-link:hover {
+      background: var(--green-light);
+      box-shadow:
+      inset 3px 3px 7px rgba(0, 0, 0, 0.28),
+      inset -2px -2px 5px rgba(255, 255, 255, 0.08);
+    }
+
+    /* Disabled — tools (light bg) */
+    .tools-section .card-link.disabled {
+      background: #ece8e0;
+      color: #8a7f6e;
+      pointer-events: none;
+      box-shadow:
+      4px 4px 10px rgba(163, 143, 110, 0.32),
+      -4px -4px 10px rgba(255, 255, 255, 0.88);
+    }
+
+    /* Disabled — blog (dark bg) */
+    #blog .card-link.disabled {
+      background: rgba(50, 44, 38, 0.85);
+      color: rgba(255, 255, 255, 0.32);
+      pointer-events: none;
+      box-shadow:
+      inset 2px 2px 6px rgba(0, 0, 0, 0.4),
+      inset -1px -1px 4px rgba(255, 255, 255, 0.03);
+    }
+
+    /* Badges — neumorphic pill */
+    .card-badge {
+      position: absolute;
+      top: 10px; right: 10px;
+      padding: 0.22rem 0.6rem;
+      border-radius: 20px;
+      font-size: 0.6rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      box-shadow: 2px 2px 6px rgba(0,0,0,0.2), -1px -1px 4px rgba(255,255,255,0.15);
+    }
+
+    .badge-ready { background: var(--gold); color: #fff; }
+    .badge-wip   { background: rgba(30,30,30,0.6); color: rgba(255,255,255,0.8); }
+
+    /* Card meta (dates, updated text) */
+    .card-meta {
+      font-size: 0.68rem;
+      font-weight: 500;
+      color: var(--green-light);
+      letter-spacing: 0.04em;
+      margin-bottom: 0.6rem;
+    }
+
+    #blog .card-meta { color: var(--gold); }    
+
+
+
+
+    .card-img-wrap img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s ease;
+      filter: brightness(0.85);
+      -webkit-user-drag: none;
+      user-select: none;
+      pointer-events: none;
+    }
+
+    .project-card:not(.wip):hover .card-img-wrap img { transform: scale(1.04); }
 
     /* ── JS-driven layout classes (applied by updateCarouselLayout()) ── */
     .card-grid.layout-grid {
@@ -653,32 +774,11 @@
       flex-shrink: 0;
     }
 
-    .card-img-wrap img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      transition: transform 0.4s ease;
-      filter: brightness(0.85);
-      -webkit-user-drag: none;
-      user-select: none;
-      pointer-events: none;  /* ← add this */      
-    }
 
     .project-card:not(.wip):hover .card-img-wrap img {
       transform: scale(1.04);
     }
 
-    .card-badge {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      padding: 0.2rem 0.55rem;
-      border-radius: 2px;
-      font-size: 0.62rem;
-      font-weight: 500;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-    }
 
     .badge-ready {
       background: var(--gold);
@@ -724,41 +824,9 @@
       margin-bottom: 1rem;
     }
 
-    .card-meta {
-      font-size: 0.7rem;
-      font-weight: 500;
-      color: var(--green-light);    /* ← was #999, now visible green */
-      letter-spacing: 0.04em;
-      margin-bottom: 0.75rem;
-    }
 
-    .card-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-      padding: 0.5rem 1rem;
-      background: var(--green-deep);
-      color: #fff;
-      font-size: 0.75rem;
-      font-weight: 500;
-      letter-spacing: 0.05em;
-      text-decoration: none;
-      border-radius: 3px;
-      align-self: flex-start;
-      transition: background 0.2s;
-    }
 
-    .card-link:hover {
-      background: var(--green-light);
-    }
 
-    .card-link.disabled {
-      background: rgba(27,58,47,0.15);
-      color: var(--green-deep);
-      cursor: default;
-      pointer-events: none;
-      border: 1px solid rgba(27,58,47,0.2);
-    }
 
     /* ══════════════════════════════════════════════════════════
     SIMPLE SECTIONS
