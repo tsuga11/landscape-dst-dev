@@ -99,7 +99,7 @@ function addTerrain() {
   if (!state.map.getSource('terrain-dem')) {
     state.map.addSource('terrain-dem', {
       type: 'raster-dem',
-      url: 'https://api.maptiler.com/tiles/terrain-rgb-v2/tiles.json?key=cv4A9SfoJm6F3eii0Yjy',
+      url: 'https://api.maptiler.com/tiles/terrain-rgb-v2/tiles.json?key=L9m2QvkG3KvfZEuyAa2n',
       tileSize: 256
     });
   }
@@ -639,6 +639,24 @@ function toggleLayer(link, layerCfg) {
     removeLayer(layerCfg);
   }
 }
+
+// 2. RUN ON PAGE LOAD: Automatically load a specific layer
+document.addEventListener('DOMContentLoaded', () => {
+  // Replace 'your-default-layer-id' with the actual ID string in your data-layer attribute
+  const defaultLink = document.querySelector('.toc-link[data-layer="strategyEcosystem"]');
+  if (!defaultLink) return;
+
+  const layerId = defaultLink.dataset.layer;
+  const layerCfg = findLayer(layerId);
+  if (!layerCfg) return;
+
+  // Run the same map-load check used in your click listener
+  if (state.map.loaded()) {
+    toggleLayer(defaultLink, layerCfg);
+  } else {
+    state.map.once('load', () => toggleLayer(defaultLink, layerCfg));
+  }
+});
 
 // ─── OPACITY SLIDER EVENT DELEGATION ────────────────────────
 document.addEventListener('input', e => {
