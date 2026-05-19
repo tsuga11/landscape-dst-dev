@@ -573,25 +573,26 @@
       display: flex;
       flex-direction: row;
       overflow-x: scroll;
-      overflow-y: visible;
       scroll-snap-type: x mandatory;
       -webkit-overflow-scrolling: touch;
       overscroll-behavior-x: contain;
       gap: 1rem;
-      padding: 0.5rem 1rem 1.5rem;
+      padding: 0.5rem 0 1.5rem;
       scrollbar-width: none;
+      cursor: grab;
     }
 
+    .card-grid.layout-carousel:active { cursor: grabbing; }
     .card-grid.layout-carousel::-webkit-scrollbar { display: none; }
 
+    /* Desktop: multiple cards visible at fixed width */
     .card-grid.layout-carousel .project-card {
-      flex: 0 0 88%;
-      max-width: 88%;
+      flex: 0 0 300px;
+      max-width: 300px;
       min-width: 0;
       scroll-snap-align: start;
-      transform: none !important;
-      transition: opacity 0.3s ease;
     }
+
 
     /* ── Dots: hidden unless carousel ────────────────────────── */
     .carousel-dots { display: none; }
@@ -1439,7 +1440,57 @@
         flex: 0 0 88%;
         max-width: 88%;
         scroll-snap-align: center;
+        transform: none !important;
       }
+
+      /* Dots always visible when carousel active */
+      .carousel-dots { display: none; }
+      .split-right.is-carousel .carousel-dots { display: flex; }
+
+      /* Pagination buttons */
+      .carousel-pagination {
+        display: none;
+        justify-content: center;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.5rem 0 1rem;
+      }
+
+      .split-right.is-carousel .carousel-pagination { display: flex; }
+
+      .page-btn {
+        background: none;
+        border: 1px solid rgba(255,255,255,0.2);
+        color: rgba(255,255,255,0.45);
+        width: 28px;
+        height: 28px;
+        border-radius: 3px;
+        font-size: 0.72rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-family: 'DM Sans', sans-serif;
+      }
+
+      .page-btn:hover {
+        border-color: rgba(255,255,255,0.5);
+        color: rgba(255,255,255,0.8);
+      }
+
+      .page-btn.active {
+        background: var(--gold);
+        border-color: var(--gold);
+        color: #fff;
+      }
+
+      /* Page buttons on cream sections */
+      .tools-section .page-btn {
+        border-color: rgba(27,58,47,0.25);
+        color: rgba(27,58,47,0.5);
+      }
+
+      .tools-section .page-btn:hover { border-color: var(--green-light); color: var(--green-deep); }
+      .tools-section .page-btn.active { background: var(--gold); border-color: var(--gold); color: #fff; }      
 
       /* ── People ────────────────────────────────────────────── */
       .people-header,
@@ -1607,10 +1658,11 @@
     <div class="hero-content">
       <p class="hero-eyebrow">Landscape ecology · Decision support · Wildfire</p>
       <h1 class="hero-title">
-        Ecosystem &amp; Resilience<br>
+        Ecosystem Resilience<br> <!--&amp; -->
         <em>Collaborative</em>
       </h1>
       <p class="hero-desc">
+        Quantifying landscape resilience to disturbances and ongoing climate change.
         Spatial decision support tools for prioritizing ecological restoration
         and protection across western US forests and watersheds.
       </p>
@@ -1783,7 +1835,8 @@
               </div>
       
             </div>
-            <div class="carousel-dots">
+              <div class="carousel-dots">
+              <div class="carousel-pagination"></div> <!-- ← add this --> 
               <!-- populated by JS -->
             </div>
           </div>
@@ -1869,7 +1922,8 @@
           </div>
 
         </div>
-        <div class="carousel-dots">
+          <div class="carousel-dots">
+          <div class="carousel-pagination"></div>
           <!-- populated by JS -->
         </div>
       </div>
@@ -2112,48 +2166,125 @@
   });
 
   // ── Carousel ───────────────────────────────────────────────
+  // ── Carousel: dots, pagination, auto-advance, drag ─────────
+  const PAGE_SIZE = 10;
+
   document.querySelectorAll('.split-right').forEach(wrap => {
     const grid = wrap.querySelector('.card-grid');
     const dotsContainer = wrap.querySelector('.carousel-dots');
-    if (!grid || !dotsContainer) return;
+    const pageContainer = wrap.querySelector('.carousel-pagination');
+    if (!grid) return;
 
-    const cards = grid.querySelectorAll('.project-card');
-    if (cards.length < 2) return;
+    // ── Sort cards: visible cards first, wip last ─────────────
+    const allCards = Array.from(grid.querySelectorAll('.project-card'));
+    if (!allCards.length) return;
 
-    const getCardWidth = () => cards[0].getBoundingClientRect().width + 16;
+    // ── Pagination setup ──────────────────────────────────────
+    const totalPages = Math.ceil(allCards.length / PAGE_SIZE);
+    let currentPage = 0;
 
-    cards.forEach((_, i) => {
-      const dot = document.createElement('button');
-      dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
-      dot.setAttribute('aria-label', `Card ${i + 1}`);
-      dot.addEventListener('click', () => {
-        grid.scrollTo({ left: getCardWidth() * i, behavior: 'smooth' });
+    function getPageCards(page) {
+      return allCards.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
+    }
+
+    function showPage(pageIdx) {
+      currentPage = pageIdx;
+
+      // Show/hide cards by page
+      allCards.forEach((card, i) => {
+        const cardPage = Math.floor(i / PAGE_SIZE);
+        card.style.display = cardPage === pageIdx ? '' : 'none';
       });
-      dotsContainer.appendChild(dot);
-    });
 
-    const dots = dotsContainer.querySelectorAll('.carousel-dot');
+      // Reset scroll
+      grid.scrollTo({ left: 0, behavior: 'smooth' });
 
+      // Rebuild dots for current page
+      buildDots(getPageCards(pageIdx));
+
+      // Update page buttons
+      if (pageContainer) {
+        pageContainer.querySelectorAll('.page-btn')
+          .forEach((btn, i) => btn.classList.toggle('active', i === pageIdx));
+      }
+
+      // Reset auto-advance
+      stopTimer(); startTimer();
+    }
+
+    // ── Build page buttons ────────────────────────────────────
+    if (pageContainer && totalPages > 1) {
+      for (let i = 0; i < totalPages; i++) {
+        const btn = document.createElement('button');
+        btn.className = 'page-btn' + (i === 0 ? ' active' : '');
+        btn.textContent = i + 1;
+        btn.setAttribute('aria-label', `Page ${i + 1}`);
+        btn.addEventListener('click', () => showPage(i));
+        pageContainer.appendChild(btn);
+      }
+    }
+
+    // ── Build dots ────────────────────────────────────────────
+    let dots = [];
+
+    function buildDots(visibleCards) {
+      if (!dotsContainer) return;
+      dotsContainer.innerHTML = '';
+      dots = [];
+
+      visibleCards.forEach((_, i) => {
+        const dot = document.createElement('button');
+        dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
+        dot.setAttribute('aria-label', `Card ${i + 1}`);
+        dot.addEventListener('click', () => {
+          const cardWidth = visibleCards[0].getBoundingClientRect().width + 16;
+          grid.scrollTo({ left: cardWidth * i, behavior: 'smooth' });
+        });
+        dotsContainer.appendChild(dot);
+        dots.push(dot);
+      });
+    }
+
+    // ── Scroll handler: update dots + fade ───────────────────
     grid.addEventListener('scroll', () => {
-      const idx = Math.round(grid.scrollLeft / getCardWidth());
+      const visibleCards = getPageCards(currentPage)
+        .filter(c => c.style.display !== 'none');
+      if (!visibleCards.length) return;
+
+      const cardWidth = visibleCards[0].getBoundingClientRect().width + 16;
+      const idx = Math.round(grid.scrollLeft / cardWidth);
       const gridRect = grid.getBoundingClientRect();
+
       dots.forEach((d, i) => d.classList.toggle('active', i === idx));
-      cards.forEach(card => {
+
+      allCards.forEach(card => {
+        if (card.style.display === 'none') return;
         card.style.opacity =
           card.getBoundingClientRect().left >= gridRect.left - 10 ? '1' : '0.35';
       });
     }, { passive: true });
 
+    // ── Auto-advance ──────────────────────────────────────────
     let current = 0, timer;
+
+    const getCardWidth = () => {
+      const visible = getPageCards(currentPage).filter(c => c.style.display !== 'none');
+      return visible[0]?.getBoundingClientRect().width + 16 || 300;
+    };
+
     const startTimer = () => {
       timer = setInterval(() => {
-        current = (current + 1) % cards.length;
+        const visible = getPageCards(currentPage).filter(c => c.style.display !== 'none');
+        current = (current + 1) % visible.length;
         grid.scrollTo({ left: getCardWidth() * current, behavior: 'smooth' });
       }, 4000);
     };
-    const stopTimer = () => clearInterval(timer);
+
+    const stopTimer = () => { clearInterval(timer); current = 0; };
+
     startTimer();
 
+    // ── Click-drag ────────────────────────────────────────────
     let isDown = false, startX, scrollLeft;
     grid.style.cursor = 'grab';
 
@@ -2165,6 +2296,7 @@
       grid.style.cursor = 'grabbing';
       stopTimer();
     });
+
     grid.addEventListener('mouseleave', () => { isDown = false; grid.style.cursor = 'grab'; });
     grid.addEventListener('mouseup', () => { isDown = false; grid.style.cursor = 'grab'; startTimer(); });
     grid.addEventListener('mousemove', e => {
@@ -2175,6 +2307,9 @@
 
     grid.addEventListener('touchstart', stopTimer, { passive: true });
     grid.addEventListener('touchend', startTimer, { passive: true });
+
+    // ── Init first page ───────────────────────────────────────
+    showPage(0);
   });
 
   
@@ -2254,24 +2389,16 @@
 
   // ── Responsive carousel layout ─────────────────────────────
   function updateCarouselLayout() {
-    const width = window.innerWidth;
-
     document.querySelectorAll('.split-right').forEach(wrap => {
       const grid = wrap.querySelector('.card-grid');
       const dots = wrap.querySelector('.carousel-dots');
       if (!grid) return;
 
+      // Always carousel — remove grid option
       grid.classList.remove('layout-grid', 'layout-row', 'layout-carousel');
-      wrap.classList.remove('is-carousel');
-
-      if (width <= 900) {
-        grid.classList.add('layout-carousel');
-        wrap.classList.add('is-carousel');
-        if (dots) dots.style.display = 'flex';
-      } else {
-        grid.classList.add('layout-grid');
-        if (dots) dots.style.display = 'none';
-      }
+      wrap.classList.add('is-carousel');
+      grid.classList.add('layout-carousel');
+      if (dots) dots.style.display = 'flex';
     });
   }
 
