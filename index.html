@@ -1481,6 +1481,28 @@
       .tools-section {
         min-height: auto;
       }
+
+      .card-grid {
+        display: flex;
+        flex-direction: row;
+        overflow-x: scroll;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior-x: contain;
+        gap: 1rem;
+        padding: 0 5% 1rem;
+        scrollbar-width: none;
+      }
+
+      .card-grid::-webkit-scrollbar { display: none; }
+
+      .card-grid .project-card {
+        flex: 0 0 88% !important;
+        max-width: 88% !important;
+        min-width: 0;
+        scroll-snap-align: center !important;
+        transform: none !important;
+      }      
     }
 
     @media (max-width: 480px) {
@@ -2249,7 +2271,7 @@
       grid.classList.remove('layout-grid', 'layout-row', 'layout-carousel');
       wrap.classList.remove('is-carousel');
 
-      if (width <= 600) {
+      if (width <= 900) {
         grid.classList.add('layout-carousel');
         wrap.classList.add('is-carousel');
         if (dots) dots.style.display = 'flex';
