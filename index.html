@@ -1484,7 +1484,23 @@
 
     @media (max-width: 900px) {
       #mobile-header { display: flex; }
-      #tools         { margin-top: calc(100vh + 52px); }
+
+      /* ← was #tools, now #about is the first section */
+      #about { margin-top: calc(100vh + 52px); }
+
+      /* Remove the massive gap that was pushing Tools down */
+      #tools { margin-top: 0; }
+
+      /* Remove min-height so sections don't have empty space */
+      .page-section,
+      .people-section,
+      .news-section,
+      .tools-section {
+        min-height: auto;
+        justify-content: flex-start;
+      }
+
+      html { scroll-snap-type: none; }
 
       .split-layout  { flex-direction: column; padding: 1.5rem; gap: 1.5rem; }
       .split-left    { width: 100%; }
@@ -1496,8 +1512,8 @@
         width: 100%;
       }
 
-      /* ← add these carousel fixes */
-      .carousel-wrap { padding: 0; }
+      /* Carousel fixes — more visible peek */
+      .carousel-wrap { padding: 0; background: none; }
 
       .card-grid.layout-carousel .project-card {
         flex: 0 0 78%;
