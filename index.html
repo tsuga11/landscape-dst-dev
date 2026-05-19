@@ -345,20 +345,15 @@
     }
 
     /* ── CAROUSEL WRAPPER ────────────────────────────────────── */
-    .carousel-wrap {
-      position: relative;
-      padding: 1.5rem;                       /* ← space around card grid */
-      background: rgba(255,255,255,0.08);    /* ← subtle container tint */
-      border-radius: 8px;      
-    }
-
+    /*
     .split-layout {
       display: flex;
       align-items: flex-start;
-      padding: 5rem;          /* ← was 3.5rem, now much larger */
+      padding: 5rem;      
       gap: 4rem;
       min-height: 400px;
     }
+    */
 
     .carousel-wrap {
       position: relative;
@@ -406,30 +401,35 @@
     /* ══════════════════════════════════════════════════════════
     SPLIT LAYOUT
     ══════════════════════════════════════════════════════════ */
+    /*
     .split-layout {
       display: flex;
       align-items: flex-start;
-      padding: 5rem;  /* was 3.5rem */
-      gap: 4rem;                      /* was 3rem */
+      padding: 5rem;   
+      gap: 4rem;                    
       min-height: 400px;
     }
+      */
 
-    .split-layout,
+    /*.split-layout,*/
     .simple-section,
     .footer-inner {
       position: relative;
       z-index: 2;
     }
 
+    /*
     .split-left {
       width: 33%;
       flex-shrink: 0;
     }
+    
 
     .split-sticky {
       position: sticky;
       top: 3rem;
     }
+    */
 
     .section-eyebrow {
       font-size: 0.68rem;
@@ -456,11 +456,13 @@
       line-height: 1.65;
     }
 
+    /*
     .split-right {
       flex: 1;
       min-width: 0;
       padding: 0.5rem;   
     }
+      */
 
 
     .section-eyebrow,
@@ -504,6 +506,51 @@
     .section-animate.in-view {
       opacity: 1;
       transform: translateY(0);
+    }   
+    
+    
+
+
+    /* ── Stacked section layout ──────────────────────────────── */
+    .section-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 2.5rem;
+      padding: 4rem 4rem 3rem;
+      width: 100%;
+      /* right padding clears the fixed nav labels */
+      padding-right: calc(var(--section-right-margin) + 3.5rem);
+    }
+
+    .stack-header { max-width: 680px; }
+
+    .stack-header .section-eyebrow { margin-bottom: 0.5rem; }
+    .stack-header .section-title   { margin-bottom: 0.75rem; }
+
+    /* ── Card grid — no container, full width ────────────────── */
+    .card-grid.layout-carousel {
+      display: flex;
+      flex-direction: row;
+      overflow-x: scroll;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior-x: contain;
+      gap: 1.25rem;
+      padding: 0.5rem 0 1.5rem;
+      scrollbar-width: none;
+      cursor: grab;
+    }
+
+    .card-grid.layout-carousel:active  { cursor: grabbing; }
+    .card-grid.layout-carousel::-webkit-scrollbar { display: none; }
+
+    /* ── Identical card size ─────────────────────────────────── */
+    .card-grid.layout-carousel .project-card {
+      flex: 0 0 280px;
+      max-width: 280px;
+      min-width: 0;
+      height: 460px;       /* ← fixed height — same on blog and tools */
+      scroll-snap-align: start;
     }    
 
     /* ══════════════════════════════════════════════════════════
@@ -679,7 +726,9 @@
 
     .card-meta {
       font-size: 0.7rem;
-      color: #999;
+      font-weight: 500;
+      color: var(--green-light);    /* ← was #999, now visible green */
+      letter-spacing: 0.04em;
       margin-bottom: 0.75rem;
     }
 
@@ -704,9 +753,11 @@
     }
 
     .card-link.disabled {
-      background: #bbb;
+      background: rgba(27,58,47,0.15);
+      color: var(--green-deep);
       cursor: default;
       pointer-events: none;
+      border: 1px solid rgba(27,58,47,0.2);
     }
 
     /* ══════════════════════════════════════════════════════════
@@ -1424,10 +1475,6 @@
       .hero-title   { font-size: 2.5rem; }
 
       /* ── Split layout ──────────────────────────────────────── */
-      .split-layout  { flex-direction: column; padding: 1.5rem 0; gap: 1rem; }
-      .split-left    { width: 100%; padding: 0 1.25rem; }
-      .split-sticky  { position: static; }
-      .split-right   { position: relative; overflow: hidden; width: 100%; padding: 0; }
       .simple-section { padding: 1.5rem; }
 
       /* ── Carousel ──────────────────────────────────────────── */
@@ -1439,8 +1486,14 @@
       .card-grid.layout-carousel .project-card {
         flex: 0 0 88%;
         max-width: 88%;
+        height: auto;
         scroll-snap-align: center;
         transform: none !important;
+      }
+
+      .section-stack {
+        padding: 2rem 1.25rem 2rem;
+        gap: 1.5rem;
       }
 
       /* Dots always visible when carousel active */
@@ -1759,89 +1812,79 @@
             4. BLOG — floating glass
        ══════════════════════════════════════════════════════════ -->
       <section class="page-section" id="blog">
-        <div class="split-layout">
-          <div class="split-left">
-            <div class="split-sticky">
-              <p class="section-eyebrow">Field notes &amp; research updates</p>
-              <h2 class="section-title">From the lab</h2>
-              <p class="section-sub">Notes on ongoing research, methods, and observations from the field and the data.</p>
-            </div>
+        <div class="section-stack">
+          <div class="stack-header">
+            <p class="section-eyebrow">Field notes &amp; research updates</p>
+            <h2 class="section-title">From the lab</h2>
+            <p class="section-sub">Notes on ongoing research, methods, and observations from the field and the data.</p>
           </div>
           <div class="split-right">
-            <div class="carousel-wrap">
+            <div class="card-grid">
+              <article class="project-card">
+                <div class="card-img-wrap">
+                  <img src="assets/washington.jpeg" alt="Wildfire">
+                  <span class="card-badge badge-ready">New</span>
+                </div>
+                <div class="card-body">
+                  <p class="card-region">Research update</p>
+                  <h3 class="card-title">Climate analogs and the future of western conifers</h3>
+                  <p class="card-meta">May 2025</p>
+                  <p class="card-desc">How Mahalanobis distance modeling reveals where today's forests may be headed — and
+                    what that means for management.</p>
+                  <a class="card-link" href="blog/post-1.html">Read →</a>
+                </div>
+              </article>
       
-              <div class="card-grid">
+              <article class="project-card wip">
+                <div class="card-img-wrap">
+                  <img src="assets/tahoe.jpg" alt="Sierra Nevada">
+                  <span class="card-badge badge-wip">Coming soon</span>
+                </div>
+                <div class="card-body">
+                  <p class="card-region">Methods</p>
+                  <h3 class="card-title">Phylogenetic distance as an ecological vulnerability metric</h3>
+                  <p class="card-meta">Coming soon</p>
+                  <p class="card-desc">Exploring Aitchison distance and UniFrac as measures of compositional shift in analog
+                    vegetation communities.</p>
+                  <a class="card-link disabled" href="#">Coming soon</a>
+                </div>
+              </article>
       
-                <article class="project-card">
-                  <div class="card-img-wrap">
-                    <img src="assets/washington.jpeg" alt="Wildfire">
-                    <span class="card-badge badge-ready">New</span>
-                  </div>
-                  <div class="card-body">
-                    <p class="card-region">Research update</p>
-                    <h3 class="card-title">Climate analogs and the future of western conifers</h3>
-                    <p class="card-meta">May 2025</p>
-                    <p class="card-desc">How Mahalanobis distance modeling reveals where today's forests may be headed — and
-                      what that means for management.</p>
-                    <a class="card-link" href="blog/post-1.html">Read →</a>
-                  </div>
-                </article>
+              <article class="project-card wip">
+                <div class="card-img-wrap">
+                  <img src="assets/hamakua.jpg" alt="Hamakua">
+                  <span class="card-badge badge-wip">Coming soon</span>
+                </div>
+                <div class="card-body">
+                  <p class="card-region">Field notes</p>
+                  <h3 class="card-title">Bottom-up refugia: where topography buffers climate</h3>
+                  <p class="card-meta">Coming soon</p>
+                  <p class="card-desc">Evidence from soil and terrain variables that local factors can partially offset
+                    regional climate pressure on conifer communities.</p>
+                  <a class="card-link disabled" href="#">Coming soon</a>
+                </div>
+              </article>
       
-                <article class="project-card wip">
-                  <div class="card-img-wrap">
-                    <img src="assets/tahoe.jpg" alt="Sierra Nevada">
-                    <span class="card-badge badge-wip">Coming soon</span>
-                  </div>
-                  <div class="card-body">
-                    <p class="card-region">Methods</p>
-                    <h3 class="card-title">Phylogenetic distance as an ecological vulnerability metric</h3>
-                    <p class="card-meta">Coming soon</p>
-                    <p class="card-desc">Exploring Aitchison distance and UniFrac as measures of compositional shift in analog
-                      vegetation communities.</p>
-                    <a class="card-link disabled" href="#">Coming soon</a>
-                  </div>
-                </article>
-      
-                <article class="project-card wip">
-                  <div class="card-img-wrap">
-                    <img src="assets/hamakua.jpg" alt="Hamakua">
-                    <span class="card-badge badge-wip">Coming soon</span>
-                  </div>
-                  <div class="card-body">
-                    <p class="card-region">Field notes</p>
-                    <h3 class="card-title">Bottom-up refugia: where topography buffers climate</h3>
-                    <p class="card-meta">Coming soon</p>
-                    <p class="card-desc">Evidence from soil and terrain variables that local factors can partially offset
-                      regional climate pressure on conifer communities.</p>
-                    <a class="card-link disabled" href="#">Coming soon</a>
-                  </div>
-                </article>
-      
-                <article class="project-card wip">
-                  <div class="card-img-wrap">
-                    <img src="assets/Babeldaob-mosaic.jpg" alt="Tropical forest">
-                    <span class="card-badge badge-wip">Coming soon</span>
-                  </div>
-                  <div class="card-body">
-                    <p class="card-region">Tools &amp; code</p>
-                    <h3 class="card-title">Building the PROMOTE framework: from concept to pipeline</h3>
-                    <p class="card-meta">Coming soon</p>
-                    <p class="card-desc">A walkthrough of the Resist-Accept-Direct framework operationalized at landscape
-                      scale using R and ClimateNA.</p>
-                    <a class="card-link disabled" href="#">Coming soon</a>
-                  </div>
-                </article>
-      
-              </div>
-      
+              <article class="project-card wip">
+                <div class="card-img-wrap">
+                  <img src="assets/Babeldaob-mosaic.jpg" alt="Tropical forest">
+                  <span class="card-badge badge-wip">Coming soon</span>
+                </div>
+                <div class="card-body">
+                  <p class="card-region">Tools &amp; code</p>
+                  <h3 class="card-title">Building the PROMOTE framework: from concept to pipeline</h3>
+                  <p class="card-meta">Coming soon</p>
+                  <p class="card-desc">A walkthrough of the Resist-Accept-Direct framework operationalized at landscape scale
+                    using R and ClimateNA.</p>
+                  <a class="card-link disabled" href="#">Coming soon</a>
+                </div>
+              </article>
             </div>
-              <div class="carousel-dots">
-              <div class="carousel-pagination"></div> <!-- ← add this --> 
-              <!-- populated by JS -->
-            </div>
+            <div class="carousel-dots"></div>
+            <div class="carousel-pagination"></div>
           </div>
         </div>
-      </section>
+        </section>
 
 
 
@@ -1849,86 +1892,80 @@
       5. Tools — floating glass
   ══════════════════════════════════════════════════════════ -->
   <section class="page-section tools-section" id="tools">
-    <div class="split-layout">
-      <div class="split-left">
-        <div class="split-sticky">
-          <p class="section-eyebrow">Decision support tools</p>
-          <h2 class="section-title">Select a geography</h2>
-          <p class="section-sub">Interactive maps with multi-criteria decision models. Adjust criteria weights to
-            generate customized management priorities for restoration and protection.</p>
-        </div>
+    <div class="section-stack">
+      <div class="stack-header">
+        <p class="section-eyebrow">Decision support tools</p>
+        <h2 class="section-title">Select a geography</h2>
+        <p class="section-sub">Interactive maps with multi-criteria decision models. Adjust criteria weights to generate
+          customized management priorities for restoration and protection.</p>
       </div>
       <div class="split-right">
-        <div class="carousel-wrap">
-
-          <div class="card-grid">
-
-            <article class="project-card">
-              <div class="card-img-wrap">
-                <img src="assets/hamakua.jpg" alt="Hamakua coast">
-                <span class="card-badge badge-ready">Live</span>
-              </div>
-              <div class="card-body">
-                <p class="card-region">Hawai'i, USA</p>
-                <h3 class="card-title">Hamakua Coast</h3>
-                <p class="card-desc">Prioritizing strawberry guava removal to restore freshwater yield across watershed
-                  catchments.</p>
-                <a class="card-link" href="geographies/hamakua/index.html">Open tool →</a>
-              </div>
-            </article>
-
-            <article class="project-card">
-              <div class="card-img-wrap">
-                <img src="assets/Babeldaob-mosaic.jpg" alt="Babeldaob">
-                <span class="card-badge badge-ready">Live</span>
-              </div>
-              <div class="card-body">
-                <p class="card-region">Palau, Micronesia</p>
-                <h3 class="card-title">Babeldaob Island</h3>
-                <p class="card-desc">Managing tropical forest to protect near-shore environments from upland sediment.
-                </p>
-                <a class="card-link" href="geographies/palau/index.html">Open tool →</a>
-              </div>
-            </article>
-
-            <article class="project-card">
-              <div class="card-img-wrap">
-                <img src="assets/tahoe.jpg" alt="Tahoe Sierra">
-                <span class="card-badge badge-ready">Live</span>
-              </div>
-              <div class="card-body">
-                <p class="card-region">California / Nevada, USA</p>
-                <h3 class="card-title">Tahoe–Central Sierra</h3>
-                <p class="card-desc">Managing 2.4 million hectares for multiple co-benefits across the TCSI footprint.
-                </p>
-                <a class="card-link" href="geographies/tcsi/index.html">Open tool →</a>
-              </div>
-            </article>
-
-            <article class="project-card wip">
-              <div class="card-img-wrap">
-                <img src="assets/washington.jpeg" alt="North Central Washington">
-                <span class="card-badge badge-wip">In progress</span>
-              </div>
-              <div class="card-body">
-                <p class="card-region">Washington, USA</p>
-                <h3 class="card-title">North-Central Washington</h3>
-                <p class="card-desc">Managing subbasins for hydrologic function, biomass production, and fire hazard
-                  reduction.</p>
-                <a class="card-link disabled" href="#">In progress</a>
-              </div>
-            </article>
-
-          </div>
-
+        <div class="card-grid">
+  
+          <article class="project-card">
+            <div class="card-img-wrap">
+              <img src="assets/hamakua.jpg" alt="Hamakua coast">
+              <span class="card-badge badge-ready">Live</span>
+            </div>
+            <div class="card-body">
+              <p class="card-region">Hawai'i, USA</p>
+              <h3 class="card-title">Hamakua Coast</h3>
+              <p class="card-meta">Updated: May 2026</p>
+              <p class="card-desc">Prioritizing strawberry guava removal to restore freshwater yield across watershed
+                catchments.</p>
+              <a class="card-link" href="geographies/hamakua/index.html">Open tool →</a>
+            </div>
+          </article>
+  
+          <article class="project-card">
+            <div class="card-img-wrap">
+              <img src="assets/Babeldaob-mosaic.jpg" alt="Babeldaob">
+              <span class="card-badge badge-ready">Live</span>
+            </div>
+            <div class="card-body">
+              <p class="card-region">Palau, Micronesia</p>
+              <h3 class="card-title">Babeldaob Island</h3>
+              <p class="card-meta">Updated: May 2026</p>
+              <p class="card-desc">Managing tropical forest to protect near-shore environments from upland sediment.</p>
+              <a class="card-link" href="geographies/palau/index.html">Open tool →</a>
+            </div>
+          </article>
+  
+          <article class="project-card">
+            <div class="card-img-wrap">
+              <img src="assets/tahoe.jpg" alt="Tahoe Sierra">
+              <span class="card-badge badge-ready">Live</span>
+            </div>
+            <div class="card-body">
+              <p class="card-region">California / Nevada, USA</p>
+              <h3 class="card-title">Tahoe–Central Sierra</h3>
+              <p class="card-meta">Updated: May 2026</p>
+              <p class="card-desc">Managing 2.4 million hectares for multiple co-benefits across the TCSI footprint.</p>
+              <a class="card-link" href="geographies/tcsi/index.html">Open tool →</a>
+            </div>
+          </article>
+  
+          <article class="project-card wip">
+            <div class="card-img-wrap">
+              <img src="assets/washington.jpeg" alt="North Central Washington">
+              <span class="card-badge badge-wip">In progress</span>
+            </div>
+            <div class="card-body">
+              <p class="card-region">Washington, USA</p>
+              <h3 class="card-title">North-Central Washington</h3>
+              <p class="card-meta">In development</p>
+              <p class="card-desc">Managing subbasins for hydrologic function, biomass production, and fire hazard
+                reduction.</p>
+              <a class="card-link disabled" href="#">In progress</a>
+            </div>
+          </article>
+  
         </div>
-          <div class="carousel-dots">
-          <div class="carousel-pagination"></div>
-          <!-- populated by JS -->
-        </div>
+        <div class="carousel-dots"></div>
+        <div class="carousel-pagination"></div>
       </div>
     </div>
-  </section>
+    </section>
 
 
 
