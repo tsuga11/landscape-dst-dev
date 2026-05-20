@@ -93,7 +93,7 @@
       object-position: center;
       filter: brightness(0.6) blur(0px);
       opacity: 0.6;
-      will-change: filter;
+      /*will-change: filter;*/
     }
 
     .hero-bg-img::after {
@@ -1457,8 +1457,8 @@
       color: var(--text-mid);
       width: 100%;
       margin-bottom: 1.5rem;
-      max-height: 220px;
-      overflow-y: auto;
+      max-height: none;
+      overflow-y: visible;
       scrollbar-width: thin;
       scrollbar-color: rgba(163,143,110,0.3) transparent;
     }
@@ -1882,6 +1882,7 @@
 </head>
 
 <body>
+  <!--
   <svg xmlns="http://www.w3.org/2000/svg" style="position:absolute;width:0;height:0;overflow:hidden;">
     <defs>
       <filter id="heat" x="-5%" y="-5%" width="110%" height="110%">
@@ -1895,6 +1896,7 @@
       </filter>
     </defs>
     </svg>
+  -->
 
   
 
@@ -2699,7 +2701,7 @@
     loadData();
 
   // ── Heat shimmer ───────────────────────────────────────────
-    // ── Heat shimmer ───────────────────────────────────────────
+    /*
     window.addEventListener('load', () => {
       if (window.scrollY > 20) return; // user already scrolled — skip
 
@@ -2738,6 +2740,7 @@
 
       setTimeout(() => requestAnimationFrame(animate), 1500); // delayed start
     });
+    */
 
   // ── Responsive carousel layout ─────────────────────────────
   function updateCarouselLayout() {
