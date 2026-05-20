@@ -10,31 +10,36 @@ Nick’s research falls into three broad categories: decision support modeling, 
 Nick holds Forestry degrees from Virginia Tech (BS), University of Wisconsin – Madison (MS), and University of Washington (PhD).</p>",
     "photo": "assets/nick.jpg",
     "links": [
-      { "label": "Google Scholar", "url": "https://scholar.google.com/citations?user=o-sf2DEAAAAJ&hl=en" },
-      { "label": "LinkedIn", "url": "www.linkedin.com/in/nicholas-povak-22ba7062" },
+      { "label": "Google Scholar", "url": "https://scholar.google.com/citations?user=o-sf2DEAAAAJ&hl=en&oi=ao" },
+      { "label": "LinkedIn", "url": "https://www.linkedin.com/in/nicholas-povak-22ba7062/" },
       { "label": "northcoastxy.com", "url": "https://northcoastxy.com" }
     ]
   },
+
   {
-    "name": "Patricia",
+    "name": "Patricia Manley",
     "title": "Research Ecologist",
     "affiliation": "USFS | PSW Research",
-    "bio": "<p>Bio coming soon.</p>",
+    "bio": "<p>Patricia Manley has over 30 years experience with the USFS.</p>",
     "photo": "assets/pat.jpg",
     "links": [
-      {"label": "Google Scholar", "url": "https://scholar.google.com/citations?user=LnozMwEAAAAJ&hl=en&oi=ao"}
-]
+      { "label": "Google Scholar", "url": "https://scholar.google.com/citations?user=LnozMwEAAAAJ&hl=en&oi=ao" },
+      { "label": "LinkedIn", "url": "https://www.linkedin.com/in/patricia-manley-498861bb/" }
+     ]
   },
+
   {
-    "name": "Bryan",
+    "name": "Bryan Fuentes",
     "title": "Senior Data Scientist",
     "affiliation": "Spatial Informatics Group",
     "bio": "<p>Bryan Fuentes is a Senior Data Scientist specializing in quantitative ecology and geospatial informatics.
 
-With over a decade of experience, Bryan has supported applied research and data production across government, academia, the private sector, and international efforts for the public good. His core contributions include developing spatial information systems, building scalable workflows for quantitative ecology, leading capacity building for interdisciplinary teams, authoring peer-reviewed scientific articles, and developing open-source software for ecological data analysis.
+With over a decade of experience, Bryan Fuentes has supported applied research and data production across government, academia, the private sector, and international efforts for the public good. His core contributions include developing spatial information systems, building scalable workflows for quantitative ecology, leading capacity building for interdisciplinary teams, authoring peer-reviewed scientific articles, and developing open-source software for ecological data analysis.
 
-Equipped with a Bachelor’s degree in Forest Science and a Master’s degree in Soil Science, Bryan takes a holistic approach to uncovering the relationships, trends, and patterns hidden in complex environmental data..</p>",
+Equipped with a Bachelor’s degree in Forest Science and a Master’s degree in Soil Science, Bryan takes a holistic approach to uncovering the relationships, trends, and patterns hidden in complex environmental data.</p>",
     "photo": "assets/bryan.jpg",
-    "links": []
+    "links": [
+      { "label": "Google Scholar", "url": "https://scholar.google.com/citations?user=XFNZWOsAAAAJ&hl=en&oi=ao" }
+    ]
   }
 ]
