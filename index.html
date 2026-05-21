@@ -2979,8 +2979,6 @@
       .pointColor(d => d.live ? '#c4963a' : 'rgba(196,150,58,0.38)')
       .pointResolution(16)
 
-      .controls().enableZoom = true
-
       // ── Signal rings — expanding from each location ───────
       .ringsData(GLOBE_POINTS)
       .ringLat('lat')
@@ -3031,7 +3029,7 @@
     globe.width(container.offsetWidth);
     globe.height(container.offsetHeight);
     globe.pointOfView({ lat: 15, lng: -155, altitude: getAltitude() }, 0);
-    globe.controls().enableZoom = false;
+    globe.controls().enableZoom = true;
 
     // ── Responsive: update size AND zoom on resize ────────
     const ro = new ResizeObserver(() => {
