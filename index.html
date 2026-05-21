@@ -923,7 +923,7 @@
       background: var(--cream);
       position: relative;
       z-index: 2;
-      min-height: 120vh;
+      min-height: 80vh;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -945,7 +945,7 @@
       align-items: stretch;
       padding: 3rem 2rem 3rem 4rem;  /* ← less right padding */
       gap: 1rem;                      /* ← tighter gap between text and globe */
-      min-height: 85vh;
+      min-height: 80vh;
     }
 
     .globe-section .stack-header {
@@ -960,8 +960,9 @@
     /* Mobile centering + ensure canvas fills container */
     .globe-container {
       flex: 0 0 55%;
-      max-width: 55%;
-      min-height: 500px;
+      max-width: 75%;
+      min-height: 380px;   /* was 500px */
+      max-height: 560px;   /* add this cap */
       position: relative;
       cursor: grab;
       display: flex;
