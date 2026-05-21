@@ -3026,7 +3026,7 @@
           ? `rgba(196,150,58,${Math.max(0, (1 - t * 1.4) * 1.0)})`
           : `rgba(196,150,58,${Math.max(0, (1 - t * 1.4) * 0.5)})`
       )
-      .ringMaxRadius(d => d.live ? 10 : 6)          /* was 4.5 / 2.8 */
+      .ringMaxRadius(d => d.live ? 20 : 10)          /* was 4.5 / 2.8 ... d.live is if it is an active tool or not...*/ 
       .ringPropagationSpeed(d => d.live ? 2.5 : 1.2) /* was 1.8 / 1.0 */
       .ringRepeatPeriod(d => d.live ? 800 : 1600)
 
