@@ -939,28 +939,68 @@
 
 
 
-        /* ── Globe section ───────────────────────────────────────── */
+    /* ── Globe: side-by-side layout ─────────────────────────── */
     .globe-section .section-stack {
-      flex: 1;
+      flex-direction: row;         /* text left, globe right */
+      align-items: stretch;
+      padding: 3rem 4rem;
+      gap: 2rem;
+      min-height: 85vh;
+    }
+
+    .globe-section .stack-header {
+      flex: 0 0 260px;
+      max-width: 260px;
       display: flex;
       flex-direction: column;
+      justify-content: flex-end;   /* push title to bottom */
+      padding-bottom: 3rem;
     }
 
     .globe-container {
       flex: 1;
-      width: 100%;
-      height: 65vh;
-      min-height: 420px;
-      max-height: 720px;
+      min-height: 500px;
       position: relative;
       cursor: grab;
     }
 
     .globe-container:active { cursor: grabbing; }
 
-    /* Hide on mobile — show card fallback instead */
+    .globe-hint {
+      position: absolute;
+      bottom: 0.75rem;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.65rem;
+      font-weight: 400;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(27, 58, 47, 0.45);
+      pointer-events: none;
+      white-space: nowrap;
+      z-index: 1;
+    }
+
     @media (max-width: 900px) {
-      .globe-container { display: none; }
+      .globe-section .section-stack {
+        flex-direction: column;
+        min-height: auto;
+        padding: 2rem 1.25rem;
+      }
+
+      .globe-section .stack-header {
+        flex: none;
+        max-width: none;
+        justify-content: flex-start;
+        padding-bottom: 0;
+      }
+
+      .globe-container {
+        display: block;
+        height: 55vw;
+        min-height: 300px;
+        max-height: 420px;
+      }
     }
 
 
@@ -2287,7 +2327,9 @@
           <p class="section-sub">Spatially explicit decision support for forest and watershed management. Spin the globe and
             click a location to explore.</p>
         </div>
-        <div class="globe-container" id="globe-container"></div>
+        <div class="globe-container" id="globe-container">
+          <p class="globe-hint">Drag to spin &nbsp;·&nbsp; Tap a dot to open tool</p>
+        </div>
       </div>
       </section>     
 
@@ -2873,19 +2915,22 @@
     if (!container || typeof Globe === 'undefined') return;
 
     const globe = Globe()
-      .globeImageUrl('//unpkg.com/three-globe/example/img/earth-dark.jpg')
+      .globeImageUrl('//unpkg.com/three-globe/example/img/earth-day.jpg')
       .bumpImageUrl('//unpkg.com/three-globe/example/img/earth-topology.png')
       .backgroundColor('rgba(0,0,0,0)')   // transparent — section bg shows through
       .showAtmosphere(true)
-      .atmosphereColor('rgba(196,150,58,0.18)')
-      .atmosphereAltitude(0.18)
+      .atmosphereColor('rgba(100,160,220,0.25)')
+      .atmosphereAltitude(0.15)
 
       // ── Points ─────────────────────────────────────────────
       .pointsData(GLOBE_POINTS)
       .pointLat('lat')
       .pointLng('lng')
       .pointAltitude(0.02)
-      .pointRadius(d => d.live ? 0.55 : 0.35)
+      .pointRadius(d => {
+        const mobile = window.innerWidth <= 900;
+        return d.live ? (mobile ? 0.9 : 0.55) : (mobile ? 0.6 : 0.35);
+      })
       .pointColor(d => d.live ? '#c4963a' : 'rgba(196,150,58,0.38)')
       .pointResolution(16)
 
@@ -2940,17 +2985,8 @@
 
     // ── Auto-rotate, start centered on Pacific ─────────────
     globe.pointOfView({ lat: 15, lng: -155, altitude: 2.2 }, 0);
-    globe.controls().autoRotate = true;
-    globe.controls().autoRotateSpeed = 0.45;
     globe.controls().enableZoom = false;  // cleaner without zoom
 
-    // Pause on drag, resume on release
-    container.addEventListener('pointerdown', () => {
-      globe.controls().autoRotate = false;
-    });
-    window.addEventListener('pointerup', () => {
-      globe.controls().autoRotate = true;
-    });
 
     // Responsive resize
     const ro = new ResizeObserver(() => {
