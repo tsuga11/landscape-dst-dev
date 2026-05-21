@@ -1270,16 +1270,20 @@
 
 
     #section-nav.on-light .nav-label {
-      background: transparent;          /* ← remove pill on light bg */
-      color: rgba(27, 58, 47, 0.6);
-      border: none;
+      color: rgba(27, 58, 47, 0.8);
+      background: rgba(226, 219, 208, 0.85);  /* matches --cream: #e2dbd0 */
+      text-shadow: none;
     }
 
-    #section-nav.on-light .nav-label:hover,
     #section-nav.on-light .nav-item.active .nav-label {
       color: var(--green-deep);
+      background: var(--cream);
       font-weight: 600;
-      background: transparent;
+    }
+
+    #section-nav.on-light .nav-item:hover .nav-label {
+      color: var(--green-light);
+      background: var(--cream);
     }
 
     #section-nav.on-light .nav-dot {
@@ -1301,6 +1305,31 @@
     #section-nav.on-light #nav-home.active .nav-home-icon {
       stroke: var(--gold);
     }    
+
+
+    /* ── Nav on dark sections (News) ─────────────────────────── */
+    #section-nav.on-dark .nav-label {
+      color: rgba(240, 232, 208, 0.6);
+      background: rgba(26, 26, 20, 0.65);
+      text-shadow: none;
+    }
+
+    #section-nav.on-dark .nav-item.active .nav-label {
+      color: #f0e8d0;
+      background: rgba(26, 26, 20, 0.85);
+      font-weight: 600;
+    }
+
+    #section-nav.on-dark .nav-item:hover .nav-label {
+      color: var(--gold-light);
+      background: rgba(26, 26, 20, 0.75);
+    }
+
+    #section-nav.on-dark .nav-dot { background: rgba(240, 232, 208, 0.25); }
+    #section-nav.on-dark .nav-item.active .nav-dot { background: var(--gold); }
+    #section-nav.on-dark .nav-item:not(:last-child) .nav-dot-wrap::after { background: rgba(240, 232, 208, 0.12); }
+    #section-nav.on-dark .nav-home-icon { stroke: rgba(240, 232, 208, 0.4); }
+    #section-nav.on-dark #nav-home.active .nav-home-icon { stroke: var(--gold); }    
 
     /* ── BASE (outside all @media) ──────────────────────────── */
     .nav-label {
@@ -1337,7 +1366,8 @@
 
     #section-nav.on-light .nav-item.active .nav-label {
       color: var(--green-deep);
-      background: rgba(245,240,232,0.9);
+      background: var(--cream);
+      font-weight: 600;
     }
 
 
@@ -2611,37 +2641,38 @@
   function updateNavState() {
     const scrollY = window.scrollY;
     const viewportH = window.innerHeight;
+    const midY = viewportH * 0.5;
 
-    // On-light mode when People section is in view
-    const peopleRect = peopleSect ? peopleSect.getBoundingClientRect() : null;
-    const overPeople = peopleRect &&
-      peopleRect.top < viewportH * 0.5 &&
-      peopleRect.bottom > viewportH * 0.5;
+    const toolsSect = document.getElementById('tools');
+    const newsSect = document.getElementById('news');
 
-    if (overPeople) navEl?.classList.add('on-light');
-    else navEl?.classList.remove('on-light');
+    const isOver = el => {
+      if (!el) return false;
+      const r = el.getBoundingClientRect();
+      return r.top < midY && r.bottom > midY;
+    };
 
-    // Home active when near top
+    const overLight = isOver(peopleSect) || isOver(toolsSect);
+    const overDark = isOver(newsSect);
+
+    navEl?.classList.toggle('on-light', overLight);
+    navEl?.classList.toggle('on-dark', overDark && !overLight);
+
     if (scrollY < viewportH * 0.5) {
       document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
       navHome?.classList.add('active');
       return;
     }
 
-    // Find which section is most in view
     let activeSection = null;
     sections.forEach(section => {
       const rect = section.getBoundingClientRect();
-      if (rect.top < viewportH * 0.6 && rect.bottom > 0) {
-        activeSection = section;
-      }
+      if (rect.top < viewportH * 0.6 && rect.bottom > 0) activeSection = section;
     });
 
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
     if (activeSection) {
-      document.querySelector(
-        `.nav-item[data-section="${activeSection.id}"]`
-      )?.classList.add('active');
+      document.querySelector(`.nav-item[data-section="${activeSection.id}"]`)?.classList.add('active');
     }
   }
 
