@@ -957,13 +957,43 @@
       padding-bottom: 3rem;
     }
 
+    /* Mobile centering + ensure canvas fills container */
     .globe-container {
-      flex: 0 0 55%;        /* ← fixed proportion instead of flex:1 */
-      max-width: 55%;       /* ← caps the width */
+      flex: 0 0 55%;
+      max-width: 55%;
       min-height: 500px;
       position: relative;
       cursor: grab;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: visible;
     }
+
+    /* Globe.gl wraps in a div — center it */
+    .globe-container > div {
+      margin: 0 auto;
+    }    
+
+
+    .globe-container::after {
+      content: '';
+      position: absolute;
+      bottom: -18px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 55%;
+      height: 22px;
+      background: radial-gradient(
+        ellipse,
+        rgba(90, 70, 45, 0.22) 0%,
+        transparent 70%
+      );
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
 
     .globe-container:active { cursor: grabbing; }
 
@@ -997,11 +1027,16 @@
       }
 
       .globe-container {
-        display: block;
-        height: 55vw;
+        display: flex;
+        width: 100%;
+        flex: none;
+        max-width: 100%;
+        height: 65vw;
         min-height: 300px;
         max-height: 420px;
+        margin: 0 auto;
       }
+
     }
 
 
@@ -2915,19 +2950,28 @@
     const container = document.getElementById('globe-container');
     if (!container || typeof Globe === 'undefined') return;
 
+    // ── Altitude based on container width ──────────────────
+    function getAltitude() {
+      const w = container.offsetWidth;
+      if (w < 300) return 4.0;
+      if (w < 420) return 3.2;
+      if (w < 580) return 2.6;
+      return 2.2;
+    }
+
     const globe = Globe()
       .globeImageUrl('//unpkg.com/three-globe/example/img/earth-day.jpg')
       .bumpImageUrl('//unpkg.com/three-globe/example/img/earth-topology.png')
-      .backgroundColor('rgba(0,0,0,0)')   // transparent — section bg shows through
+      .backgroundColor('rgba(0,0,0,0)')
       .showAtmosphere(true)
       .atmosphereColor('rgba(100,160,220,0.25)')
       .atmosphereAltitude(0.15)
 
-      // ── Points ─────────────────────────────────────────────
+      // ── Solid dots ────────────────────────────────────────
       .pointsData(GLOBE_POINTS)
       .pointLat('lat')
       .pointLng('lng')
-      .pointAltitude(0.02)
+      .pointAltitude(0.015)
       .pointRadius(d => {
         const mobile = window.innerWidth <= 900;
         return d.live ? (mobile ? 0.9 : 0.55) : (mobile ? 0.6 : 0.35);
@@ -2935,7 +2979,21 @@
       .pointColor(d => d.live ? '#c4963a' : 'rgba(196,150,58,0.38)')
       .pointResolution(16)
 
-      // ── Hover tooltip ──────────────────────────────────────
+      // ── Signal rings — expanding from each location ───────
+      .ringsData(GLOBE_POINTS)
+      .ringLat('lat')
+      .ringLng('lng')
+      .ringAltitude(0.005)
+      .ringColor(d => t =>
+        d.live
+          ? `rgba(196,150,58,${Math.max(0, (1 - t * 1.8) * 0.9)})`   // gold, fades out
+          : `rgba(196,150,58,${Math.max(0, (1 - t * 1.8) * 0.3)})`   // faint for in-progress
+      )
+      .ringMaxRadius(d => d.live ? 4.5 : 2.8)
+      .ringPropagationSpeed(d => d.live ? 1.8 : 1.0)
+      .ringRepeatPeriod(d => d.live ? 800 : 1600)
+
+      // ── Hover tooltip ─────────────────────────────────────
       .pointLabel(d => `
       <div style="
         background: rgba(10,8,6,0.93);
@@ -2947,55 +3005,43 @@
         min-width: 170px;
         pointer-events: none;
       ">
-        <div style="
-          font-size: 0.58rem;
-          letter-spacing: 0.14em;
-          text-transform: uppercase;
-          color: #c4963a;
-          margin-bottom: 5px;
-        ">${d.region}</div>
-        <div style="
-          font-family: 'Cormorant Garamond', serif;
-          font-size: 1.15rem;
-          font-weight: 600;
-          color: #f0e8d0;
-          margin-bottom: 5px;
-        ">${d.name}</div>
-        <div style="
-          font-size: 0.68rem;
-          color: rgba(255,255,255,${d.live ? '0.55' : '0.3'});
-        ">${d.live ? '↗ Click to open tool' : 'Coming soon'}</div>
+        <div style="font-size:0.58rem;letter-spacing:0.14em;text-transform:uppercase;
+          color:#c4963a;margin-bottom:5px;">${d.region}</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:1.15rem;
+          font-weight:600;color:#f0e8d0;margin-bottom:5px;">${d.name}</div>
+        <div style="font-size:0.68rem;color:rgba(255,255,255,${d.live ? '0.55' : '0.3'});">
+          ${d.live ? '↗ Click to open tool' : 'Coming soon'}
+        </div>
       </div>
     `)
 
-      // ── Click handler ──────────────────────────────────────
+      // ── Interaction ───────────────────────────────────────
       .onPointClick(d => {
         if (d.live && d.url) window.location.href = d.url;
       })
-
-      // ── Cursor change on hover ─────────────────────────────
       .onPointHover(d => {
         container.style.cursor = (d && d.live) ? 'pointer' : 'default';
       })
 
       (container);
 
-    // ── Size to container ──────────────────────────────────
+    // ── Size + initial view ───────────────────────────────
     globe.width(container.offsetWidth);
     globe.height(container.offsetHeight);
+    globe.pointOfView({ lat: 15, lng: -155, altitude: getAltitude() }, 0);
+    globe.controls().enableZoom = false;
 
-    // ── Auto-rotate, start centered on Pacific ─────────────
-    globe.pointOfView({ lat: 15, lng: -155, altitude: 2.2 }, 0);
-    globe.controls().enableZoom = false;  // cleaner without zoom
-
-
-    // Responsive resize
+    // ── Responsive: update size AND zoom on resize ────────
     const ro = new ResizeObserver(() => {
       globe.width(container.offsetWidth);
       globe.height(container.offsetHeight);
+      globe.pointOfView({ altitude: getAltitude() }, 600); // smooth zoom transition
     });
     ro.observe(container);
+
   })();
+
+
 </script>
 
 
