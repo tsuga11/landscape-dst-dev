@@ -457,6 +457,46 @@
       line-height: 1.65;
     }
 
+    .globe-section .section-sub {
+      color: var(--text-mid) !important;   /* force dark text on cream */
+    }   
+    
+    
+    .globe-zoom-controls {
+      position: absolute;
+      bottom: 2.5rem;
+      right: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      z-index: 10;
+    }
+
+    .globe-zoom-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      border: none;
+      background: var(--cream);
+      color: var(--green-deep);
+      font-size: 1.3rem;
+      font-weight: 400;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow:
+        4px 4px 9px rgba(130, 112, 88, 0.38),
+        -4px -4px 9px rgba(255, 255, 255, 0.88);
+      transition: box-shadow 0.2s;
+    }
+
+    .globe-zoom-btn:hover {
+      box-shadow:
+        inset 3px 3px 7px rgba(130, 112, 88, 0.32),
+        inset -3px -3px 7px rgba(255, 255, 255, 0.85);
+    }    
+
     /*
     .split-right {
       flex: 1;
@@ -955,6 +995,8 @@
       flex-direction: column;
       justify-content: flex-end;   /* push title to bottom */
       padding-bottom: 3rem;
+      position: relative;
+      z-index: 2;          /* sits above the WebGL canvas */
     }
 
     /* Mobile centering + ensure canvas fills container */
@@ -2366,6 +2408,9 @@
         </div>
         <div class="globe-container" id="globe-container">
           <p class="globe-hint">Drag to spin &nbsp;·&nbsp; Tap a dot to open tool</p>
+          <div class="globe-zoom-controls">
+            <button class="globe-zoom-btn" id="globe-zoom-in" title="Zoom in">+</button>
+            <button class="globe-zoom-btn" id="globe-zoom-out" title="Zoom out">−</button>  </div>          
         </div>
       </div>
       </section>     
@@ -3030,8 +3075,63 @@
     globe.width(container.offsetWidth);
     globe.height(container.offsetHeight);
     globe.pointOfView({ lat: 15, lng: -155, altitude: getAltitude() }, 0);
-    globe.controls().enableZoom = true;
+    globe.controls().enableZoom = false;
 
+    // Track current altitude for buttons
+    let currentAltitude = getAltitude();
+
+    document.getElementById('globe-zoom-in').addEventListener('click', () => {
+      currentAltitude = Math.max(0.8, currentAltitude * 0.72);
+      globe.pointOfView({ altitude: currentAltitude }, 400);
+    });
+
+    document.getElementById('globe-zoom-out').addEventListener('click', () => {
+      currentAltitude = Math.min(5.5, currentAltitude * 1.38);
+      globe.pointOfView({ altitude: currentAltitude }, 400);
+    });
+
+
+    
+    // ── Mobile touch tap handler ───────────────────────────────
+    let touchOrigin = null;
+
+    container.addEventListener('touchstart', e => {
+      touchOrigin = {
+        x: e.touches[0].clientX,
+        y: e.touches[0].clientY,
+        t: Date.now()
+      };
+    }, { passive: true });
+
+    container.addEventListener('touchend', e => {
+      if (!touchOrigin) return;
+      const touch = e.changedTouches[0];
+      const dx = Math.abs(touch.clientX - touchOrigin.x);
+      const dy = Math.abs(touch.clientY - touchOrigin.y);
+      const dt = Date.now() - touchOrigin.t;
+      touchOrigin = null;
+
+      // Only trigger if it was a short tap, not a drag
+      if (dx > 12 || dy > 12 || dt > 350) return;
+
+      const rect = container.getBoundingClientRect();
+      const coords = globe.toGlobeCoords(
+        touch.clientX - rect.left,
+        touch.clientY - rect.top
+      );
+      if (!coords) return;
+
+      // Find nearest point within ~12 degrees
+      const hit = GLOBE_POINTS.reduce((best, pt) => {
+        const dist = Math.hypot(pt.lat - coords.lat, pt.lng - coords.lng);
+        return (!best || dist < best.dist) ? { pt, dist } : best;
+      }, null);
+
+      if (hit && hit.dist < 12 && hit.pt.live && hit.pt.url) {
+        window.location.href = hit.pt.url;
+      }
+    }, { passive: true });    
+ 
     // ── Responsive: update size AND zoom on resize ────────
     const ro = new ResizeObserver(() => {
       globe.width(container.offsetWidth);
