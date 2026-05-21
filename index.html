@@ -466,7 +466,7 @@
       position: absolute;
       bottom: 2.5rem;
       right: 1.5rem;
-      z-index: 100;         /* well above the canvas */
+      z-index: 999;         /* well above the canvas */
       pointer-events: all;
       display: flex;
       flex-direction: column;
@@ -1002,20 +1002,17 @@
       isolation: isolate;         /* sits above the WebGL canvas */
     }
 
-    /* Mobile centering + ensure canvas fills container */
+    /* ── GLOBAL (outside any @media) ────────────────────────── */
     .globe-container {
-      flex: 0 0 55%;
-      max-width: 75%;
-      min-height: 380px;   /* was 500px */
-      max-height: 560px;   /* add this cap */
       position: relative;
       cursor: grab;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
       z-index: 1;
+      flex: 0 0 55%;
+      max-width: 55%;
+      min-height: 380px;
+      max-height: 560px;
     }
+
 
     /* Globe.gl wraps in a div — center it */
     .globe-container > div {
@@ -1073,16 +1070,17 @@
         padding-bottom: 0;
       }
 
-      .globe-container {
-        display: flex;
-        width: 100%;
-        flex: none;
-        max-width: 100%;
-        height: 82vw;        /* was 65vw */
-        min-height: 340px;   /* was 300px */
-        max-height: 520px;   /* was 420px */
-        margin: 0 auto;
-      }
+    .globe-container {
+      flex: none;
+      width: 100%;
+      max-width: 100%;
+      height: 82vw;
+      min-height: 340px;
+      max-height: 520px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
     }
 
@@ -2410,12 +2408,14 @@
           <p class="section-sub">Spatially explicit decision support for forest and watershed management. Spin the globe and
             click a location to explore.</p>
         </div>
-        <div class="globe-container" id="globe-container">
-          <p class="globe-hint">Drag to spin &nbsp;·&nbsp; Tap a dot to open tool</p>
+        <div class="globe-wrapper">
+          <div class="globe-container" id="globe-container">
+           <!-- <p class="globe-hint">Drag to spin · Ctrl+scroll to zoom · Click dot to open</p>-->
+          </div>
           <div class="globe-zoom-controls">
             <button class="globe-zoom-btn" id="globe-zoom-in">+</button>
             <button class="globe-zoom-btn" id="globe-zoom-out">−</button>
-          </div>          
+          </div>  
         </div>
       </div>
       </section>     
@@ -3132,6 +3132,29 @@
       globe.pointOfView({ altitude: getAltitude() }, 600); // smooth zoom transition
     });
     ro.observe(container);
+
+    // Append AFTER globe renders so they sit above the canvas
+    const hint = document.createElement('p');
+    hint.className = 'globe-hint';
+    hint.innerHTML = 'Drag to spin · Ctrl+scroll to zoom · Click a dot to open';
+    container.appendChild(hint);
+
+    const zoomWrap = document.createElement('div');
+    zoomWrap.className = 'globe-zoom-controls';
+    zoomWrap.innerHTML = `
+  <button class="globe-zoom-btn" id="globe-zoom-in">+</button>
+  <button class="globe-zoom-btn" id="globe-zoom-out">−</button>
+`;
+    container.appendChild(zoomWrap);
+
+    document.getElementById('globe-zoom-in').addEventListener('click', () => {
+      currentAltitude = Math.max(0.8, currentAltitude * 0.72);
+      globe.pointOfView({ altitude: currentAltitude }, 400);
+    });
+    document.getElementById('globe-zoom-out').addEventListener('click', () => {
+      currentAltitude = Math.min(5.5, currentAltitude * 1.38);
+      globe.pointOfView({ altitude: currentAltitude }, 400);
+    });    
 
   })();
 
