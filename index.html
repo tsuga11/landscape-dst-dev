@@ -941,10 +941,10 @@
 
     /* ── Globe: side-by-side layout ─────────────────────────── */
     .globe-section .section-stack {
-      flex-direction: row;         /* text left, globe right */
+      flex-direction: row;
       align-items: stretch;
-      padding: 3rem 4rem;
-      gap: 2rem;
+      padding: 3rem 2rem 3rem 4rem;  /* ← less right padding */
+      gap: 1rem;                      /* ← tighter gap between text and globe */
       min-height: 85vh;
     }
 
@@ -958,7 +958,8 @@
     }
 
     .globe-container {
-      flex: 1;
+      flex: 0 0 55%;        /* ← fixed proportion instead of flex:1 */
+      max-width: 55%;       /* ← caps the width */
       min-height: 500px;
       position: relative;
       cursor: grab;
