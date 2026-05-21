@@ -1028,9 +1028,9 @@
       content: '';
       position: absolute;
       bottom: -18px;
-      left: 50%;
+      left: var(--shadow-x, 50%);
       transform: translateX(-50%);
-      width: 55%;
+      width: var(--shadow-w, 55%);   /* ← driven by JS */
       height: 22px;
       background: radial-gradient(ellipse, rgba(90,70,45,0.22) 0%, transparent 70%);
       border-radius: 50%;
@@ -3114,9 +3114,16 @@
  
     // ── Responsive: update size AND zoom on resize ────────
     const ro = new ResizeObserver(() => {
-      globe.width(container.offsetWidth);
-      globe.height(container.offsetHeight);
-      globe.pointOfView({ altitude: getAltitude() }, 600); // smooth zoom transition
+      const w = container.offsetWidth;
+      const h = container.offsetHeight;
+      globe.width(w).height(h);
+      globe.pointOfView({ altitude: getAltitude() }, 600);
+
+      // ── Scale shadow to globe size ──────────────────────────
+      // Globe radius ≈ 45% of the smaller container dimension
+      const globeRadius = Math.min(w, h) * 0.45;
+      container.style.setProperty('--shadow-w', `${globeRadius * 1.6}px`);
+      container.style.setProperty('--shadow-x', `${w / 2}px`);
     });
     ro.observe(container);
 
