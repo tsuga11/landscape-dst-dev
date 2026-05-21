@@ -1006,6 +1006,21 @@
       max-width: 55%;
     }
 
+
+    /* Shadow on wrapper (not container) so it's never clipped */
+    .globe-wrapper::after {
+      content: '';
+      position: absolute;
+      bottom: 42px;      /* sits below container, above hint text */
+      left: 50%;
+      transform: translateX(-50%);
+      width: 55%;
+      height: 22px;
+      background: radial-gradient(ellipse, rgba(90,70,45,0.22) 0%, transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+    }    
+
     /* ── Globe canvas container ──────────────────────────────── */
     .globe-container {
       position: relative;
@@ -1014,26 +1029,12 @@
       width: 100%;
       min-height: 380px;
       max-height: 560px;
-      overflow: hidden;
+      overflow: visible;
     }
 
 
     .globe-container::after {
-      content: '';
-      position: absolute;
-      bottom: -18px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 55%;
-      height: 22px;
-      background: radial-gradient(
-        ellipse,
-        rgba(90, 70, 45, 0.22) 0%,
-        transparent 70%
-      );
-      border-radius: 50%;
-      pointer-events: none;
-      z-index: 0;
+      display: none;
     }
 
 
@@ -1050,6 +1051,10 @@
       color: rgba(27, 58, 47, 0.45);
       pointer-events: none;
     }
+
+    /* Hint variants */
+    .desktop-hint { display: block; }
+    .mobile-hint  { display: none; }
 
     @media (max-width: 900px) {
       .globe-section .section-stack {
@@ -1080,6 +1085,9 @@
         justify-content: center;
         margin: 0 auto;
       }
+
+      .desktop-hint { display: none; }
+      .mobile-hint  { display: block; }      
     }
 
 
@@ -2406,14 +2414,20 @@
           <p class="section-sub">Spatially explicit decision support for forest and watershed management. Spin the globe and
             click a location to explore.</p>
         </div>
+
+
         <div class="globe-wrapper">
           <div class="globe-container" id="globe-container"></div>
-          <p class="globe-hint">Drag to spin &nbsp;·&nbsp; Ctrl+scroll to zoom &nbsp;·&nbsp; Click a dot to open</p>
+          <p class="globe-hint desktop-hint">Drag to spin &nbsp;·&nbsp; Ctrl+scroll to zoom &nbsp;·&nbsp; Click a dot to open
+          </p>
+          <p class="globe-hint mobile-hint">Drag to spin &nbsp;·&nbsp; Tap a dot to open</p>
           <div class="globe-zoom-controls">
             <button class="globe-zoom-btn" id="globe-zoom-in">+</button>
             <button class="globe-zoom-btn" id="globe-zoom-out">−</button>
-          </div>
+          </div>  
         </div>
+
+
       </div>
       </section>     
 
@@ -2939,6 +2953,12 @@
     // ── Altitude based on container width ──────────────────
     function getAltitude() {
       const w = container.offsetWidth;
+      const mobile = window.innerWidth <= 900;
+      if (mobile) {
+        if (w < 300) return 2.2;
+        if (w < 420) return 1.6;   /* phone — pre-zoomed in */
+        return 1.4;
+      }
       if (w < 300) return 4.0;
       if (w < 420) return 3.2;
       if (w < 580) return 2.6;
