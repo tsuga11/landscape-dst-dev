@@ -1009,16 +1009,7 @@
 
     /* Shadow on wrapper (not container) so it's never clipped */
     .globe-wrapper::after {
-      content: '';
-      position: absolute;
-      bottom: 42px;      /* sits below container, above hint text */
-      left: 50%;
-      transform: translateX(-50%);
-      width: 55%;
-      height: 22px;
-      background: radial-gradient(ellipse, rgba(90,70,45,0.22) 0%, transparent 70%);
-      border-radius: 50%;
-      pointer-events: none;
+      display: none;
     }    
 
     /* ── Globe canvas container ──────────────────────────────── */
@@ -1034,7 +1025,17 @@
 
 
     .globe-container::after {
-      display: none;
+      content: '';
+      position: absolute;
+      bottom: -18px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 55%;
+      height: 22px;
+      background: radial-gradient(ellipse, rgba(90,70,45,0.22) 0%, transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 0;
     }
 
 
@@ -1043,7 +1044,7 @@
     .globe-hint {
       display: block;
       text-align: center;
-      margin-top: 0.75rem;
+      margin-top: 26px;
       font-size: 0.62rem;
       font-weight: 400;
       letter-spacing: 0.1em;
