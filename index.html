@@ -1026,7 +1026,8 @@
       border-radius: 50%;
       background: radial-gradient(ellipse, rgba(90,70,45,0.28) 0%, transparent 70%);
       pointer-events: none;
-      transition: width 0.3s ease;
+      transition: width 0.4s ease;
+      width: 70%;  /* fallback until JS sets it */
     }
 
 
@@ -3107,19 +3108,27 @@
     // ── Responsive: update size AND zoom on resize ────────
     const shadow = document.getElementById('globe-shadow');
 
+    function updateShadow() {
+      if (!shadow) return;
+      const w = container.offsetWidth;
+      const h = container.offsetHeight;
+      if (w === 0 || h === 0) return; // not ready yet
+      const diam = Math.min(w, h) * 0.8;
+      shadow.style.width = `${diam}px`;
+    }
+
     const ro = new ResizeObserver(() => {
       const w = container.offsetWidth;
       const h = container.offsetHeight;
       globe.width(w).height(h);
       globe.pointOfView({ altitude: getAltitude() }, 600);
-
-      // Shadow = ~80% of globe diameter
-      if (shadow) {
-        const diam = Math.min(w, h) * 0.8;
-        shadow.style.width = `${diam}px`;
-      }
+      updateShadow();
     });
     ro.observe(container);
+
+    // Also fire after globe has had time to fully render
+    setTimeout(updateShadow, 300);
+    setTimeout(updateShadow, 800);
 
 
 
