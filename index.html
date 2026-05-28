@@ -1080,7 +1080,10 @@
       }
 
       .desktop-hint { display: none; }
-      .mobile-hint  { display: block; }      
+      .mobile-hint  { display: block; } 
+      
+      
+
     }
 
 
@@ -1701,57 +1704,67 @@
     text-decoration-color: var(--gold-light);
   }
 
+  /* ── Bio expand — desktop: unrestricted ──────────────────── */
+  .pd-bio-wrap {
+    position: relative;
+    width: 100%;
+    margin-bottom: 1.5rem;
+  }
+
+  .bio-expand-btn { display: none; }
+      
 
 
-    /* ══════════════════════════════════════════════════════════
-    RESPONSIVE — single consolidated block
-    ══════════════════════════════════════════════════════════ */
-    /* ── People: two-column on wide screens ─────────────────── */
-    @media (min-width: 1100px) {
-      .people-section {
-        display: flex;
-        flex-direction: column;
-      }
 
-      /* Header stays full width */
-      .people-header { flex-shrink: 0; }
-
-      /* Strip + detail side by side */
-      .people-body {
-        display: flex;
-        flex-direction: row;
-        gap: 3rem;
-        padding: 0 4rem 4rem;
-        align-items: flex-start;
-        flex: 1;
-        padding-right: calc(var(--section-right-margin) + 4rem); /* ← clears nav */
-      }
-
-      /* Vertical strip on left */
-      .people-strip-outer {
-        flex: 0 0 160px;
-        padding: 0;
-      }
-
-      .people-strip {
-        flex-direction: column;
-        overflow-y: auto;
-        overflow-x: visible;
-        scroll-snap-type: y mandatory;
-        padding-bottom: 0;
-        padding-right: 0.5rem;
-        max-height: 60vh;
-        gap: 0.75rem;
-      }
-
-      /* Detail card fills remaining space */
-      .people-detail {
-        flex: 1;
-        padding: 0;
-      }
-
-      .pd-card { max-width: none; }
+  /* ══════════════════════════════════════════════════════════
+  RESPONSIVE — single consolidated block
+  ══════════════════════════════════════════════════════════ */
+  /* ── People: two-column on wide screens ─────────────────── */
+  @media (min-width: 1100px) {
+    .people-section {
+      display: flex;
+      flex-direction: column;
     }
+
+    /* Header stays full width */
+    .people-header { flex-shrink: 0; }
+
+    /* Strip + detail side by side */
+    .people-body {
+      display: flex;
+      flex-direction: row;
+      gap: 3rem;
+      padding: 0 4rem 4rem;
+      align-items: flex-start;
+      flex: 1;
+      padding-right: calc(var(--section-right-margin) + 4rem); /* ← clears nav */
+    }
+
+    /* Vertical strip on left */
+    .people-strip-outer {
+      flex: 0 0 160px;
+      padding: 0;
+    }
+
+    .people-strip {
+      flex-direction: column;
+      overflow-y: auto;
+      overflow-x: visible;
+      scroll-snap-type: y mandatory;
+      padding-bottom: 0;
+      padding-right: 0.5rem;
+      max-height: 60vh;
+      gap: 0.75rem;
+    }
+
+    /* Detail card fills remaining space */
+    .people-detail {
+      flex: 1;
+      padding: 0;
+    }
+
+    .pd-card { max-width: none; }
+  }
 
 
     @media (max-width: 1100px) {
@@ -1875,7 +1888,7 @@
       .pd-card { margin-top: 55px; }
 
       .pd-name  { font-size: 1.6rem; }
-      .pd-bio   { max-height: none; }      
+      .pd-bio   { max-height: none; }  
 
       .people-detail-photo img  { width: 140px; height: 140px; }
       .pd-name                  { font-size: 1.7rem; }
@@ -1889,7 +1902,58 @@
       .footer-top     { flex-direction: column; gap: 1.5rem; }
       .footer-nav     { gap: 1rem; }
 
+      .pd-bio-wrap {
+        max-height: 145px;
+        overflow: hidden;
+        transition: max-height 0.4s ease;
       }
+
+      /* Fade gradient over bottom of truncated text */
+      .pd-bio-wrap:not(.expanded)::after {
+        content: '';
+        position: absolute;
+        bottom: 0; left: 0; right: 0;
+        height: 64px;
+        background: linear-gradient(
+          to bottom,
+          transparent,
+          var(--cream) 90%
+        );
+        pointer-events: none;
+      }
+
+      /* Expanded state — remove height cap and fade */
+      .pd-bio-wrap.expanded {
+        max-height: 1200px;
+      }
+
+      /* Show expand button on mobile */
+      .bio-expand-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0.25rem 0 0.5rem;
+        color: var(--green-light);
+        transition: color 0.2s;
+        margin-bottom: 1rem;
+      }
+
+      .bio-expand-btn:hover { color: var(--green-deep); }
+
+      /* Rotate arrow when expanded */
+      .bio-expand-btn svg {
+        transition: transform 0.35s ease;
+      }
+
+      .bio-expand-btn.expanded svg {
+        transform: rotate(180deg);
+      }      
+
+    }
     /* ── NEW: mobile-specific fixes ─────────────────────────── */
     @media (max-width: 600px) {
       html { scroll-snap-type: none; }  /* prevents gap/jump between sections */
@@ -2130,11 +2194,23 @@
                 <h3 id="pd-name" class="pd-name"></h3>
                 <p id="pd-title" class="pd-title"></p>
                 <p id="pd-affil" class="pd-affil"></p>
-                <div id="pd-links" class="pd-links"></div>
+                <div id="pd-links" class="pd-links">
+                </div>
               </div>
             </div>
-            <div class="pd-divider"></div>
-            <div id="pd-bio" class="pd-bio"></div>    </div>
+            <div class="pd-divider">
+            </div>
+            <div class="pd-bio-wrap">
+              <div id="pd-bio" class="pd-bio">
+              </div>
+            </div>
+            <button class="bio-expand-btn" id="bio-expand-btn" aria-label="Read more">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.5"
+                stroke-linecap="round">
+                <polyline points="4,8 10,14 16,8" />
+              </svg>   
+            </button> 
+          </div>
           
         </div>
 
@@ -2383,6 +2459,26 @@
        SCRIPTS
   ══════════════════════════════════════════════════════════ -->
 <script>
+
+
+  function initBioExpand() {
+    const wrap = document.getElementById('pd-bio')?.parentElement;
+    const btn = document.getElementById('bio-expand-btn');
+    if (!wrap || !btn) return;
+
+    // Only activate on mobile
+    if (window.innerWidth > 900) return;
+
+    // Hide button if bio isn't actually overflowing
+    const overflows = wrap.scrollHeight > wrap.clientHeight + 4;
+    btn.style.visibility = overflows ? 'visible' : 'hidden';
+
+    btn.onclick = () => {
+      const expanded = wrap.classList.toggle('expanded');
+      btn.classList.toggle('expanded', expanded);
+    };
+  }
+
   // ── Prevent scroll restoration and URL fragment jumps ──────
   // ── Prevent scroll restoration ─────────────────────────────
   if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
@@ -2499,6 +2595,15 @@
           ${getLinkIcon(l.label)}
         </a>`
               ).join('');
+
+      // Reset expand state for new person
+      const wrap = document.getElementById('pd-bio')?.parentElement;
+      const btn = document.getElementById('bio-expand-btn');
+      wrap?.classList.remove('expanded');
+      btn?.classList.remove('expanded');
+
+      // Re-init after content loads (needs a tick for scrollHeight to update)
+      requestAnimationFrame(initBioExpand);              
     }
 
     function buildNews(NEWS) {
