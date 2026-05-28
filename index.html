@@ -2469,8 +2469,10 @@
     // Only activate on mobile
     if (window.innerWidth > 900) return;
 
+    const MAX_H = 145; // must match the CSS max-height value
+
     // Hide button if bio isn't actually overflowing
-    const overflows = wrap.scrollHeight > wrap.clientHeight + 4;
+    const overflows = wrap.scrollHeight > MAX_H + 4;
     btn.style.visibility = overflows ? 'visible' : 'hidden';
 
     btn.onclick = () => {
