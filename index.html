@@ -1084,190 +1084,6 @@
 
 
     /* ══════════════════════════════════════════════════════════
-    PHOTOS SECTION
-    ══════════════════════════════════════════════════════════ */
-
-    #photos .section-stack.photos-stack {
-      flex-direction: column;
-      gap: 1.5rem;
-    }
-
-    #photos .stack-header { max-width: none; }
-
-    /* ── Strip carousel ──────────────────────────────────────── */
-    .photos-strip {
-      display: flex;
-      gap: 14px;
-      overflow-x: auto;
-      scroll-snap-type: x mandatory;
-      scroll-behavior: smooth;
-      padding-bottom: 6px;
-      scrollbar-width: none;
-      -ms-overflow-style: none;
-      cursor: grab;
-    }
-
-    .photos-strip:active { cursor: grabbing; }
-    .photos-strip::-webkit-scrollbar { display: none; }
-
-    .photo-strip-item {
-      flex: 0 0 300px;
-      height: 210px;
-      scroll-snap-align: start;
-      flex-shrink: 0;
-    }
-
-    /* ── Glassmorphism photo frame ───────────────────────────── */
-    .photo-frame-erc {
-      position: relative;
-      border-radius: 14px;
-      overflow: hidden;
-      border: 1px solid rgba(255, 255, 255, 0.14);
-      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.4);
-      background: rgba(255, 255, 255, 0.04);
-      width: 100%;
-      height: 100%;
-    }
-
-    .photo-frame-erc img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-      transition: transform 0.5s ease, filter 0.5s ease;
-      user-select: none;
-      -webkit-user-drag: none;
-      pointer-events: none;
-    }
-
-    /* Glass surface tint */
-    .photo-frame-erc::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(135deg,
-        rgba(255,255,255,0.07) 0%,
-        rgba(255,255,255,0) 55%);
-      pointer-events: none;
-      z-index: 2;
-    }
-
-    /* Sheen sweep on hover */
-    .photo-frame-erc::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -150%;
-      width: 60%;
-      height: 100%;
-      background: linear-gradient(to right,
-        rgba(255,255,255,0) 0%,
-        rgba(255,255,255,0.22) 50%,
-        rgba(255,255,255,0) 100%);
-      transform: skewX(-25deg);
-      pointer-events: none;
-      z-index: 3;
-      transition: none;
-    }
-
-    .photo-frame-erc:hover img {
-      transform: scale(1.04);
-      filter: brightness(1.08) contrast(1.02);
-    }
-
-    .photo-frame-erc:hover::after {
-      left: 150%;
-      transition: left 0.85s ease-in-out;
-    }
-
-    /* ── Bento drawer ────────────────────────────────────────── */
-    .photos-bento {
-      max-height: 0;
-      overflow: hidden;
-      transition: max-height 0.75s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    .photos-bento.open {
-      max-height: 3000px;
-      padding-top: 14px;
-    }
-
-    .bento-grid-erc {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      grid-auto-rows: 220px;
-      grid-auto-flow: dense;
-      gap: 14px;
-    }
-
-    .bento-cell {
-      border-radius: 14px;
-      overflow: hidden;
-    }
-
-    .bento-cell.span-wide { grid-column: span 2; }
-    .bento-cell.span-tall { grid-row: span 2; }
-
-    /* ── Toggle button ───────────────────────────────────────── */
-    .photos-toggle {
-      text-align: center;
-      margin-top: 1.25rem;
-    }
-
-    .photos-expand-btn {
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      color: rgba(255, 255, 255, 0.6);
-      width: 42px;
-      height: 42px;
-      border-radius: 50%;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.25s ease;
-      backdrop-filter: blur(6px);
-      outline: none;
-    }
-
-    .photos-expand-btn:hover {
-      background: rgba(196, 150, 58, 0.15);
-      border-color: rgba(196, 150, 58, 0.5);
-      color: var(--gold-light);
-    }
-
-    .photos-expand-btn svg {
-      transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    .photos-expand-btn.expanded svg {
-      transform: rotate(180deg);
-    }
-
-    /* ── Mobile ──────────────────────────────────────────────── */
-    @media (max-width: 900px) {
-      .photo-strip-item {
-        flex: 0 0 240px;
-        height: 170px;
-      }
-
-      .bento-grid-erc {
-        grid-template-columns: repeat(2, 1fr);
-        grid-auto-rows: 180px;
-      }
-    }
-
-    @media (max-width: 480px) {
-      .bento-grid-erc {
-        grid-template-columns: 1fr;
-        grid-auto-rows: 200px;
-      }
-
-      .bento-cell.span-wide { grid-column: span 1; }
-      .bento-cell.span-tall { grid-row: span 1; }
-    }
-
-    /* ══════════════════════════════════════════════════════════
     FOOTER
     ══════════════════════════════════════════════════════════ */
     .footer-section {
@@ -1827,6 +1643,54 @@
 
     .pd-bio p + p { margin-top: 0.75rem; }
 
+    /* ── Bio expand (mobile) ─────────────────────────────────── */
+    .pd-bio-wrap {
+      position: relative;
+      width: 100%;
+      margin-bottom: 1.5rem;
+    }
+
+    .bio-expand-btn { display: none; }
+
+    @media (max-width: 900px) {
+      .pd-bio-wrap {
+        max-height: 145px;
+        overflow: hidden;
+        transition: max-height 0.4s ease;
+        margin-bottom: 0;
+      }
+
+      .pd-bio-wrap:not(.expanded)::after {
+        content: '';
+        position: absolute;
+        bottom: 0; left: 0; right: 0;
+        height: 64px;
+        background: linear-gradient(to bottom, transparent, var(--cream) 90%);
+        pointer-events: none;
+      }
+
+      .pd-bio-wrap.expanded { max-height: 1200px; }
+
+      .bio-expand-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0.25rem 0 0.5rem;
+        color: var(--green-light);
+        transition: color 0.2s;
+        margin-bottom: 1rem;
+      }
+
+      .bio-expand-btn:hover { color: var(--green-deep); }
+
+      .bio-expand-btn svg { transition: transform 0.35s ease; }
+      .bio-expand-btn.expanded svg { transform: rotate(180deg); }
+    }
+
     /* Neumorphic link buttons — left aligned */
     .pd-link {
       display: inline-flex;
@@ -2310,12 +2174,6 @@
         <div class="nav-dot"></div>
       </div>
     </a>
-    <a class="nav-item" href="#photos" data-section="photos">
-      <span class="nav-label">Photos</span>
-      <div class="nav-dot-wrap">
-        <div class="nav-dot"></div>
-      </div>
-    </a>
     <a class="nav-item" href="#blog" data-section="blog">
       <span class="nav-label">Blog</span>
       <div class="nav-dot-wrap">
@@ -2427,7 +2285,16 @@
               </div>
             </div>
             <div class="pd-divider"></div>
-            <div id="pd-bio" class="pd-bio"></div>    </div>
+            <div class="pd-bio-wrap">
+              <div id="pd-bio" class="pd-bio"></div>
+            </div>
+            <button class="bio-expand-btn" id="bio-expand-btn" aria-label="Read more">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none"
+                   stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                <polyline points="4,8 10,14 16,8"/>
+              </svg>
+            </button>
+          </div>
           
         </div>
 
@@ -2458,126 +2325,7 @@
 
 
       <!-- ══════════════════════════════════════════════════════════
-            4. PHOTOS — dark glass
-       ══════════════════════════════════════════════════════════ -->
-      <section class="page-section" id="photos">
-        <div class="section-stack photos-stack">
-          <div class="stack-header">
-            <p class="section-eyebrow">Field &amp; lab</p>
-            <h2 class="section-title">Photos</h2>
-            <p class="section-sub" style="color:rgba(255,255,255,0.55);">From the landscapes, field sites, and lab.</p>
-          </div>
-
-          <div class="photos-body">
-
-            <!-- ── Collapsed strip carousel ──────────────────── -->
-            <div class="photos-strip" id="photos-strip">
-              <div class="photo-strip-item">
-                <div class="photo-frame-erc">
-                  <img src="assets/hamakua.jpg" alt="Hamakua coast waterfall">
-                </div>
-              </div>
-              <div class="photo-strip-item">
-                <div class="photo-frame-erc">
-                  <img src="assets/washington.jpeg" alt="Washington forest fire">
-                </div>
-              </div>
-              <div class="photo-strip-item">
-                <div class="photo-frame-erc">
-                  <img src="assets/Babeldaob-mosaic.jpg" alt="Babeldaob island">
-                </div>
-              </div>
-              <div class="photo-strip-item">
-                <div class="photo-frame-erc">
-                  <img src="assets/tahoe.jpg" alt="Tahoe Sierra Nevada">
-                </div>
-              </div>
-              <div class="photo-strip-item">
-                <div class="photo-frame-erc">
-                  <img src="assets/bw_burn.jpg" alt="Black and white burn">
-                </div>
-              </div>
-              <div class="photo-strip-item">
-                <div class="photo-frame-erc">
-                  <img src="assets/wildfire-on-mountain_1600.jpg" alt="Wildfire on mountain">
-                </div>
-              </div>
-            </div>
-
-            <!-- ── Expanded bento grid ────────────────────────── -->
-            <div class="photos-bento" id="photos-bento">
-              <div class="bento-grid-erc">
-
-                <div class="bento-cell span-wide">
-                  <div class="photo-frame-erc">
-                    <img src="assets/wildfire-on-mountain_1600.jpg" alt="Wildfire panorama">
-                  </div>
-                </div>
-
-                <div class="bento-cell span-tall">
-                  <div class="photo-frame-erc">
-                    <img src="assets/hamakua.jpg" alt="Hamakua waterfall">
-                  </div>
-                </div>
-
-                <div class="bento-cell">
-                  <div class="photo-frame-erc">
-                    <img src="assets/tahoe.jpg" alt="Tahoe Sierra">
-                  </div>
-                </div>
-
-                <div class="bento-cell">
-                  <div class="photo-frame-erc">
-                    <img src="assets/bw_burn.jpg" alt="Burn scar">
-                  </div>
-                </div>
-
-                <div class="bento-cell span-wide">
-                  <div class="photo-frame-erc">
-                    <img src="assets/Babeldaob-mosaic.jpg" alt="Babeldaob landscape">
-                  </div>
-                </div>
-
-                <div class="bento-cell span-tall">
-                  <div class="photo-frame-erc">
-                    <img src="assets/washington.jpeg" alt="Washington fire">
-                  </div>
-                </div>
-
-                <div class="bento-cell">
-                  <div class="photo-frame-erc">
-                    <img src="assets/hamakua.jpg" alt="Forest canopy">
-                  </div>
-                </div>
-
-                <div class="bento-cell">
-                  <div class="photo-frame-erc">
-                    <img src="assets/tahoe.jpg" alt="Sierra Nevada">
-                  </div>
-                </div>
-
-              </div>
-            </div>
-
-            <!-- ── Toggle button ──────────────────────────────── -->
-            <div class="photos-toggle">
-              <button class="photos-expand-btn" id="photos-toggle-btn"
-                      onclick="togglePhotos()" aria-label="Expand photo grid">
-                <svg width="18" height="18" viewBox="0 0 18 18" fill="none"
-                     stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-                  <polyline points="3,6 9,12 15,6"/>
-                </svg>
-              </button>
-            </div>
-
-          </div>
-        </div>
-      </section>
-
-
-
-      <!-- ══════════════════════════════════════════════════════════
-            5. BLOG — floating glass
+            4. BLOG — floating glass
        ══════════════════════════════════════════════════════════ -->
       <section class="page-section" id="blog">
         <div class="section-stack">
@@ -2912,7 +2660,29 @@
         `<a class="pd-link" href="${l.url}" target="_blank" rel="noopener" title="${l.label}">
           ${getLinkIcon(l.label)}
         </a>`
-              ).join('');
+      ).join('');
+
+      // Reset + re-init bio expand each time person changes
+      const wrap = document.getElementById('pd-bio')?.parentElement;
+      const btn  = document.getElementById('bio-expand-btn');
+      wrap?.classList.remove('expanded');
+      btn?.classList.remove('expanded');
+      requestAnimationFrame(initBioExpand);
+    }
+
+    function initBioExpand() {
+      const wrap = document.getElementById('pd-bio')?.parentElement;
+      const btn  = document.getElementById('bio-expand-btn');
+      if (!wrap || !btn || window.innerWidth > 900) return;
+
+      const MAX_H = 145; // must match CSS max-height on .pd-bio-wrap
+      const overflows = wrap.scrollHeight > MAX_H + 4;
+      btn.style.visibility = overflows ? 'visible' : 'hidden';
+
+      btn.onclick = () => {
+        const expanded = wrap.classList.toggle('expanded');
+        btn.classList.toggle('expanded', expanded);
+      };
     }
 
     function buildNews(NEWS) {
@@ -3193,23 +2963,7 @@
 
 
   // Call after animObserver is defined
-    // ── Photos section toggle ──────────────────────────────────
-  function togglePhotos() {
-    const drawer = document.getElementById('photos-bento');
-    const btn    = document.getElementById('photos-toggle-btn');
-    if (!drawer || !btn) return;
-    const opening = !drawer.classList.contains('open');
-    drawer.classList.toggle('open');
-    btn.classList.toggle('expanded');
-    if (opening) {
-      setTimeout(() => {
-        drawer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-      }, 350);
-    }
-  }
-
-  loadData();
-
+    loadData();
 
   // ── Responsive carousel layout ─────────────────────────────
   function updateCarouselLayout() {
