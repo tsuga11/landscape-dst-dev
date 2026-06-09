@@ -10,7 +10,7 @@
 
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ecosystem Resilience Cooperative</title>
+  <title>Ecosystem Resilience Collaborative</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
@@ -96,7 +96,6 @@
       /*will-change: filter;*/
     }
 
-    /*
     .hero-bg-img::after {
       content: '';
       position: absolute;
@@ -107,7 +106,7 @@
           rgba(110, 105, 100, 0.45) 70%,
           rgba(120, 110, 95, 0.10) 100%);
     }
-*/
+
     .hero::before {
       content: '';
       position: absolute;
@@ -1027,7 +1026,7 @@
       border-radius: 50%;
       background: radial-gradient(ellipse, rgba(90,70,45,0.28) 0%, transparent 70%);
       pointer-events: none;
-      width: 70%; /* fallback */
+      transition: width 0.3s ease;
     }
 
 
@@ -1080,12 +1079,193 @@
       }
 
       .desktop-hint { display: none; }
-      .mobile-hint  { display: block; } 
-      
-      
-
+      .mobile-hint  { display: block; }      
     }
 
+
+    /* ══════════════════════════════════════════════════════════
+    PHOTOS SECTION
+    ══════════════════════════════════════════════════════════ */
+
+    #photos .section-stack.photos-stack {
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    #photos .stack-header { max-width: none; }
+
+    /* ── Strip carousel ──────────────────────────────────────── */
+    .photos-strip {
+      display: flex;
+      gap: 14px;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scroll-behavior: smooth;
+      padding-bottom: 6px;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      cursor: grab;
+    }
+
+    .photos-strip:active { cursor: grabbing; }
+    .photos-strip::-webkit-scrollbar { display: none; }
+
+    .photo-strip-item {
+      flex: 0 0 300px;
+      height: 210px;
+      scroll-snap-align: start;
+      flex-shrink: 0;
+    }
+
+    /* ── Glassmorphism photo frame ───────────────────────────── */
+    .photo-frame-erc {
+      position: relative;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.4);
+      background: rgba(255, 255, 255, 0.04);
+      width: 100%;
+      height: 100%;
+    }
+
+    .photo-frame-erc img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.5s ease, filter 0.5s ease;
+      user-select: none;
+      -webkit-user-drag: none;
+      pointer-events: none;
+    }
+
+    /* Glass surface tint */
+    .photo-frame-erc::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg,
+        rgba(255,255,255,0.07) 0%,
+        rgba(255,255,255,0) 55%);
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    /* Sheen sweep on hover */
+    .photo-frame-erc::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -150%;
+      width: 60%;
+      height: 100%;
+      background: linear-gradient(to right,
+        rgba(255,255,255,0) 0%,
+        rgba(255,255,255,0.22) 50%,
+        rgba(255,255,255,0) 100%);
+      transform: skewX(-25deg);
+      pointer-events: none;
+      z-index: 3;
+      transition: none;
+    }
+
+    .photo-frame-erc:hover img {
+      transform: scale(1.04);
+      filter: brightness(1.08) contrast(1.02);
+    }
+
+    .photo-frame-erc:hover::after {
+      left: 150%;
+      transition: left 0.85s ease-in-out;
+    }
+
+    /* ── Bento drawer ────────────────────────────────────────── */
+    .photos-bento {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.75s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .photos-bento.open {
+      max-height: 3000px;
+      padding-top: 14px;
+    }
+
+    .bento-grid-erc {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-auto-rows: 220px;
+      grid-auto-flow: dense;
+      gap: 14px;
+    }
+
+    .bento-cell {
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    .bento-cell.span-wide { grid-column: span 2; }
+    .bento-cell.span-tall { grid-row: span 2; }
+
+    /* ── Toggle button ───────────────────────────────────────── */
+    .photos-toggle {
+      text-align: center;
+      margin-top: 1.25rem;
+    }
+
+    .photos-expand-btn {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: rgba(255, 255, 255, 0.6);
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.25s ease;
+      backdrop-filter: blur(6px);
+      outline: none;
+    }
+
+    .photos-expand-btn:hover {
+      background: rgba(196, 150, 58, 0.15);
+      border-color: rgba(196, 150, 58, 0.5);
+      color: var(--gold-light);
+    }
+
+    .photos-expand-btn svg {
+      transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .photos-expand-btn.expanded svg {
+      transform: rotate(180deg);
+    }
+
+    /* ── Mobile ──────────────────────────────────────────────── */
+    @media (max-width: 900px) {
+      .photo-strip-item {
+        flex: 0 0 240px;
+        height: 170px;
+      }
+
+      .bento-grid-erc {
+        grid-template-columns: repeat(2, 1fr);
+        grid-auto-rows: 180px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .bento-grid-erc {
+        grid-template-columns: 1fr;
+        grid-auto-rows: 200px;
+      }
+
+      .bento-cell.span-wide { grid-column: span 1; }
+      .bento-cell.span-tall { grid-row: span 1; }
+    }
 
     /* ══════════════════════════════════════════════════════════
     FOOTER
@@ -1176,76 +1356,196 @@
 
 
 
-    /* ── Hero nav layout ─────────────────────────────────────── */
-    .hero-nav {
+    /* ══════════════════════════════════════════════════════════
+    SECTION NAV
+    ══════════════════════════════════════════════════════════ */
+    #section-nav {
+      position: fixed;
+      right: 1.75rem;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 3000;
       display: flex;
-      align-items: center;
-      justify-content: space-between;  /* name left, hamburger right */
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 0;
     }
 
-    /* ── Hamburger button ────────────────────────────────────── */
-    .nav-hamburger {
-      display: none;          /* hidden while nav is transparent */
-      background: none;
-      border: none;
-      cursor: pointer;
-      color: rgba(255, 255, 255, 0.85);
-      padding: 0.4rem;
-      border-radius: 6px;
-      transition: color 0.2s, background 0.2s;
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+      text-decoration: none;
+      padding: 0.55rem 0;
+    }
+
+    .nav-label {
+      font-size: 0.68rem;
+      font-weight: 400;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.35);
+      transition: color 0.25s, font-weight 0.25s;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.6);  /* ← add this */
+    }
+
+    .nav-dot-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .nav-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.3);
+      transition: background 0.25s, transform 0.25s;
       flex-shrink: 0;
     }
 
-    .nav-hamburger:hover {
-      color: #fff;
-      background: rgba(255,255,255,0.08);
+    .nav-item:not(:last-child) .nav-dot-wrap::after {
+      content: '';
+      display: block;
+      width: 1px;
+      height: 1.8rem;
+      background: rgba(255, 255, 255, 0.15);
+      margin-top: 2px;
     }
 
-    /* Show hamburger only when dark nav bar is visible */
-    .hero-nav:not(.transparent) .nav-hamburger {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    /* ── Dropdown menu ───────────────────────────────────────── */
-    .nav-dropdown {
-      position: fixed;
-      top: 64px;                        /* sits below the hero-nav bar */
-      right: 0;
-      z-index: 2999;
-      background: rgba(10, 8, 6, 0.96);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      border-left: 1px solid rgba(255,255,255,0.07);
-      border-bottom: 1px solid rgba(255,255,255,0.07);
-      border-radius: 0 0 0 12px;
-      min-width: 200px;
-      padding: 0.5rem 0;
-      display: none;
-      flex-direction: column;
-      box-shadow: -4px 4px 24px rgba(0,0,0,0.4);
-    }
-
-    .nav-dropdown.open { display: flex; }
-
-    .nav-drop-link {
-      padding: 0.8rem 1.75rem;
-      color: rgba(255, 255, 255, 0.65);
-      text-decoration: none;
-      font-size: 0.72rem;
+    .nav-item.active .nav-label {
+      color: rgba(255, 255, 255, 0.9);
       font-weight: 500;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      transition: color 0.2s, background 0.2s;
-      border-left: 2px solid transparent;
     }
 
-    .nav-drop-link:hover {
-      color: var(--gold-light);
-      background: rgba(255,255,255,0.04);
-      border-left-color: var(--gold);
+    .nav-item.active .nav-dot {
+      background: var(--gold);
+      transform: scale(1.35);
     }
+
+    .nav-item:hover .nav-label {
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .nav-item:hover .nav-dot {
+      background: rgba(255, 255, 255, 0.6);
+    }
+
+    .nav-home-icon {
+      transition: stroke 0.25s;
+    }
+
+    #nav-home:hover .nav-home-icon {
+      stroke: var(--gold-light);
+    }
+
+    #nav-home.active .nav-home-icon {
+      stroke: var(--gold);
+    }
+
+
+
+    #section-nav.on-light .nav-label {
+      color: rgba(27, 58, 47, 0.8);
+      background: rgba(226, 219, 208, 0.85);  /* matches --cream: #e2dbd0 */
+      text-shadow: none;
+    }
+
+    #section-nav.on-light .nav-item.active .nav-label {
+      color: var(--green-deep);
+      background: var(--cream);
+      font-weight: 600;
+    }
+
+    #section-nav.on-light .nav-item:hover .nav-label {
+      color: var(--green-light);
+      background: var(--cream);
+    }
+
+    #section-nav.on-light .nav-dot {
+      background: rgba(27, 58, 47, 0.25);
+    }
+
+    #section-nav.on-light .nav-item.active .nav-dot {
+      background: var(--gold);
+    }
+
+    #section-nav.on-light .nav-item:not(:last-child) .nav-dot-wrap::after {
+      background: rgba(27, 58, 47, 0.15);
+    }
+
+    #section-nav.on-light .nav-home-icon {
+      stroke: rgba(27, 58, 47, 0.4);
+    }
+
+    #section-nav.on-light #nav-home.active .nav-home-icon {
+      stroke: var(--gold);
+    }    
+
+
+    /* ── Nav on dark sections (News) ─────────────────────────── */
+    #section-nav.on-dark .nav-label {
+      color: rgba(240, 232, 208, 0.6);
+      background: rgba(26, 26, 20, 0.65);
+      text-shadow: none;
+    }
+
+    #section-nav.on-dark .nav-item.active .nav-label {
+      color: #f0e8d0;
+      background: rgba(26, 26, 20, 0.85);
+      font-weight: 600;
+    }
+
+    #section-nav.on-dark .nav-item:hover .nav-label {
+      color: var(--gold-light);
+      background: rgba(26, 26, 20, 0.75);
+    }
+
+    #section-nav.on-dark .nav-dot { background: rgba(240, 232, 208, 0.25); }
+    #section-nav.on-dark .nav-item.active .nav-dot { background: var(--gold); }
+    #section-nav.on-dark .nav-item:not(:last-child) .nav-dot-wrap::after { background: rgba(240, 232, 208, 0.12); }
+    #section-nav.on-dark .nav-home-icon { stroke: rgba(240, 232, 208, 0.4); }
+    #section-nav.on-dark #nav-home.active .nav-home-icon { stroke: var(--gold); }    
+
+    /* ── BASE (outside all @media) ──────────────────────────── */
+    .nav-label {
+      font-size: var(--type-eyebrow);
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.75);
+      background: rgba(0,0,0,0.28);
+      padding: 0.18rem 0.5rem;
+      border-radius: 3px;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      transition: color 0.25s, background 0.25s;
+      text-shadow: none;
+    }
+
+    .nav-item.active .nav-label {
+      color: #fff;
+      background: rgba(0,0,0,0.45);
+      font-weight: 600;
+    }
+
+    .nav-item:hover .nav-label {
+      color: var(--gold-light);
+      background: rgba(0,0,0,0.38);
+    }
+
+    #section-nav.on-light .nav-label {
+      color: rgba(27,58,47,0.8);
+      background: rgba(245,240,232,0.7);
+      text-shadow: none;
+    }
+
+    #section-nav.on-light .nav-item.active .nav-label {
+      color: var(--green-deep);
+      background: var(--cream);
+      font-weight: 600;
+    }
+
 
 
     .carousel-dots {
@@ -1704,67 +2004,57 @@
     text-decoration-color: var(--gold-light);
   }
 
-  /* ── Bio expand — desktop: unrestricted ──────────────────── */
-  .pd-bio-wrap {
-    position: relative;
-    width: 100%;
-    margin-bottom: 1.5rem;
-  }
-
-  .bio-expand-btn { display: none; }
-      
 
 
+    /* ══════════════════════════════════════════════════════════
+    RESPONSIVE — single consolidated block
+    ══════════════════════════════════════════════════════════ */
+    /* ── People: two-column on wide screens ─────────────────── */
+    @media (min-width: 1100px) {
+      .people-section {
+        display: flex;
+        flex-direction: column;
+      }
 
-  /* ══════════════════════════════════════════════════════════
-  RESPONSIVE — single consolidated block
-  ══════════════════════════════════════════════════════════ */
-  /* ── People: two-column on wide screens ─────────────────── */
-  @media (min-width: 1100px) {
-    .people-section {
-      display: flex;
-      flex-direction: column;
+      /* Header stays full width */
+      .people-header { flex-shrink: 0; }
+
+      /* Strip + detail side by side */
+      .people-body {
+        display: flex;
+        flex-direction: row;
+        gap: 3rem;
+        padding: 0 4rem 4rem;
+        align-items: flex-start;
+        flex: 1;
+        padding-right: calc(var(--section-right-margin) + 4rem); /* ← clears nav */
+      }
+
+      /* Vertical strip on left */
+      .people-strip-outer {
+        flex: 0 0 160px;
+        padding: 0;
+      }
+
+      .people-strip {
+        flex-direction: column;
+        overflow-y: auto;
+        overflow-x: visible;
+        scroll-snap-type: y mandatory;
+        padding-bottom: 0;
+        padding-right: 0.5rem;
+        max-height: 60vh;
+        gap: 0.75rem;
+      }
+
+      /* Detail card fills remaining space */
+      .people-detail {
+        flex: 1;
+        padding: 0;
+      }
+
+      .pd-card { max-width: none; }
     }
-
-    /* Header stays full width */
-    .people-header { flex-shrink: 0; }
-
-    /* Strip + detail side by side */
-    .people-body {
-      display: flex;
-      flex-direction: row;
-      gap: 3rem;
-      padding: 0 4rem 4rem;
-      align-items: flex-start;
-      flex: 1;
-      padding-right: calc(var(--section-right-margin) + 4rem); /* ← clears nav */
-    }
-
-    /* Vertical strip on left */
-    .people-strip-outer {
-      flex: 0 0 160px;
-      padding: 0;
-    }
-
-    .people-strip {
-      flex-direction: column;
-      overflow-y: auto;
-      overflow-x: visible;
-      scroll-snap-type: y mandatory;
-      padding-bottom: 0;
-      padding-right: 0.5rem;
-      max-height: 60vh;
-      gap: 0.75rem;
-    }
-
-    /* Detail card fills remaining space */
-    .people-detail {
-      flex: 1;
-      padding: 0;
-    }
-
-    .pd-card { max-width: none; }
-  }
 
 
     @media (max-width: 1100px) {
@@ -1888,7 +2178,7 @@
       .pd-card { margin-top: 55px; }
 
       .pd-name  { font-size: 1.6rem; }
-      .pd-bio   { max-height: none; }  
+      .pd-bio   { max-height: none; }      
 
       .people-detail-photo img  { width: 140px; height: 140px; }
       .pd-name                  { font-size: 1.7rem; }
@@ -1902,58 +2192,7 @@
       .footer-top     { flex-direction: column; gap: 1.5rem; }
       .footer-nav     { gap: 1rem; }
 
-      .pd-bio-wrap {
-        max-height: 145px;
-        overflow: hidden;
-        transition: max-height 0.4s ease;
       }
-
-      /* Fade gradient over bottom of truncated text */
-      .pd-bio-wrap:not(.expanded)::after {
-        content: '';
-        position: absolute;
-        bottom: 0; left: 0; right: 0;
-        height: 64px;
-        background: linear-gradient(
-          to bottom,
-          transparent,
-          var(--cream) 90%
-        );
-        pointer-events: none;
-      }
-
-      /* Expanded state — remove height cap and fade */
-      .pd-bio-wrap.expanded {
-        max-height: 1200px;
-      }
-
-      /* Show expand button on mobile */
-      .bio-expand-btn {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 100%;
-        background: none;
-        border: none;
-        cursor: pointer;
-        padding: 0.25rem 0 0.5rem;
-        color: var(--green-light);
-        transition: color 0.2s;
-        margin-bottom: 1rem;
-      }
-
-      .bio-expand-btn:hover { color: var(--green-deep); }
-
-      /* Rotate arrow when expanded */
-      .bio-expand-btn svg {
-        transition: transform 0.35s ease;
-      }
-
-      .bio-expand-btn.expanded svg {
-        transform: rotate(180deg);
-      }      
-
-    }
     /* ── NEW: mobile-specific fixes ─────────────────────────── */
     @media (max-width: 600px) {
       html { scroll-snap-type: none; }  /* prevents gap/jump between sections */
@@ -2025,7 +2264,7 @@
 
   <!-- Mobile header (hidden on desktop) -->
   <header id="mobile-header">
-    <span class="mobile-site-name">Ecosystem Resilience Cooperative</span>
+    <span class="mobile-site-name">Ecosystem Resilience Collaborative</span>
     <button id="mobile-menu-btn" aria-label="Menu">☰</button>
   </header>
 
@@ -2042,7 +2281,6 @@
   <!-- ══════════════════════════════════════════════════════════
        FLOATING SECTION NAV
   ══════════════════════════════════════════════════════════ -->
-  <!--
   <nav id="section-nav" aria-label="Page sections">
     <a class="nav-item" href="#" id="nav-home" onclick="window.scrollTo({top:0,behavior:'smooth'});return false;">
       <span class="nav-label">Home</span>
@@ -2072,6 +2310,12 @@
         <div class="nav-dot"></div>
       </div>
     </a>
+    <a class="nav-item" href="#photos" data-section="photos">
+      <span class="nav-label">Photos</span>
+      <div class="nav-dot-wrap">
+        <div class="nav-dot"></div>
+      </div>
+    </a>
     <a class="nav-item" href="#blog" data-section="blog">
       <span class="nav-label">Blog</span>
       <div class="nav-dot-wrap">
@@ -2085,31 +2329,16 @@
       </div>
     </a>
   </nav>
--->
+
 
 
   <!-- ══════════════════════════════════════════════════════════
        HERO
   ══════════════════════════════════════════════════════════ -->
-  <nav class="hero-nav transparent" id="hero-nav">
-    <span class="site-name">ecosystem resilience cooperative</span>
-    <button class="nav-hamburger" id="nav-hamburger" aria-label="Open menu">
-      <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="2"
-        stroke-linecap="round">
-        <line x1="3" y1="6" x2="19" y2="6" />
-        <line x1="3" y1="11" x2="19" y2="11" />
-        <line x1="3" y1="16" x2="19" y2="16" />
-      </svg>
-    </button>
+  <nav class="hero-nav">
+    <span class="site-name">Ecosystem Resilience Collaborative</span>
+    <!--<a href="mailto:napovak@gmail.com">napovak@gmail.com</a>-->
   </nav>
-  
-  <div class="nav-dropdown" id="nav-dropdown">
-    <a class="nav-drop-link" href="#about">About</a>
-    <a class="nav-drop-link" href="#people">People</a>
-    <a class="nav-drop-link" href="#news">News</a>
-    <a class="nav-drop-link" href="#blog">Blog</a>
-    <a class="nav-drop-link" href="#tools">Tools</a>
-  </div>
   
   <section class="hero">
     <div class="hero-bg-img">
@@ -2122,7 +2351,7 @@
       <p class="hero-eyebrow">Landscape ecology · Decision support · Wildfire</p>
       <h1 class="hero-title">
         Ecosystem Resilience<br> <!--&amp; -->
-        <em>Cooperative</em>
+        <em>Collaborative</em>
       </h1>
       <p class="hero-desc">
         Quantifying landscape resilience to disturbances and ongoing climate change.
@@ -2154,7 +2383,7 @@
 
       <div class="about-text">
         <p>
-          The Ecosystem Resilience Cooperative represents a group of ecological
+          The Ecosystem Resilience Collaborative represents a group of ecological
           researchers whose research is joined by the common goal of evaluating social
           and ecological resilience across large landscapes using quantitative methods
           and how climate change may impact resilient properties over time.
@@ -2174,7 +2403,7 @@
     <section id="people" class="people-section">
     
       <div class="people-header">
-        <p class="people-eyebrow section-animate">Ecosystem Resilience Cooperative</p>
+        <p class="people-eyebrow section-animate">Ecosystem Resilience Collaborative</p>
         <h2 class="people-title section-animate delay-1">People</h2>
       </div>
       <div class="people-body">
@@ -2194,23 +2423,11 @@
                 <h3 id="pd-name" class="pd-name"></h3>
                 <p id="pd-title" class="pd-title"></p>
                 <p id="pd-affil" class="pd-affil"></p>
-                <div id="pd-links" class="pd-links">
-                </div>
+                <div id="pd-links" class="pd-links"></div>
               </div>
             </div>
-            <div class="pd-divider">
-            </div>
-            <div class="pd-bio-wrap">
-              <div id="pd-bio" class="pd-bio">
-              </div>
-            </div>
-            <button class="bio-expand-btn" id="bio-expand-btn" aria-label="Read more">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.5"
-                stroke-linecap="round">
-                <polyline points="4,8 10,14 16,8" />
-              </svg>   
-            </button> 
-          </div>
+            <div class="pd-divider"></div>
+            <div id="pd-bio" class="pd-bio"></div>    </div>
           
         </div>
 
@@ -2241,7 +2458,126 @@
 
 
       <!-- ══════════════════════════════════════════════════════════
-            4. BLOG — floating glass
+            4. PHOTOS — dark glass
+       ══════════════════════════════════════════════════════════ -->
+      <section class="page-section" id="photos">
+        <div class="section-stack photos-stack">
+          <div class="stack-header">
+            <p class="section-eyebrow">Field &amp; lab</p>
+            <h2 class="section-title">Photos</h2>
+            <p class="section-sub" style="color:rgba(255,255,255,0.55);">From the landscapes, field sites, and lab.</p>
+          </div>
+
+          <div class="photos-body">
+
+            <!-- ── Collapsed strip carousel ──────────────────── -->
+            <div class="photos-strip" id="photos-strip">
+              <div class="photo-strip-item">
+                <div class="photo-frame-erc">
+                  <img src="assets/hamakua.jpg" alt="Hamakua coast waterfall">
+                </div>
+              </div>
+              <div class="photo-strip-item">
+                <div class="photo-frame-erc">
+                  <img src="assets/washington.jpeg" alt="Washington forest fire">
+                </div>
+              </div>
+              <div class="photo-strip-item">
+                <div class="photo-frame-erc">
+                  <img src="assets/Babeldaob-mosaic.jpg" alt="Babeldaob island">
+                </div>
+              </div>
+              <div class="photo-strip-item">
+                <div class="photo-frame-erc">
+                  <img src="assets/tahoe.jpg" alt="Tahoe Sierra Nevada">
+                </div>
+              </div>
+              <div class="photo-strip-item">
+                <div class="photo-frame-erc">
+                  <img src="assets/bw_burn.jpg" alt="Black and white burn">
+                </div>
+              </div>
+              <div class="photo-strip-item">
+                <div class="photo-frame-erc">
+                  <img src="assets/wildfire-on-mountain_1600.jpg" alt="Wildfire on mountain">
+                </div>
+              </div>
+            </div>
+
+            <!-- ── Expanded bento grid ────────────────────────── -->
+            <div class="photos-bento" id="photos-bento">
+              <div class="bento-grid-erc">
+
+                <div class="bento-cell span-wide">
+                  <div class="photo-frame-erc">
+                    <img src="assets/wildfire-on-mountain_1600.jpg" alt="Wildfire panorama">
+                  </div>
+                </div>
+
+                <div class="bento-cell span-tall">
+                  <div class="photo-frame-erc">
+                    <img src="assets/hamakua.jpg" alt="Hamakua waterfall">
+                  </div>
+                </div>
+
+                <div class="bento-cell">
+                  <div class="photo-frame-erc">
+                    <img src="assets/tahoe.jpg" alt="Tahoe Sierra">
+                  </div>
+                </div>
+
+                <div class="bento-cell">
+                  <div class="photo-frame-erc">
+                    <img src="assets/bw_burn.jpg" alt="Burn scar">
+                  </div>
+                </div>
+
+                <div class="bento-cell span-wide">
+                  <div class="photo-frame-erc">
+                    <img src="assets/Babeldaob-mosaic.jpg" alt="Babeldaob landscape">
+                  </div>
+                </div>
+
+                <div class="bento-cell span-tall">
+                  <div class="photo-frame-erc">
+                    <img src="assets/washington.jpeg" alt="Washington fire">
+                  </div>
+                </div>
+
+                <div class="bento-cell">
+                  <div class="photo-frame-erc">
+                    <img src="assets/hamakua.jpg" alt="Forest canopy">
+                  </div>
+                </div>
+
+                <div class="bento-cell">
+                  <div class="photo-frame-erc">
+                    <img src="assets/tahoe.jpg" alt="Sierra Nevada">
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- ── Toggle button ──────────────────────────────── -->
+            <div class="photos-toggle">
+              <button class="photos-expand-btn" id="photos-toggle-btn"
+                      onclick="togglePhotos()" aria-label="Expand photo grid">
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none"
+                     stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                  <polyline points="3,6 9,12 15,6"/>
+                </svg>
+              </button>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+
+
+      <!-- ══════════════════════════════════════════════════════════
+            5. BLOG — floating glass
        ══════════════════════════════════════════════════════════ -->
       <section class="page-section" id="blog">
         <div class="section-stack">
@@ -2434,7 +2770,7 @@
   <footer class="footer-section">
     <div class="footer-top">
       <div class="footer-brand">
-        <p class="footer-name">Ecosystem Resilience Cooperative</p>
+        <p class="footer-name">Ecosystem Resilience Collaborative</p>
         <p class="footer-tagline">Landscape ecology · Decision support · Wildfire</p>
       </div>
       <nav class="footer-nav" aria-label="Footer navigation">
@@ -2447,7 +2783,7 @@
     </div>
     <div class="footer-rule"></div>
     <div class="footer-bottom">
-      <p>© 2026 Ecosystem Resilience Cooperative
+      <p>© 2026 Ecosystem Resilience Collaborative
         &nbsp;·&nbsp;
         <a href="http://northcoastxy.com">northcoastxy.com</a>
       </p>
@@ -2459,28 +2795,6 @@
        SCRIPTS
   ══════════════════════════════════════════════════════════ -->
 <script>
-
-
-  function initBioExpand() {
-    const wrap = document.getElementById('pd-bio')?.parentElement;
-    const btn = document.getElementById('bio-expand-btn');
-    if (!wrap || !btn) return;
-
-    // Only activate on mobile
-    if (window.innerWidth > 900) return;
-
-    const MAX_H = 145; // must match the CSS max-height value
-
-    // Hide button if bio isn't actually overflowing
-    const overflows = wrap.scrollHeight > MAX_H + 4;
-    btn.style.visibility = overflows ? 'visible' : 'hidden';
-
-    btn.onclick = () => {
-      const expanded = wrap.classList.toggle('expanded');
-      btn.classList.toggle('expanded', expanded);
-    };
-  }
-
   // ── Prevent scroll restoration and URL fragment jumps ──────
   // ── Prevent scroll restoration ─────────────────────────────
   if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
@@ -2492,7 +2806,9 @@
   const hero = document.querySelector('.hero');
   const heroContent = document.querySelector('.hero-content');
   const heroNav = document.querySelector('.hero-nav');
-
+  const navEl = document.getElementById('section-nav');
+  const navHome = document.getElementById('nav-home');
+  const navItems = document.querySelectorAll('.nav-item[data-section]');
   const sections = document.querySelectorAll('.page-section[id], .people-section[id], .news-section[id]');
   const peopleSect = document.getElementById('people');   // ← must be before updateNavState
   const heroBg2 = document.getElementById('hero-bg-2');
@@ -2597,15 +2913,6 @@
           ${getLinkIcon(l.label)}
         </a>`
               ).join('');
-
-      // Reset expand state for new person
-      const wrap = document.getElementById('pd-bio')?.parentElement;
-      const btn = document.getElementById('bio-expand-btn');
-      wrap?.classList.remove('expanded');
-      btn?.classList.remove('expanded');
-
-      // Re-init after content loads (needs a tick for scrollHeight to update)
-      requestAnimationFrame(initBioExpand);              
     }
 
     function buildNews(NEWS) {
@@ -2630,31 +2937,49 @@
     }
 
 
-    // ── Hamburger menu ──────────────────────────────────────────
-    const hamburger = document.getElementById('nav-hamburger');
-    const dropdown = document.getElementById('nav-dropdown');
 
-    hamburger?.addEventListener('click', e => {
-      e.stopPropagation();
-      dropdown?.classList.toggle('open');
-      // Animate to X when open
-      const lines = hamburger.querySelectorAll('line');
-      const isOpen = dropdown?.classList.contains('open');
-      hamburger.style.opacity = isOpen ? '1' : '';
+
+  // ── Nav state ──────────────────────────────────────────────
+  function updateNavState() {
+    const scrollY = window.scrollY;
+    const viewportH = window.innerHeight;
+    const midY = viewportH * 0.5;
+
+    const toolsSect = document.getElementById('tools');
+    const newsSect = document.getElementById('news');
+
+    const isOver = el => {
+      if (!el) return false;
+      const r = el.getBoundingClientRect();
+      return r.top < midY && r.bottom > midY;
+    };
+
+    const overLight = isOver(peopleSect) || isOver(toolsSect);
+    const overDark = isOver(newsSect);
+
+    navEl?.classList.toggle('on-light', overLight);
+    navEl?.classList.toggle('on-dark', overDark && !overLight);
+
+    if (scrollY < viewportH * 0.5) {
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      navHome?.classList.add('active');
+      return;
+    }
+
+    let activeSection = null;
+    sections.forEach(section => {
+      const rect = section.getBoundingClientRect();
+      if (rect.top < viewportH * 0.6 && rect.bottom > 0) activeSection = section;
     });
 
-    // Close on outside click
-    document.addEventListener('click', () => {
-      dropdown?.classList.remove('open');
-    });
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    if (activeSection) {
+      document.querySelector(`.nav-item[data-section="${activeSection.id}"]`)?.classList.add('active');
+    }
+  }
 
-    // Close when a link is clicked
-    document.querySelectorAll('.nav-drop-link').forEach(link => {
-      link.addEventListener('click', () => {
-        dropdown?.classList.remove('open');
-      });
-    });
-
+  window.addEventListener('scroll', updateNavState, { passive: true });
+  updateNavState(); // initial call — peopleSect is now defined above
 
   // ── Mobile menu ────────────────────────────────────────────
   const mobileMenuBtn = document.getElementById('mobile-menu-btn');
@@ -2868,7 +3193,22 @@
 
 
   // Call after animObserver is defined
-    loadData();
+    // ── Photos section toggle ──────────────────────────────────
+  function togglePhotos() {
+    const drawer = document.getElementById('photos-bento');
+    const btn    = document.getElementById('photos-toggle-btn');
+    if (!drawer || !btn) return;
+    const opening = !drawer.classList.contains('open');
+    drawer.classList.toggle('open');
+    btn.classList.toggle('expanded');
+    if (opening) {
+      setTimeout(() => {
+        drawer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }, 350);
+    }
+  }
+
+
 
   // ── Responsive carousel layout ─────────────────────────────
   function updateCarouselLayout() {
@@ -3042,7 +3382,7 @@
     // ── Size + initial view ───────────────────────────────
     globe.width(container.offsetWidth);
     globe.height(container.offsetHeight);
-    globe.pointOfView({ lat: 30, lng: -122, altitude: getAltitude() }, 0);
+    globe.pointOfView({ lat: 15, lng: -155, altitude: getAltitude() }, 0);
     globe.controls().enableZoom = false;
 
     // Track current altitude for buttons
@@ -3091,43 +3431,27 @@
     // ── Responsive: update size AND zoom on resize ────────
     const shadow = document.getElementById('globe-shadow');
 
-    // Shadow scales with both container size AND zoom level (altitude)
-    function updateShadow() {
-      if (!shadow) return;
-      const size = Math.min(container.offsetWidth, container.offsetHeight);
-      if (size === 0) return;
-      // Globe fills more of the container at lower altitudes
-      // At alt=2.2 → ~75% of size; scales inversely with altitude
-      const fraction = 1.2 / (currentAltitude + 0.8);
-      const w = Math.round(size * Math.min(fraction, 0.95) * 2.15);
-      shadow.style.width = w + 'px';
-    }
-
     const ro = new ResizeObserver(() => {
       const w = container.offsetWidth;
       const h = container.offsetHeight;
       globe.width(w).height(h);
       globe.pointOfView({ altitude: getAltitude() }, 600);
-      updateShadow();
+
+      // Shadow = ~80% of globe diameter
+      if (shadow) {
+        const diam = Math.min(w, h) * 0.8;
+        shadow.style.width = `${diam}px`;
+      }
     });
     ro.observe(container);
-    setTimeout(updateShadow, 500); // fire after globe textures load
 
 
 
     // ── Wire up zoom buttons (already in HTML) ────────────────
     const zoomIn  = document.getElementById('globe-zoom-in');
     const zoomOut = document.getElementById('globe-zoom-out');
-    if (zoomIn)  zoomIn.addEventListener('click',  () => {
-      currentAltitude = Math.max(0.8, currentAltitude * 0.72);
-      globe.pointOfView({ altitude: currentAltitude }, 400);
-      updateShadow();
-    });
-    if (zoomOut) zoomOut.addEventListener('click', () => {
-      currentAltitude = Math.min(5.5, currentAltitude * 1.38);
-      globe.pointOfView({ altitude: currentAltitude }, 400);
-      updateShadow();
-    });
+    if (zoomIn)  zoomIn.addEventListener('click',  () => { currentAltitude = Math.max(0.8, currentAltitude * 0.72);  globe.pointOfView({ altitude: currentAltitude }, 400); });
+    if (zoomOut) zoomOut.addEventListener('click', () => { currentAltitude = Math.min(5.5, currentAltitude * 1.38); globe.pointOfView({ altitude: currentAltitude }, 400); });
 
     // ── Ctrl+scroll zoom ──────────────────────────────────────
     container.addEventListener('wheel', e => {
@@ -3136,7 +3460,6 @@
         const delta = e.deltaY > 0 ? 1.15 : 0.87;
         currentAltitude = Math.min(5.5, Math.max(0.8, currentAltitude * delta));
         globe.pointOfView({ altitude: currentAltitude }, 200);
-        updateShadow();
       }
     }, { passive: false });
 
