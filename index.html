@@ -1236,19 +1236,7 @@ PHOTOS SECTION
   #photos .section-title   { color: rgba(255,255,255,0.92); }
   #photos .section-sub     { color: rgba(255,255,255,0.5); }
 
-  .photos-strip {
-    display: flex; gap: 14px;
-    overflow-x: auto; scroll-snap-type: x mandatory;
-    scroll-behavior: smooth; padding-bottom: 6px;
-    scrollbar-width: none; cursor: grab;
-  }
-  .photos-strip:active { cursor: grabbing; }
-  .photos-strip::-webkit-scrollbar { display: none; }
 
-  .photo-strip-item {
-    flex: 0 0 300px; height: 210px;
-    scroll-snap-align: start; flex-shrink: 0;
-  }
 
   .photo-frame-erc {
     position: relative; border-radius: 14px; overflow: hidden;
@@ -1276,11 +1264,28 @@ PHOTOS SECTION
   .photo-frame-erc:hover img { transform: scale(1.04); filter: brightness(1.08) contrast(1.02); }
   .photo-frame-erc:hover::after { left: 150%; transition: left 0.85s ease-in-out; }
 
-  .photos-bento {
-    max-height: 0; overflow: hidden;
-    transition: max-height 0.75s cubic-bezier(0.4,0,0.2,1);
+  /* Collapsed bento — shows ~2 rows */
+  .photos-bento-wrap {
+    position: relative;
+    max-height: 460px;
+    overflow: hidden;
+    transition: max-height 0.7s cubic-bezier(0.4,0,0.2,1);
   }
-  .photos-bento.open { max-height: 3000px; padding-top: 14px; }
+
+  /* Fade at bottom when collapsed */
+  .photos-bento-wrap:not(.expanded)::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 80px;
+    background: linear-gradient(to bottom, transparent, rgba(8,6,4,0.85));
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .photos-bento-wrap.expanded { max-height: 3000px; }
+
+  .photos-bento-wrap.open { max-height: 3000px; padding-top: 14px; }
 
   .bento-grid-erc {
     display: grid;
@@ -1800,6 +1805,53 @@ PHOTOS SECTION
     .pd-bio p+p {
       margin-top: 0.75rem;
     }
+
+/* ── Bio expand (mobile only) ───────────────────────────── */
+.pd-bio-wrap {
+  position: relative;
+  width: 100%;
+  margin-bottom: 1.5rem;
+}
+
+.bio-expand-btn { display: none; }
+
+@media (max-width: 900px) {
+  .pd-bio-wrap {
+    max-height: 145px;
+    overflow: hidden;
+    transition: max-height 0.4s ease;
+    margin-bottom: 0;
+  }
+
+  .pd-bio-wrap:not(.expanded)::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 64px;
+    background: linear-gradient(to bottom, transparent, var(--cream) 90%);
+    pointer-events: none;
+  }
+
+  .pd-bio-wrap.expanded { max-height: 1200px; }
+
+  .bio-expand-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.25rem 0 0.5rem;
+    color: var(--green-light);
+    transition: color 0.2s;
+    margin-bottom: 1rem;
+  }
+
+  .bio-expand-btn:hover { color: var(--green-deep); }
+  .bio-expand-btn svg   { transition: transform 0.35s ease; }
+  .bio-expand-btn.expanded svg { transform: rotate(180deg); }
+}    
 
     /* Neumorphic link buttons — left aligned */
     .pd-link {
@@ -2532,7 +2584,15 @@ PHOTOS SECTION
             </div>
           </div>
           <div class="pd-divider"></div>
-          <div id="pd-bio" class="pd-bio"></div>
+          <div class="pd-bio-wrap">
+            <div id="pd-bio" class="pd-bio"></div>
+          </div>
+          <button class="bio-expand-btn" id="bio-expand-btn" aria-label="Read more">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.5"
+              stroke-linecap="round">
+              <polyline points="4,8 10,14 16,8" />
+            </svg> 
+          </button>
         </div>
 
       </div>
@@ -2574,28 +2634,9 @@ PHOTOS SECTION
         <p class="section-sub">From the landscapes, field sites, and lab.</p>
       </div>
   
-      <div class="photos-strip">
-        <div class="photo-strip-item">
-          <div class="photo-frame-erc"><img src="assets/hamakua.jpg" alt="Hamakua"></div>
-        </div>
-        <div class="photo-strip-item">
-          <div class="photo-frame-erc"><img src="assets/washington.jpeg" alt="Washington"></div>
-        </div>
-        <div class="photo-strip-item">
-          <div class="photo-frame-erc"><img src="assets/Babeldaob-mosaic.jpg" alt="Babeldaob"></div>
-        </div>
-        <div class="photo-strip-item">
-          <div class="photo-frame-erc"><img src="assets/tahoe.jpg" alt="Tahoe"></div>
-        </div>
-        <div class="photo-strip-item">
-          <div class="photo-frame-erc"><img src="assets/bw_burn.jpg" alt="Burn"></div>
-        </div>
-        <div class="photo-strip-item">
-          <div class="photo-frame-erc"><img src="assets/wildfire-on-mountain_1600.jpg" alt="Wildfire"></div>
-        </div>
-      </div>
+
   
-      <div class="photos-bento" id="photos-bento">
+      <div class="photos-bento-wrap-wrap" id="photos-bento-wrap-wrap">
         <div class="bento-grid-erc">
           <div class="bento-cell span-wide">
             <div class="photo-frame-erc"><img src="assets/wildfire-on-mountain_1600.jpg" alt="Wildfire panorama"></div>
@@ -2623,8 +2664,8 @@ PHOTOS SECTION
           </div>
         </div>
       </div>
-  
-      <div class="photos-toggle">
+      
+      <div class="photos-toggle" id="photos-toggle-area">
         <button class="photos-expand-btn" id="photos-toggle-btn" onclick="togglePhotos()" aria-label="Expand photo grid">
           <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2.5"
             stroke-linecap="round">
@@ -2632,6 +2673,7 @@ PHOTOS SECTION
           </svg>
         </button>
       </div>
+
     </div>
   </section>
 
@@ -2963,20 +3005,39 @@ PHOTOS SECTION
       </svg>`;
     }
 
-    function showPerson(idx, PEOPLE) {
-      const p = PEOPLE[idx];
-      document.getElementById('pd-photo').src = p.photo;
-      document.getElementById('pd-photo').alt = p.name;
-      document.getElementById('pd-name').textContent = p.name;
-      document.getElementById('pd-title').textContent = p.title;
-      document.getElementById('pd-affil').textContent = p.affiliation;
-      document.getElementById('pd-bio').innerHTML = p.bio;
-      document.getElementById('pd-links').innerHTML = p.links.map(l =>
-        `<a class="pd-link" href="${l.url}" target="_blank" rel="noopener" title="${l.label}">
-          ${getLinkIcon(l.label)}
-        </a>`
-      ).join('');
-    }
+  function showPerson(idx, PEOPLE) {
+    const p = PEOPLE[idx];
+    document.getElementById('pd-photo').src = p.photo;
+    document.getElementById('pd-photo').alt = p.name;
+    document.getElementById('pd-name').textContent = p.name;
+    document.getElementById('pd-title').textContent = p.title;
+    document.getElementById('pd-affil').textContent = p.affiliation;
+    document.getElementById('pd-bio').innerHTML = p.bio;
+    document.getElementById('pd-links').innerHTML = p.links.map(l =>
+      `<a class="pd-link" href="${l.url}" target="_blank" rel="noopener" title="${l.label}">
+      ${getLinkIcon(l.label)}
+    </a>`
+    ).join('');
+
+    // Reset + re-init bio expand on every person change
+    const wrap = document.getElementById('pd-bio')?.parentElement;
+    const btn = document.getElementById('bio-expand-btn');
+    wrap?.classList.remove('expanded');
+    btn?.classList.remove('expanded');
+    requestAnimationFrame(initBioExpand);
+  }
+
+  function initBioExpand() {
+    const wrap = document.getElementById('pd-bio')?.parentElement;
+    const btn = document.getElementById('bio-expand-btn');
+    if (!wrap || !btn || window.innerWidth > 900) return;
+    const MAX_H = 145; // must match CSS max-height
+    btn.style.visibility = wrap.scrollHeight > MAX_H + 4 ? 'visible' : 'hidden';
+    btn.onclick = () => {
+      const expanded = wrap.classList.toggle('expanded');
+      btn.classList.toggle('expanded', expanded);
+    };
+  }
 
     function buildNews(NEWS) {
       const grid = document.getElementById('news-grid');
@@ -3236,16 +3297,23 @@ PHOTOS SECTION
       bgObserver.observe(peopleSect);
     }
 
-    function togglePhotos() {
-        const drawer = document.getElementById('photos-bento');
+      function togglePhotos() {
+        const wrap = document.getElementById('photos-bento-wrap');
         const btn = document.getElementById('photos-toggle-btn');
-        if (!drawer || !btn) return;
-        const opening = !drawer.classList.contains('open');
-        drawer.classList.toggle('open');
+        if (!wrap || !btn) return;
+        wrap.classList.toggle('expanded');
         btn.classList.toggle('expanded');
-        if (opening) setTimeout(() => drawer.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 350);
       }
 
+      function initPhotosExpand() {
+        const wrap = document.getElementById('photos-bento-wrap');
+        const toggleArea = document.getElementById('photos-toggle-area');
+        if (!wrap || !toggleArea) return;
+        // Only show button if bento content exceeds collapsed height
+        toggleArea.style.display = wrap.scrollHeight > 470 ? 'block' : 'none';
+      }
+
+      window.addEventListener('load', initPhotosExpand);
     // Call after animObserver is defined
     loadData();
 
