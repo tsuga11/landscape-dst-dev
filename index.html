@@ -3314,10 +3314,6 @@ PHOTOS SECTION
       btn.classList.toggle('expanded');
     }
 
-    // Call after DOM renders, and again on resize
-    document.addEventListener('DOMContentLoaded', () => setTimeout(initPhotosExpand, 150));
-    window.addEventListener('resize', initPhotosExpand, { passive: true });
-
 
     // Call after animObserver is defined
     loadData();
