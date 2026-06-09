@@ -1285,8 +1285,6 @@ PHOTOS SECTION
 
   .photos-bento-wrap.expanded { max-height: 3000px; }
 
-  .photos-bento-wrap.open { max-height: 3000px; padding-top: 14px; }
-
   .bento-grid-erc {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -2642,7 +2640,7 @@ PHOTOS SECTION
   
 
   
-      <div class="photos-bento-wrap-wrap" id="photos-bento-wrap-wrap">
+      <div class="photos-bento-wrap" id="photos-bento-wrap">
         <div class="bento-grid-erc">
           <div class="bento-cell span-wide">
             <div class="photo-frame-erc"><img src="assets/wildfire-on-mountain_1600.jpg" alt="Wildfire panorama"></div>
@@ -3308,22 +3306,13 @@ PHOTOS SECTION
     bgObserver.observe(peopleSect);
   }
 
-      function togglePhotos() {
-        const wrap = document.getElementById('photos-bento-wrap');
-        const btn = document.getElementById('photos-toggle-btn');
-        if (!wrap || !btn) return;
-        wrap.classList.toggle('expanded');
-        btn.classList.toggle('expanded');
-      }
-
-      function initPhotosExpand() {
-        const wrap = document.getElementById('photos-bento-wrap');
-        const toggleArea = document.getElementById('photos-toggle-area');
-        if (!wrap || !toggleArea) return;
-        // Show button only if content actually overflows the collapsed box
-        toggleArea.style.display = wrap.scrollHeight > wrap.clientHeight + 10 ? 'block' : 'none';
-      }
-
+    function togglePhotos() {
+      const wrap = document.getElementById('photos-bento-wrap');
+      const btn  = document.getElementById('photos-toggle-btn');
+      if (!wrap || !btn) return;
+      wrap.classList.toggle('expanded');
+      btn.classList.toggle('expanded');
+    }
 
     // Call after DOM renders, and again on resize
     document.addEventListener('DOMContentLoaded', () => setTimeout(initPhotosExpand, 150));
