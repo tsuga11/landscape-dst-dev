@@ -2906,8 +2906,8 @@ PHOTOS SECTION
     // ── Prevent scroll restoration ─────────────────────────────
     if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
     if (window.location.hash) history.replaceState(null, null, window.location.pathname);
-    document.addEventListener('DOMContentLoaded', () => window.scrollTo(0, 0));
-    window.addEventListener('load', () => window.scrollTo(0, 0));
+    //document.addEventListener('DOMContentLoaded', () => window.scrollTo(0, 0));
+    //window.addEventListener('load', () => window.scrollTo(0, 0));
 
     // ── DOM references — ALL declared first ────────────────────
     const hero = document.querySelector('.hero');
@@ -3283,19 +3283,24 @@ PHOTOS SECTION
     document.querySelectorAll('.section-animate').forEach(el => animObserver.observe(el));
 
     // ── Background crossfade ───────────────────────────────────
-    if (heroBg2 && peopleSect) {
-      const bgObserver = new IntersectionObserver(entries => {
-        entries.forEach(entry => {
-          if (!entry.isIntersecting && entry.boundingClientRect.top < 0) {
-            heroBg2.classList.add('visible');
-          } else {
-            heroBg2.classList.remove('visible');
-          }
-        });
-      }, { threshold: 0 });
+  if (heroBg2 && peopleSect) {
+    const bgObserver = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        // Don't switch bg if we're still near the top
+        if (window.scrollY < 100) {
+          heroBg2.classList.remove('visible');
+          return;
+        }
+        if (!entry.isIntersecting && entry.boundingClientRect.top < 0) {
+          heroBg2.classList.add('visible');
+        } else {
+          heroBg2.classList.remove('visible');
+        }
+      });
+    }, { threshold: 0 });
 
-      bgObserver.observe(peopleSect);
-    }
+    bgObserver.observe(peopleSect);
+  }
 
       function togglePhotos() {
         const wrap = document.getElementById('photos-bento-wrap');
