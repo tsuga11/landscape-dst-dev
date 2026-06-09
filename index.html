@@ -1278,7 +1278,7 @@ PHOTOS SECTION
     position: absolute;
     bottom: 0; left: 0; right: 0;
     height: 80px;
-    background: linear-gradient(to bottom, transparent, rgba(8,6,4,0.85));
+    background: linear-gradient(to bottom, transparent, rgba(8,6,4,0.95));
     pointer-events: none;
     z-index: 1;
   }
@@ -1317,11 +1317,17 @@ PHOTOS SECTION
   @media (max-width: 900px) {
     .photo-strip-item { flex: 0 0 240px; height: 170px; }
     .bento-grid-erc { grid-template-columns: repeat(2,1fr); grid-auto-rows: 180px; }
+    .photos-bento-wrap {
+      max-height: 195px;  /* ~1 row at 180px + gap */
+    }
   }
   @media (max-width: 480px) {
     .bento-grid-erc { grid-template-columns: 1fr; grid-auto-rows: 200px; }
     .bento-cell.span-wide { grid-column: span 1; }
     .bento-cell.span-tall { grid-row: span 1; }
+    .photos-bento-wrap {
+      max-height: 215px;  /* ~1 row at 200px + gap */
+    }
   }    
 
 
@@ -3314,11 +3320,16 @@ PHOTOS SECTION
         const wrap = document.getElementById('photos-bento-wrap');
         const toggleArea = document.getElementById('photos-toggle-area');
         if (!wrap || !toggleArea) return;
-        // Only show button if bento content exceeds collapsed height
-        toggleArea.style.display = wrap.scrollHeight > 470 ? 'block' : 'none';
+        // Show button only if content actually overflows the collapsed box
+        toggleArea.style.display = wrap.scrollHeight > wrap.clientHeight + 10 ? 'block' : 'none';
       }
 
-      window.addEventListener('load', initPhotosExpand);
+
+    // Call after DOM renders, and again on resize
+    document.addEventListener('DOMContentLoaded', () => setTimeout(initPhotosExpand, 150));
+    window.addEventListener('resize', initPhotosExpand, { passive: true });
+
+
     // Call after animObserver is defined
     loadData();
 
