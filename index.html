@@ -673,6 +673,23 @@
     #blog .card-desc   { color: rgba(255, 255, 255, 0.58); }
     #blog .card-meta   { color: var(--gold); font-weight: 500; }
 
+    #blog {
+      background: #1a1a14;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+    }
+
+    #blog .section-eyebrow { color: var(--gold); }
+    #blog .section-title   { color: var(--cream); }
+    #blog .section-sub     { color: rgba(255, 255, 255, 0.5); }
+
+    /* Carousel dots on dark background */
+    #blog .carousel-dot {
+      background: rgba(255, 255, 255, 0.25);
+    }
+    #blog .carousel-dot.active {
+      background: var(--gold);
+    }    
 
     /* ══════════════════════════════════════════════════════════
     NEUMORPHIC BUTTONS
@@ -2137,6 +2154,7 @@
     <a href="#about" class="mobile-menu-item" onclick="closeMobileMenu()">About</a>
     <a href="#people" class="mobile-menu-item" onclick="closeMobileMenu()">People</a>
     <a href="#news" class="mobile-menu-item" onclick="closeMobileMenu()">News</a>
+    <a href="#photos" class="mobile-menu-item" onclick="closeMobileMenu()">Photos</a>
     <a href="#blog" class="mobile-menu-item" onclick="closeMobileMenu()">Blog</a>
     <a href="#tools" class="mobile-menu-item" onclick="closeMobileMenu()">Tools</a>
     </nav>
@@ -3020,7 +3038,7 @@
   // ── Interactive Globe ──────────────────────────────────────
   const GLOBE_POINTS = [
     {
-      lat: 19.89, lng: -155.25,
+      lat: 33.89, lng: -125.25,
       name: 'Hamakua Coast',
       region: "Hawai'i, USA",
       url: 'geographies/hamakua/index.html',
