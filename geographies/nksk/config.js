@@ -17,7 +17,7 @@
 
 // ── Your Cloudflare R2 public URL ────────────────────────────
 // Example: 'https://pub-abc123def456.r2.dev'
-const RELEASE_URL = 'https://YOUR_R2_BUCKET_URL_HERE';
+const RELEASE_URL = 'https://pub-79bd7cf474e04912a703cf917dd8855e.r2.dev';
 
 
 const CONFIG = {
