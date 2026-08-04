@@ -3315,6 +3315,35 @@ PHOTOS SECTION
       btn.classList.toggle('expanded');
     }
 
+  // ── Photo grid ─────────────────────────────────────────────
+  fetch('data/photos.json')
+    .then(r => r.json())
+    .then(photos => {
+      const grid = document.getElementById('bento-grid');
+
+      Promise.all(photos.map(src => new Promise(resolve => {
+        const img  = new Image();
+        img.onload = () => resolve({ src, w: img.naturalWidth, h: img.naturalHeight });
+        img.onerror = () => resolve({ src, w: 1, h: 1 });
+        img.src = src;
+      }))).then(measured => {
+        measured.forEach(({ src, w, h }) => {
+          const ratio = w / h;
+          let span = '';
+          if (ratio > 1.6)  span = 'span-wide';
+          else if (ratio < 0.7) span = 'span-tall';
+
+          const alt  = src.split('/').pop().replace(/\.[^.]+$/, '').replace(/[-_]/g, ' ');
+          const cell = document.createElement('div');
+          cell.className = `bento-cell ${span}`.trim();
+          cell.innerHTML = `<div class="photo-frame-erc">
+            <img src="${src}" alt="${alt}" loading="lazy">
+          </div>`;
+          grid.appendChild(cell);
+        });
+      });
+    });
+
 
     // Call after animObserver is defined
     loadData();
