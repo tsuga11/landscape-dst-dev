@@ -16,6 +16,7 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap"
     rel="stylesheet">
+  
   <style>
     *,
     *::before,
@@ -1097,6 +1098,240 @@
       color: var(--text-mid);
     }
 
+    /* ── Web tools — general-purpose, below the globe ───────── */
+    .webtools-block {
+      padding: 0 4rem 4rem;
+      padding-right: calc(var(--section-right-margin) + 3.5rem);
+    }
+
+    .webtools-rule {
+      width: 100%;
+      height: 1px;
+      background: rgba(27, 58, 47, 0.12);
+      margin-bottom: 2.5rem;
+    }
+
+    .webtools-header {
+      max-width: 680px;
+      margin-bottom: 1.75rem;
+    }
+
+    .webtools-header .section-eyebrow { margin-bottom: 0.5rem; }
+    .webtools-header .section-title   { margin-bottom: 0.75rem; }
+
+    .tools-section .webtools-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, 300px);
+      justify-content: start;
+      gap: 1.25rem;
+    }
+
+    .tools-section .webtools-grid .project-card {
+      width: 300px;
+      height: 460px;
+    }
+
+    @media (max-width: 900px) {
+      .tools-section .webtools-block { padding: 0 1.25rem 2.5rem; }
+      .tools-section .webtools-grid  { grid-template-columns: 1fr; }
+      .tools-section .webtools-grid .project-card { width: 100%; height: auto; }
+    }   
+
+
+    /* ══════════════════════════════════════════════════════════════
+       WEB TOOLS — APP LAUNCHER
+
+       Desktop: Mac-Dock-inspired magnification.
+       Mobile:  responsive app grid.
+
+       To turn the launcher OFF and restore the original cards,
+       uncomment the display:none !important line below.
+       ══════════════════════════════════════════════════════════════ */
+
+    .tools-launcher {
+      --icon-size: 82px;
+      --icon-gap: 12px;
+
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+
+      width: fit-content;
+      max-width: calc(100vw - 6rem);
+
+      margin: 2.75rem auto 3rem;
+      padding: 14px 18px 12px;
+
+      background: rgba(255, 255, 255, 0.42);
+      border: 1px solid rgba(27, 58, 47, 0.10);
+      border-radius: 18px;
+
+      box-shadow:
+        5px 7px 18px rgba(100, 85, 65, 0.18),
+        -4px -4px 12px rgba(255, 255, 255, 0.72);
+
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+
+      gap: var(--icon-gap);
+      min-height: 112px;
+
+      /*
+      display: none !important;
+      */
+    }
+
+    /* Original cards are hidden only while the launcher is active. */
+    .tools-section .webtools-grid.launcher-active {
+      display: none;
+    }
+
+    .tool-app {
+      position: relative;
+      width: var(--icon-size);
+      flex: 0 0 var(--icon-size);
+      text-decoration: none;
+      color: var(--green-deep);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transform-origin: bottom center;
+      transition: transform 180ms cubic-bezier(.2,.8,.2,1);
+    }
+
+    .tool-app-icon {
+      width: var(--icon-size);
+      height: var(--icon-size);
+      display: block;
+      object-fit: cover;
+      object-position: center;
+      border-radius: 15px;
+      background: #111820;
+      border: 1px solid rgba(255,255,255,.35);
+      box-shadow:
+        3px 4px 9px rgba(80, 70, 55, .25),
+        -2px -2px 6px rgba(255,255,255,.6);
+      transition:
+        box-shadow 180ms ease,
+        border-radius 180ms ease;
+    }
+
+    .tool-app-label {
+      position: absolute;
+      left: 50%;
+      bottom: calc(100% + 12px);
+      transform: translateX(-50%) translateY(5px);
+      white-space: nowrap;
+      padding: 5px 9px;
+      background: var(--green-deep);
+      color: white;
+      border-radius: 5px;
+      font-size: .68rem;
+      letter-spacing: .04em;
+      line-height: 1;
+      opacity: 0;
+      pointer-events: none;
+      box-shadow: 3px 4px 9px rgba(0,0,0,.22);
+      transition:
+        opacity 140ms ease,
+        transform 140ms ease;
+    }
+
+    .tool-app-status {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--gold);
+      border: 2px solid var(--cream);
+      z-index: 2;
+    }
+
+    .tool-app:hover {
+      transform: translateY(-8px) scale(1.18);
+      z-index: 10;
+    }
+
+    .tool-app:hover .tool-app-icon {
+      border-radius: 17px;
+      box-shadow:
+        6px 9px 18px rgba(70, 60, 45, .30),
+        -3px -3px 9px rgba(255,255,255,.75);
+    }
+
+    .tool-app:hover .tool-app-label {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .tool-app:focus-visible {
+      outline: 2px solid var(--gold);
+      outline-offset: 5px;
+      border-radius: 18px;
+    }
+
+    @media (max-width: 700px) {
+      .tools-launcher {
+        width: 100%;
+        max-width: none;
+        display: grid;
+        grid-template-columns: repeat(3, minmax(75px, 1fr));
+        gap: 1.5rem 1.1rem;
+        margin: 2rem 0 2.5rem;
+        padding: 1.5rem 1rem;
+        background: transparent;
+        border: none;
+        box-shadow: none;
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+      }
+
+      .tool-app {
+        width: 100%;
+        flex: none;
+        transform: none !important;
+      }
+
+      .tool-app-icon {
+        width: clamp(72px, 22vw, 100px);
+        height: clamp(72px, 22vw, 100px);
+        border-radius: 17px;
+      }
+
+      .tool-app-label {
+        position: static;
+        transform: none;
+        opacity: 1;
+        margin-top: .55rem;
+        padding: 0;
+        background: transparent;
+        color: var(--green-deep);
+        font-family: inherit;
+        font-size: .70rem;
+        line-height: 1.25;
+        white-space: normal;
+        text-align: center;
+        box-shadow: none;
+      }
+
+      .tool-app-status {
+        top: -4px;
+        right: calc(50% - 50px);
+      }
+
+      .tool-app:hover .tool-app-label {
+        transform: none;
+      }
+    }
+
+    @media (max-width: 400px) {
+      .tools-launcher {
+        grid-template-columns: repeat(2, minmax(90px, 1fr));
+        gap: 1.5rem;
+      }
+    }
 
 
 
@@ -1778,6 +2013,15 @@ PHOTOS SECTION
       margin-bottom: 0.1rem;
     }
 
+    .pd-role {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 0.1rem;
+    }    
+
     .pd-affil {
       font-size: 0.76rem;
       color: var(--text-mid);
@@ -2269,6 +2513,7 @@ PHOTOS SECTION
         color: #fff;
       }
 
+
       /* ── People ────────────────────────────────────────────── */
       .people-header,
       .people-strip-outer {
@@ -2510,15 +2755,15 @@ PHOTOS SECTION
     <div class="hero-shimmer" id="hero-shimmer"></div>
     -->
     <div class="hero-content">
-      <p class="hero-eyebrow">Landscape ecology · Decision support · Wildfire</p>
+      <p class="hero-eyebrow">Landscape ecology · Biodiversity conservation · Fire dynamics · Decision support</p>
       <h1 class="hero-title">
         Ecosystem Resilience<br> <!--&amp; -->
         <em>Cooperative</em>
       </h1>
       <p class="hero-desc">
-        Quantifying landscape resilience to disturbances and ongoing climate change.
-        Spatial decision support tools for prioritizing ecological restoration
-        and protection across western US forests and watersheds.
+        Research on landscape resilience and biodiversity vulnerability to disturbances and ongoing climate change. 
+        Developing spatial decision support tools to explore ecosystem status and change, 
+        and prioritize restoration and protection across western US forests and watersheds.
       </p>
       <a class="hero-scroll" href="#about">
         <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
@@ -2584,6 +2829,7 @@ PHOTOS SECTION
             <div class="pd-card-header">
               <h3 id="pd-name" class="pd-name"></h3>
               <p id="pd-title" class="pd-title"></p>
+              <p  id="pd-role"  class="pd-role"></p>
               <p id="pd-affil" class="pd-affil"></p>
               <div id="pd-links" class="pd-links"></div>
             </div>
@@ -2822,6 +3068,123 @@ PHOTOS SECTION
      -->
 
   <section class="page-section tools-section globe-section" id="tools">
+    <div class="webtools-block">
+      <div class="webtools-rule"></div>
+      <div class="webtools-header">
+        <p class="section-eyebrow">Web tools</p>
+        <h2 class="section-title">Bring your own data</h2>
+        <p class="section-sub">General-purpose tools that run entirely in your browser — nothing is
+          uploaded, and no account is needed.</p>
+      </div>
+
+      <div class="webtools-grid">
+        <article class="project-card visible">
+          <div class="card-img-wrap">
+            <img src="assets/fuzzy_membership.jpg" alt="Fuzzy membership designer">
+            <span class="card-badge badge-ready">Live</span>
+          </div>
+          <div class="card-body">
+            <p class="card-region">Raster &amp; tabular</p>
+            <h3 class="card-title">Fuzzy membership designer</h3>
+            <p class="card-meta">Updated: August 2026</p>
+            <p class="card-desc">Calibrate a strength-of-evidence ramp against your data's own
+              distribution, then export the function and the transformed layer as GeoTIFF or
+              ESRI ASCII.</p>
+            <a class="card-link" href="webtools/fuzzy_membership/">Open tool →</a>
+          </div>
+        </article>
+        <article class="project-card visible">
+          <div class="card-img-wrap">
+            <img src="assets/promote_tool.jpg" alt="PROMOTE strategy scorer">
+            <span class="card-badge badge-ready">Live</span>
+          </div>
+          <div class="card-body">
+            <p class="card-region">Paired rasters</p>
+            <h3 class="card-title">PROMOTE strategy scorer</h3>
+            <p class="card-meta">Updated: August 2026</p>
+            <p class="card-desc">Score current- and future-condition evidence against the four
+              PROMOTE corners — Protect, Adapt, Transform, Monitor — and export the strategy
+              surfaces, management opportunity, and summary tables.</p>
+            <a class="card-link" href="webtools/promote_tool/">Open tool →</a>
+          </div>
+        </article>  
+        
+        <!-- ── Logic network developer — insert after the fuzzy membership card ── -->
+        <article class="project-card visible">
+          <div class="card-img-wrap">
+            <img src="assets/logic_network.jpg" alt="Logic network developer">
+            <span class="card-badge badge-ready">Live</span>
+          </div>
+          <div class="card-body">
+            <p class="card-region">Raster &amp; tabular</p>
+            <h3 class="card-title">Logic network developer</h3>
+            <p class="card-meta">Updated: August 2026</p>
+            <p class="card-desc">Build a NetWeaver-style logic model over standardized
+              layers — combine them with AND, OR, union and weighted union, calibrate
+              each ramp against the data's own distribution, and map the resulting
+              condition score.</p>
+            <a class="card-link" href="webtools/logic_network/">Open tool →</a>
+          </div>
+        </article>        
+
+        <!-- ── Zonal summary — insert last; not yet built ── -->
+        <article class="project-card visible">
+          <div class="card-img-wrap">
+            <img src="assets/zonal_stats.jpg" alt="Zonal summary">
+            <span class="card-badge badge-ready">LIVE</span>
+          </div>
+          <div class="card-body">
+            <p class="card-region">Raster to reporting units</p>
+            <h3 class="card-title">Zonal summary</h3>
+            <p class="card-meta">Updated: August 2026</p>
+            <p class="card-desc">Summarise raster layers to hexagons or your own polygon
+              units, carrying each band's provenance through, so results from the other
+              tools can be ranked and budgeted in the treatment prioritizer.</p>
+            <a class="card-link" href="webtools/zonal-tool/">Open tool →</a>
+          </div>
+        </article>        
+        
+        <article class="project-card visible">
+          <div class="card-img-wrap">
+            <img src="assets/prioritize_tool.jpg" alt="PROMOTE strategy scorer">
+            <span class="card-badge badge-ready">Live</span>
+          </div>
+          <div class="card-body">
+            <p class="card-region">Management planning</p>
+            <h3 class="card-title">Treatment prioritizer</h3>
+            <p class="card-meta">Updated: August 2026</p>
+            <p class="card-desc">Compare strategic planning options with various optimization tools similar to FORSYS. 
+                                  Combines functionality across the set of tools to get work done!
+            </p>
+            <a class="card-link" href="webtools/prioritize-tool/">Open tool →</a>
+          </div>
+        </article>
+        
+        <article class="project-card visible">
+          <div class="card-img-wrap">
+            <img src="assets/project_shell.jpg" alt="Project workbench">
+            <span class="card-badge badge-ready">Preview</span>
+          </div>
+          <div class="card-body">
+            <p class="card-region">Across the tool suite</p>
+            <h3 class="card-title">Project workspace</h3>
+            <p class="card-meta">Updated: August 2026</p>
+            <p class="card-desc">Keep one project across every tool. Layers accumulate as you
+                                  work, each checked against a shared grid so they line up, and every cutoff,
+                                  operator and weight is recorded — so a finished map can be traced back to the
+                                  decisions behind it.
+            </p>
+            <a class="card-link" href="webtools/shell/">Open tool →</a>
+          </div>
+        </article>        
+        
+      </div>
+
+      <!-- ── App launcher: generated automatically from the cards above ── -->
+      <div class="tools-launcher" aria-label="Web tools"></div>
+    </div>  
+
+
     <div class="section-stack">
       <div class="stack-header">
         <p class="section-eyebrow">Decision support tools</p>
@@ -2829,8 +3192,7 @@ PHOTOS SECTION
         <p class="section-sub">Spatially explicit decision support for forest and watershed management. Spin the globe
           and
           click a location to explore.</p>
-      </div>
-
+      </div> 
 
       <div class="globe-wrapper">
         <div class="globe-container" id="globe-container"></div>
@@ -2845,8 +3207,8 @@ PHOTOS SECTION
         </div>
       </div>
 
-
     </div>
+
   </section>
 
 
@@ -2991,6 +3353,7 @@ PHOTOS SECTION
     document.getElementById('pd-photo').alt = p.name;
     document.getElementById('pd-name').textContent = p.name;
     document.getElementById('pd-title').textContent = p.title;
+    document.getElementById('pd-role').textContent  = p.role || '';
     document.getElementById('pd-affil').textContent = p.affiliation;
     document.getElementById('pd-bio').innerHTML = p.bio;
     document.getElementById('pd-links').innerHTML = p.links.map(l =>
@@ -3296,27 +3659,44 @@ PHOTOS SECTION
     .then(photos => {
       const grid = document.getElementById('bento-grid');
 
-      // ── Shuffle on every load ─────────────────────────────
+      // Shuffle
       for (let i = photos.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [photos[i], photos[j]] = [photos[j], photos[i]];
       }
 
-      Promise.all(photos.map(src => new Promise(resolve => {
+      // Normalize — convert strings to objects
+      const normalized = photos.map(p =>
+        typeof p === 'string' ? { src: p, span: null } : p
+      );
+
+      Promise.all(normalized.map(photo => new Promise(resolve => {
+        // If span is explicitly set, skip measuring
+        if (photo.span !== null && photo.span !== undefined) {
+          return resolve({ ...photo, measured: false });
+        }
         const img  = new Image();
-        img.onload = () => resolve({ src, w: img.naturalWidth, h: img.naturalHeight });
-        img.onerror = () => resolve({ src, w: 1, h: 1 });
-        img.src = src;
-      }))).then(measured => {
-        measured.forEach(({ src, w, h }) => {
-          const ratio = w / h;
-          let span = '';
-          if (ratio > 1.6)  span = 'span-wide';
-          else if (ratio < 0.7) span = 'span-tall';
+        img.onload = () => resolve({
+          ...photo,
+          w: img.naturalWidth,
+          h: img.naturalHeight,
+          measured: true
+        });
+        img.onerror = () => resolve({ ...photo, w: 1, h: 1, measured: true });
+        img.src = photo.src;
+      }))).then(results => {
+        results.forEach(({ src, span, w, h, measured }) => {
+          // Use override span if provided, otherwise auto-detect
+          if (measured) {
+            const ratio = w / h;
+            if (ratio > 1.6)       span = 'span-wide';
+            else if (ratio < 0.7)  span = 'span-tall';
+            else                   span = '';
+          }
 
           const alt  = src.split('/').pop().replace(/\.[^.]+$/, '').replace(/[-_]/g, ' ');
           const cell = document.createElement('div');
-          cell.className = `bento-cell ${span}`.trim();
+          cell.className = `bento-cell ${span || ''}`.trim();
           cell.innerHTML = `<div class="photo-frame-erc">
             <img src="${src}" alt="${alt}" loading="lazy">
           </div>`;
@@ -3324,7 +3704,6 @@ PHOTOS SECTION
         });
       });
     });
-
 
     // Call after animObserver is defined
     loadData();
@@ -3613,6 +3992,106 @@ PHOTOS SECTION
 
 
 
+
+
+
+  <script>
+    /* ══════════════════════════════════════════════════════════════
+       WEB TOOLS — APP LAUNCHER
+
+       The launcher is generated from the existing .project-card
+       elements, so each tool is defined only once in the HTML.
+       ══════════════════════════════════════════════════════════════ */
+
+    document.addEventListener("DOMContentLoaded", () => {
+
+      const cardGrid = document.querySelector(".webtools-grid");
+      const launcher = document.querySelector(".tools-launcher");
+
+      if (!cardGrid || !launcher) return;
+
+      const cards = cardGrid.querySelectorAll(".project-card");
+
+      cards.forEach(card => {
+
+        const image = card.querySelector(".card-img-wrap img");
+        const title = card.querySelector(".card-title");
+        const link = card.querySelector(".card-link");
+        const badge = card.querySelector(".card-badge");
+
+        if (!image || !title || !link) return;
+
+        const app = document.createElement("a");
+        app.className = "tool-app";
+        app.href = link.getAttribute("href");
+        app.setAttribute("aria-label", `Open ${title.textContent.trim()}`);
+
+        const icon = document.createElement("img");
+        icon.className = "tool-app-icon";
+        icon.src = image.getAttribute("src");
+        icon.alt = "";
+        app.appendChild(icon);
+
+        const label = document.createElement("span");
+        label.className = "tool-app-label";
+        label.textContent = title.textContent.trim();
+        app.appendChild(label);
+
+        if (badge && badge.textContent.trim().toLowerCase() === "live") {
+          const status = document.createElement("span");
+          status.className = "tool-app-status";
+          status.setAttribute("aria-hidden", "true");
+          app.appendChild(status);
+        }
+
+        launcher.appendChild(app);
+      });
+
+      /*
+       * If the launcher has not been disabled with display:none,
+       * hide the original cards. If you uncomment display:none in
+       * .tools-launcher above, this condition is false and the cards
+       * remain visible automatically.
+       */
+      if (getComputedStyle(launcher).display !== "none") {
+        cardGrid.classList.add("launcher-active");
+      }
+
+      /* ── Desktop Dock magnification ─────────────────────────── */
+
+      const apps = [...launcher.querySelectorAll(".tool-app")];
+
+      launcher.addEventListener("pointermove", event => {
+
+        if (event.pointerType !== "mouse") return;
+
+        const mouseX = event.clientX;
+
+        apps.forEach(app => {
+
+          const rect = app.getBoundingClientRect();
+          const center = rect.left + rect.width / 2;
+          const distance = Math.abs(mouseX - center);
+
+          const influence = Math.max(0, 1 - distance / 170);
+          const scale = 1 + influence * 0.18;
+
+          app.style.transform =
+            `translateY(${-influence * 8}px) scale(${scale})`;
+
+          app.style.zIndex = Math.round(influence * 10);
+        });
+      });
+
+      launcher.addEventListener("pointerleave", () => {
+        apps.forEach(app => {
+          app.style.transform = "";
+          app.style.zIndex = "";
+        });
+      });
+
+    });
+  </script>
 
 </body>
 
